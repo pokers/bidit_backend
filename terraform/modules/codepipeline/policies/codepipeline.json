@@ -1,0 +1,193 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "codepipeline:*",
+        "iam:ListRoles",
+        "iam:PassRole",
+        "s3:CreateBucket",
+        "s3:GetBucketPolicy",
+        "s3:GetObject",
+        "s3:ListAllMyBuckets",
+        "s3:ListBucket",
+        "s3:PutBucketPolicy",
+        "codecommit:ListBranches",
+        "codecommit:ListRepositories",
+        "codedeploy:GetApplication",
+        "codedeploy:GetDeploymentGroup",
+        "codedeploy:ListApplications",
+        "codedeploy:ListDeploymentGroups",
+        "elasticbeanstalk:DescribeApplications",
+        "elasticbeanstalk:DescribeEnvironments",
+        "lambda:GetFunctionConfiguration",
+        "lambda:ListFunctions",
+        "opsworks:DescribeApps",
+        "opsworks:DescribeLayers",
+        "opsworks:DescribeStacks",
+        "cloudformation:DescribeStacks",
+        "cloudformation:ListChangeSets"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Effect":"Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:GetBucketVersioning",
+        "s3:List*",
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "${aws_s3_bucket_arn}",
+        "${aws_s3_bucket_arn}/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "codebuild:BatchGetBuilds",
+        "codebuild:StartBuild"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Action": [
+        "ecs:*",
+        "events:DescribeRule",
+        "events:DeleteRule",
+        "events:ListRuleNamesByTarget",
+        "events:ListTargetsByRule",
+        "events:PutRule",
+        "events:PutTargets",
+        "events:RemoveTargets",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListInstanceProfiles",
+        "iam:ListRoles",
+        "logs:CreateLogGroup",
+        "logs:DescribeLogGroups",
+        "logs:FilterLogEvents"
+      ],
+      "Resource": "*",
+      "Effect": "Allow"
+    },
+    {
+      "Action": "iam:PassRole",
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ],
+      "Condition": {
+        "StringLike": {
+          "iam:PassedToService": "ecs-tasks.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Action": "iam:PassRole",
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:iam::*:role/ecsInstanceRole*"
+      ],
+      "Condition": {
+        "StringLike": {
+          "iam:PassedToService": [
+            "ec2.amazonaws.com",
+            "ec2.amazonaws.com.cn"
+          ]
+        }
+      }
+    },
+    {
+      "Action": "iam:PassRole",
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:iam::*:role/ecsAutoscaleRole*"
+      ],
+      "Condition": {
+        "StringLike": {
+          "iam:PassedToService": [
+            "application-autoscaling.amazonaws.com",
+            "application-autoscaling.amazonaws.com.cn"
+          ]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iam:CreateServiceLinkedRole",
+      "Resource": "*",
+      "Condition": {
+        "StringLike": {
+          "iam:AWSServiceName": [
+            "ecs.amazonaws.com",
+            "spot.amazonaws.com",
+            "spotfleet.amazonaws.com"
+          ]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "codecommit:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CloudWatchEventsCodeCommitRulesAccess",
+      "Effect": "Allow",
+      "Action": [
+        "events:DeleteRule",
+        "events:DescribeRule",
+        "events:DisableRule",
+        "events:EnableRule",
+        "events:PutRule",
+        "events:PutTargets",
+        "events:RemoveTargets",
+        "events:ListTargetsByRule"
+      ],
+      "Resource": "arn:aws:events:*:*:rule/codecommit*"
+    },
+    {
+      "Sid": "SNSTopicAndSubscriptionAccess",
+      "Effect": "Allow",
+      "Action": [
+        "sns:CreateTopic",
+        "sns:DeleteTopic",
+        "sns:Subscribe",
+        "sns:Unsubscribe",
+        "sns:SetTopicAttributes"
+      ],
+      "Resource": "arn:aws:sns:*:*:codecommit*"
+    },
+    {
+      "Sid": "SNSTopicAndSubscriptionReadAccess",
+      "Effect": "Allow",
+      "Action": [
+        "sns:ListTopics",
+        "sns:ListSubscriptionsByTopic",
+        "sns:GetTopicAttributes"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "LambdaReadOnlyListAccess",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:ListFunctions"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "IAMReadOnlyListAccess",
+      "Effect": "Allow",
+      "Action": [
+        "iam:ListUsers"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

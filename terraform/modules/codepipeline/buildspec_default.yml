@@ -1,0 +1,53 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo install serverless cli...
+      - npm install -g serverless@2.69.1
+      - echo npm install
+      - npm install --save
+  pre_build:
+    commands:
+      - echo set Env
+      - export REDIS_ENDPOINT_ADDRESS=${redis_endpoint_address}
+      - export REDIS_ENDPOINT_PORT=${redis_endpoint_port}
+      - export RDS_WRITE_ENDPOINT=${rds_write_endpoint}
+      - export RDS_READ_ENDPOINT=${rds_read_endpoint}
+      - export RDS_ENDPOINT_PORT=${rds_endpoint_port}
+      - export RDS_USERNAME=${rds_username}
+      - export RDS_PASSWORD=${rds_password}
+      - export RDS_DATABASE_NAME=${rds_database_name}
+      - export GATEWAY_URL=${gateway_url}
+      - export GATEWAY_PORT=${gateway_port}
+      - export VPC_SECURITY_GROUP_ID=${vpc_security_group_id}
+      - export VPC_SUBNET_ID_1=${vpc_subnet_id_1}
+      - export VPC_SUBNET_ID_2=${vpc_subnet_id_2}
+      - export VPC_OUTBOUND_SUBNET_ID=${vpc_outbound_subnet_id}
+      - export VPC_OUTBOUND_SECURITY_GROUP_ID=${vpc_outbound_security_group_id}
+      - export SEGWAY_CLIENT_ID=${segway_client_id}
+      - export SEGWAY_CLIENT_SECRET=${segway_client_secret}
+      - export BACKEND_VERSION=${backend_version}
+      - export AWS_ACCOUNT_TYPE=${aws_account_type}
+      - export IAMPORT_KEY=${iamport_key}
+      - export IAMPORT_SECRET=${iamport_secret}
+      - export SLACK_HOOK_URL=${slack_hook_url}
+      - export SLACK_ALERT_HOOK_URL=${slack_alert_hook_url}
+      - export DYNAMO_TABLE=${dynamo_table}
+      - export S3_REPORT_IMAGE=${s3_report_image}
+      - export S3_DEPLOY_SPOT_IMAGE=${s3_deploy_spot_image}
+      - export S3_EMPLOYEE_JOB_IMAGE=${s3_employee_job_image}
+      - export CRYPTO_KEY_AES256=${crypto_key_aes256}
+      - echo remove existed serverless.yml file
+      - rm -rf serverless.yml
+      - echo copy preper serverless.yml file to current directory
+      - cp ./serverless/${sls_config_file} ./serverless.yml
+      - echo configure aws credentials
+      - sls config credentials --provider aws --key ${aws_access_key} --secret ${aws_secret_key}
+  build:
+    commands:
+      - echo deploying started on `date`
+      - sls deploy
+  post_build:
+    commands:
+      - echo deploying completed on `date`

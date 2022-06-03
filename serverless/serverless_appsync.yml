@@ -1,0 +1,125 @@
+service: bidit
+
+plugins:
+  - serverless-appsync-plugin
+
+provider:
+  name: aws
+  region: ap-northeast-2
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  stage: prod
+  profile: ${self:custom.profiles.${sls:stage}}
+  memorySize: 256
+  timeout: 75
+  logRetentionInDays: 60
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - lambda:*
+        - s3:*
+      Resource:
+        - arn:aws:lambda:${self:provider.region}:*:*
+    - Effect: Allow
+      Action: secretsmanager:GetSecretValue
+      Resource:
+        - arn:aws:secretsmanager:*:*
+
+  environment:
+    REGION: "${self:provider.region}"
+    STAGE: "${self:provider.stage}"
+    APPSYNC_NAME: "${self:service}-appsync"
+
+
+custom:
+  profiles:
+    dev: biditDev
+    prod: bidit
+  appSync:
+    name: "${self:provider.environment.APPSYNC_NAME}"
+    authenticationType: API_KEY
+    serviceRole: appSyncServiceRole
+    schema: 
+      - src/schema/User.graphql
+      - src/schema/Item.graphql
+      - src/schema/ItemCategory.graphql
+    dataSources:
+      - type: AWS_LAMBDA
+        name: userResolverDataSource
+        config:
+          functionName: userResolver
+      - type: AWS_LAMBDA
+        name: itemResolverDataSource
+        config:
+          functionName: itemResolver
+    mappingTemplates:
+      # User Resolver
+      - dataSource: userResolverDataSource
+        type: Query
+        field: getUser
+        request: false
+        response: false
+      # Item Resolver
+      - dataSource: itemResolverDataSource
+        type: Query
+        field: getItem
+        request: false
+        response: false
+      - dataSource: itemResolverDataSource
+        type: Query
+        field: getItemList
+        request: false
+        response: false
+      - dataSource: itemResolverDataSource
+        type: Query
+        field: getCategoryList
+        request: false
+        response: false
+      - dataSource: itemResolverDataSource
+        type: Query
+        field: getCategory
+        request: false
+        response: false
+      - dataSource: itemResolverDataSource
+        type: Query
+        field: scanCategory
+        request: false
+        response: false
+
+package:
+  individually: true
+  exclude:
+    - ./**
+
+functions:
+  userResolver:
+    handler: dist/resolvers/userResolver.userResolver
+    name: bidit-userResolver
+    package:
+      include:
+        - ./dist/resolvers/userResolver.js
+    environment:
+      environment:
+      BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
+      BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}
+      BIDIT_RDS_MAIN_PORT: ${env:BIDIT_RDS_MAIN_PORT}
+      BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
+      BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
+      BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+
+  itemResolver:
+    handler: dist/resolvers/itemResolver.itemResolver
+    name: bidit-itemResolver
+    package:
+      include:
+        - ./dist/resolvers/itemResolver.js
+    environment:
+      BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
+      BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}
+      BIDIT_RDS_MAIN_PORT: ${env:BIDIT_RDS_MAIN_PORT}
+      BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
+      BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
+      BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+
+

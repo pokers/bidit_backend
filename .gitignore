@@ -20,3 +20,5 @@ serverless_dev_pokers/
 sls_pokers.sh
 **/.DS_Store
 terraform_1.2.1
+**/dist/*
+practice.js

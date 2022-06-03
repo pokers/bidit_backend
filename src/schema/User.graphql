@@ -1,0 +1,38 @@
+# TODO : should use custom scalar. 
+enum UserStatus{
+    VALID,
+    INVALID
+}
+enum JoinPath{
+    KAKAO,
+    APPLE,
+    GOOGLE
+}
+enum gender{
+    MALE,
+    FEMALE
+}
+type User {
+    id: Int!
+    status: Int!    # 0=VALID, 1=INVALID
+    uniqueId: String
+    passwd: String
+    joinPath: Int   # 0=KAKAO, 1=APPLE, 2=GOOGLE
+    gender: Int     # 0=MALE, 1=FEMALE
+    birth: String
+    email: String
+    phone: String
+    createdAt: String!
+    updatedAt: String
+    deletedAt: String
+    description: String
+    items:ItemConnection
+}
+
+type Query {
+    getUser(id: Int!): User
+}
+
+schema {
+    query: Query
+}

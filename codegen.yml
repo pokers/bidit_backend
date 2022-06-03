@@ -1,0 +1,12 @@
+overwrite: true
+schema: 
+  - src/schema/User.graphql
+  - src/schema/Item.graphql
+  - src/schema/ItemCategory.graphql
+
+generates:
+  ./src/types/schema/schema.type.d.ts:
+    plugins:
+      - typescript
+          
+          

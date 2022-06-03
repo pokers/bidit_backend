@@ -30,6 +30,7 @@ module "main_rds" {
 
   vpc_id  = "${module.vpc_db.vpc_id}"
   vpc_security_group_ids = ["${module.vpc_db.vpc_security_group_id}"]
+  # TODO : subnet ID, it should get from vpc_db module
   subnets = ["subnet-0d59bf5163f388b48","subnet-0e98d11d6b43690a6"]
 
   # allowed_security_groups = ["${module.vpc_db.vpc_security_group_id}"]

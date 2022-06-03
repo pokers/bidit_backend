@@ -1,0 +1,46 @@
+enum CategoryStatus {
+    VALID,
+    INVALID
+}
+type Category {
+    id: Int!
+    status: Int!
+    parentId: Int
+    name: String
+    depth: Int
+    createdAt: String!
+    updatedAt: String
+    deletedAt: String
+    parent: Category
+}
+
+type CategoryEdge {
+    node: Category
+    cursor: String
+}
+
+type CategoryConnection {
+    totalCount: Int
+    edges: [CategoryEdge]
+    pageInfo: PageInfo
+}
+
+
+type Query{
+    getCategoryList(categoryQuery: CategoryQueryInput, first: Int, last: Int, after: String, before: String):CategoryConnection
+    getCategory(id: Int!):Category
+    scanCategory:[Category]
+}
+
+input CategoryQueryInput {
+    id: Int
+    status: Int
+    parentId: Int
+    name: String
+    depth: Int
+}
+
+schema {
+    query: Query
+}
+

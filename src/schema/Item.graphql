@@ -1,0 +1,94 @@
+enum DeliveryType {
+    DIRECT,
+    PARCEL,
+    BOTH
+}
+enum ItemStatus{
+    REGISTED,
+    ONGOING,
+    SOLD
+}
+
+type Item {
+    id: Int!
+    status: Int! # 0=REGISTED, 1=ONGOING, 2=SOLD
+    userId: Int!
+    categoryId: Int
+    sPrice: Int
+    cPrice: Int
+    buyNow: Int
+    name: String
+    title: String
+    dueDate: String
+    deliveryType: Int # 0=DIRECT, 1=PARCEL, 2=BOTH
+    sCondition: Int
+    aCondition: Int
+    createdAt: String!
+    updatedAt: String
+    deletedAt: String
+    description:[ItemDescription]
+    image:[ItemImage]
+    category: Category
+}
+
+type ItemDescription{
+    id: Int!
+    status: Int!
+    itemId: Int!
+    type: Int
+    description: String
+    createdAt: String!
+    updatedAt: String
+    deletedAt: String
+}
+
+type ItemImage{
+    id: Int!
+    status: Int!
+    itemId: Int!
+    type: Int
+    url: String
+    createdAt: String!
+    updatedAt: String
+    deletedAt: String
+}
+
+type ItemEdge {
+    node: Item
+    cursor: String
+}
+
+type PageInfo {
+    startCursor: String
+    endCursor: String
+    hasNextPage: Boolean
+    hasPrevPage: Boolean
+}
+
+type ItemConnection {
+    totalCount: Int
+    edges: [ItemEdge]
+    pageInfo: PageInfo
+}
+
+type Query{
+    getItem(id: Int!):Item
+    getItemList(itemQuery: ItemQueryInput, first: Int, last: Int, after: String, before: String):ItemConnection
+}
+
+input ItemQueryInput {
+    id: Int
+    status: Int
+    userId: Int
+    categoryId: Int
+    name: String
+    dueDate: String
+    deliveryType: Int
+    sCondition: Int
+    aCondition: Int
+    createdAt: Int
+}
+
+schema {
+    query: Query
+}

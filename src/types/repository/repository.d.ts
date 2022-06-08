@@ -16,6 +16,6 @@ export type QueryInput =  ItemQueryInput | CategoryQueryInput;
 
 export type Repos ={
     [key: string]: any;
-    itemRepo?: ItemRepository;
-    userRepo?: UserRepository;
+    itemRepo?: Maybe<ItemRepository>;
+    userRepo?: Maybe<UserRepository>;
 }

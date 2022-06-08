@@ -1,5 +1,5 @@
 import { log } from '../../lib/logger'
-import { OrmSequlize } from '../../lib/OrmSequlize';
+import { SequelizeORM } from '../../lib/SequelizeORM';
 
 // Models
 import { 
@@ -29,11 +29,11 @@ enum Order {
 }
 
 class Models {
-    private sequelize:OrmSequlize;
+    private sequelize:SequelizeORM;
     constructor(){
     }
 
-    initialize(sequelize:OrmSequlize):Models{
+    initialize(sequelize:SequelizeORM):Models{
         try{
             this.sequelize = sequelize;
             ItemModel.initialize(this.sequelize.getDBInstance());

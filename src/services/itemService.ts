@@ -12,10 +12,12 @@ import {
     PageInfo, 
     FirstLastItem, 
     CategoryEdge,
+
+    Repos
 } from '../types';
 import { ItemRepository } from '../repository';
 import { log } from '../lib/logger';
-import { ErrorFirstLastNotSupported } from '../lib';
+import { ErrorModuleNotFound, ErrorNotSupportedParameters } from '../lib';
 import { ModelName, CursorName, Order } from '../repository/model';
 
 enum DefaultDate {
@@ -32,11 +34,10 @@ interface defaultRowInfo {
 }
 
 class ItemService implements iItemService {
-    // TODO : any type shoud be changed to Generic Type
-    private repoProvider:(name?:string)=>any;
+    private repositories:Repos;
     
-    constructor(repoProvoder: (name?:string)=>any){
-        this.repoProvider = repoProvoder;
+    constructor(repositories:Repos){
+        this.repositories = repositories;
     }
 
     // Private Methods
@@ -80,7 +81,10 @@ class ItemService implements iItemService {
             const { id } = arg;
             let result:Item = {} as Item;
 
-            const itemRepo:ItemRepository = this.repoProvider().itemRepo;
+            if(!this.repositories.itemRepo){
+                throw ErrorModuleNotFound();
+            }
+            const itemRepo:ItemRepository = this.repositories.itemRepo;
             result = await itemRepo.getItem(id);
             log.info('Item : ', JSON.stringify(result));
             return result;
@@ -94,12 +98,15 @@ class ItemService implements iItemService {
         try{
             const { itemQuery , first , last , after , before } = arg;
             if(first && last){
-                throw ErrorFirstLastNotSupported();
+                throw ErrorNotSupportedParameters();
+            }
+            if(!this.repositories.itemRepo){
+                throw ErrorModuleNotFound();
             }
 
             let result: ItemConnection = {} as ItemConnection
             const order = first? Order.ASC:Order.DESC;
-            const itemRepo:ItemRepository = this.repoProvider().itemRepo;
+            const itemRepo:ItemRepository = this.repositories.itemRepo;
             
             const firstLastItem:FirstLastItem<Item> = await itemRepo.getFirstLastItem<Item>(CursorName.createdAt, ModelName.item, itemQuery);
             log.info('firstLastItem : ', firstLastItem);
@@ -131,13 +138,16 @@ class ItemService implements iItemService {
             const { categoryQuery , first , last , after , before } = arg;
             
             if(first && last){
-                throw ErrorFirstLastNotSupported();
+                throw ErrorNotSupportedParameters();
+            }
+            if(!this.repositories.itemRepo){
+                throw ErrorModuleNotFound();
             }
  
             let result: CategoryConnection = {} as CategoryConnection;
             const order = first? Order.ASC:Order.DESC;
 
-            const itemRepo:ItemRepository = this.repoProvider().itemRepo;
+            const itemRepo:ItemRepository = this.repositories.itemRepo;
             const firstLastItem:FirstLastItem<Category> = await itemRepo.getFirstLastItem<Category>(CursorName.createdAt, ModelName.category, categoryQuery);
             log.info('FirstLast : ', JSON.stringify(firstLastItem));
 
@@ -165,7 +175,10 @@ class ItemService implements iItemService {
         try{
             const { id } = arg;
 
-            const itemRepo:ItemRepository = this.repoProvider().itemRepo;
+            if(!this.repositories.itemRepo){
+                throw ErrorModuleNotFound();
+            }
+            const itemRepo:ItemRepository = this.repositories.itemRepo;
             const category:Category = await itemRepo.getCategory(id);
 
             return category;
@@ -177,7 +190,10 @@ class ItemService implements iItemService {
 
     async scanCategory(): Promise<Category[]>{
         try{
-            const itemRepo:ItemRepository = this.repoProvider().itemRepo;
+            if(!this.repositories.itemRepo){
+                throw ErrorModuleNotFound();
+            }
+            const itemRepo:ItemRepository = this.repositories.itemRepo;
             const categoryList:Category[] = await itemRepo.scanCategory();
 
             return categoryList;

@@ -4,7 +4,7 @@ import { SecretsManager } from 'aws-sdk';
 import { Sequelize } from 'sequelize'
 import mysql2 from 'mysql2'
 
-class OrmSequlize {
+class SequelizeORM {
     private secretManager:SecretsManager;
     private dbInst:Sequelize = {} as Sequelize;
     private secret:SecretMySql = {} as SecretMySql;
@@ -23,7 +23,7 @@ class OrmSequlize {
         return this._isConnected;
     }
 
-    async initialize(secretId: string): Promise<OrmSequlize>{
+    async initialize(secretId: string): Promise<SequelizeORM>{
         try{
             let secMgr = await this.secretManager.getSecretValue({SecretId: secretId}).promise();
             this.secret = JSON.parse(secMgr.SecretString || "");
@@ -41,7 +41,7 @@ class OrmSequlize {
                 // timezone: "+09:00",
                 logging: false,
                 pool:{
-                    max: 2,
+                    max: 5,
                     min: 0,
                     idle:0,
                     acquire: 3000,
@@ -82,6 +82,6 @@ const sequelizeInst = new Sequelize(
         }
     },
 );
-export { OrmSequlize };
+export { SequelizeORM };
 
 

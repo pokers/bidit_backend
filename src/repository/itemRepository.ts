@@ -19,8 +19,6 @@ class ItemRepository extends RepositoryBase{
 
     // Private Methods
 
-
-
     // Public Methods
     async getItem(itemId:number): Promise<Item>{
         try{

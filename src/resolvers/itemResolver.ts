@@ -1,14 +1,14 @@
+import 'reflect-metadata';
 import { log } from '../lib/logger'
 import { AppSyncResolverEvent, Context } from 'aws-lambda'
 import { ItemService } from '../services';
-import { ItemResolverService } from '../types'
 import { Provider } from './provider'
+import { Container } from 'typedi'
 
-const getItemService = async():Promise<ItemService>=>{
+const initialize = async()=>{
     try{
-        const provider:Provider = await Provider.getInstance();
-        const services:ItemResolverService = provider.getItemResolverService();
-        return services.itemService;
+        const provider:Provider = Container.get(Provider);
+        await provider.initialize();
     }catch(e){
         log.error('exception > getUser : ', e);
         throw e;
@@ -20,21 +20,22 @@ const itemResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
     try{
         log.info("Invoked itemResolver : ", JSON.stringify(event), JSON.stringify(context));
     
+        await initialize();
         switch(event.info.fieldName){
             case 'getItem':
-                payload = await (await getItemService()).getItem(event.arguments, event.info.selectionSetList);
+                payload = await Container.get(ItemService).getItem(event.arguments, event.info.selectionSetList);
                 break;
             case 'getItemList':
-                payload = await (await getItemService()).getItemList(event.arguments, event.info.selectionSetList);
+                payload = await Container.get(ItemService).getItemList(event.arguments, event.info.selectionSetList);
                 break;
             case 'getCategoryList':
-                payload = await (await getItemService()).getCategoryList(event.arguments);
+                payload = await Container.get(ItemService).getCategoryList(event.arguments);
                 break;
             case 'getCategory':
-                payload = await (await getItemService()).getCategory(event.arguments);
+                payload = await Container.get(ItemService).getCategory(event.arguments);
                 break;
             case 'scanCategory':
-                payload = await (await getItemService()).scanCategory();
+                payload = await Container.get(ItemService).scanCategory();
                 break;
             default:
                 break;
@@ -42,7 +43,6 @@ const itemResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
     }catch(e){
         log.error('Exception > ', e)
     }finally{
-        await Provider.destroy();
         return payload;
     }
 }

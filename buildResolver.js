@@ -3,9 +3,12 @@ const path = require('path');
 const esbuild = require('esbuild');
 // const RegExp = require('RegExp');
 
-const functionsDir = `src/resolvers`;
-const outDir = `dist/resolvers/`;
-const filterReg = new RegExp('\Resolver.ts$', 'i')
+// const functionsDir = `src/resolvers`;
+// const outDir = `dist/resolvers/`;
+// const filterReg = new RegExp('\Resolver.ts$', 'i')
+const functionsDir = `dist/resolvers`;
+const outDir = `bundle/`;
+const filterReg = new RegExp('\Resolver.js$', 'i')
 const entryPoints = fs
   .readdirSync(path.join(__dirname, functionsDir))
   .map(entry => {

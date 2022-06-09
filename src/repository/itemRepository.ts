@@ -1,5 +1,5 @@
 import { log } from '../lib/logger'
-import { Models, ItemModel, CategoryModel, ModelName, CursorName } from './model'
+import { ItemModel, CategoryModel, ModelName, CursorName } from './model'
 import { Op, WhereOptions } from 'sequelize'
 import { Item, 
     ItemQueryInput, 
@@ -7,16 +7,13 @@ import { Item,
     ItemImage, 
     CategoryQueryInput, 
     FirstLastItem, 
-    QueryInput, 
     Category,
 } from '../types'
 import { RepositoryBase } from './repositoryBase'
+import { Service } from 'typedi'
 
+@Service()
 class ItemRepository extends RepositoryBase{
-    constructor(models: Models){
-        super(models);
-    }
-
     // Private Methods
 
     // Public Methods

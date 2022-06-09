@@ -1,12 +1,11 @@
 import { log } from '../lib/logger'
 import { User } from '../types'
-import { Models, ModelName } from './model'
+import { ModelName } from './model'
 import { RepositoryBase } from './repositoryBase'
-
+import { Service } from 'typedi'
+@Service()
 class UserRepository extends RepositoryBase{
-    constructor(models: Models){
-        super(models);
-    }
+
     async getUser(userId:number): Promise<User>{
         try{
             const userModel = this.models.getModel(ModelName.user);

@@ -1,25 +1,24 @@
-import { ItemConnection, User, Repos } from '../types';
-import { UserRepository } from '../repository';
-import { log, cError, ErrorModuleNotFound } from '../lib';
+import { User } from '../types';
+import { Repositories } from '../repository';
+import { log, ErrorModuleNotFound } from '../lib';
+import { Service } from 'typedi';
 
 declare interface iUserService {
     getUser(arg: any, selectionSetList:string[]): Promise<User>
 }
 
+@Service()
 class UserService implements iUserService {
-    private repositories:Repos;
-    
-    constructor(repositories:Repos){
-        this.repositories = repositories;
+    constructor(private repositories:Repositories){
     }
 
     async getUser(arg: any, selectionSetList?:string[]): Promise<User>{
         try{
             const { id } = arg;
-            if(!this.repositories.userRepo){
+            if(!this.repositories.getRepository().userRepo){
                 throw ErrorModuleNotFound();
             }
-            const queryResult = await this.repositories.userRepo.getUser(id);
+            const queryResult = await this.repositories.getRepository().userRepo.getUser(id);
             return queryResult
         }catch(e){
             log.error('exception > ', e);

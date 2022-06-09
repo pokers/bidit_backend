@@ -1,4 +1,4 @@
-import { log } from '../../lib/logger'
+import { log } from '../../lib'
 import { SequelizeORM } from '../../lib/SequelizeORM';
 
 // Models
@@ -9,6 +9,7 @@ import {
     CategoryModel
 } from '.'
 import { UserModel } from './User';
+import { Service } from 'typedi';
 
 
 enum ModelName {
@@ -28,6 +29,7 @@ enum Order {
     ASC='ASC'
 }
 
+@Service()
 class Models {
     private sequelize:SequelizeORM;
     constructor(){

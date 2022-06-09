@@ -94,11 +94,11 @@ package:
 
 functions:
   userResolver:
-    handler: dist/resolvers/userResolver.userResolver
+    handler: bundle/userResolver.userResolver
     name: bidit-userResolver
     package:
       include:
-        - ./dist/resolvers/userResolver.js
+        - ./bundle/userResolver.js
     environment:
       environment:
       BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
@@ -109,11 +109,11 @@ functions:
       BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
 
   itemResolver:
-    handler: dist/resolvers/itemResolver.itemResolver
+    handler: bundle/itemResolver.itemResolver
     name: bidit-itemResolver
     package:
       include:
-        - ./dist/resolvers/itemResolver.js
+        - ./bundle/itemResolver.js
     environment:
       BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
       BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}

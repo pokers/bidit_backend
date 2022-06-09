@@ -3,6 +3,7 @@ import { SecretMySql } from '../types';
 import { SecretsManager } from 'aws-sdk';
 import { Sequelize } from 'sequelize'
 import mysql2 from 'mysql2'
+import { Service } from 'typedi'
 
 class SequelizeORM {
     private secretManager:SecretsManager;

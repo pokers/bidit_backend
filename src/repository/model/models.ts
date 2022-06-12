@@ -70,7 +70,7 @@ class Models {
             UserModel.hasMany(ItemModel, {foreignKey: 'userId', as: 'items', sourceKey: 'id'});
             ItemModel.belongsTo(UserModel, {foreignKey: 'userId', targetKey: 'id'});
 
-            UserModel.hasOne(KakaoAccountModel, {foreignKey: 'userId', sourceKey: 'id'});
+            UserModel.hasOne(KakaoAccountModel, {foreignKey: 'userId', as:'kakaoAccount', sourceKey: 'id'});
             KakaoAccountModel.belongsTo(UserModel, {foreignKey: 'userId' ,targetKey: 'id'});
             return this;
         }catch(e){

@@ -95,6 +95,7 @@ class ItemService implements iItemService {
     async getItemList(arg: any, selectionSetList:string[]): Promise<ItemConnection>{
         try{
             const { itemQuery , first , last , after , before } = arg;
+            console.log('arg : ', arg);
             if(first && last){
                 throw ErrorNotSupportedParameters();
             }

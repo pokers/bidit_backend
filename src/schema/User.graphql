@@ -27,15 +27,16 @@ type User {
     deletedAt: String
     description: String
     items:ItemConnection
-    KakaoAccount:KakaoAccount
+    kakaoAccount:KakaoAccount
 }
 
 type Query {
     getUser(id: Int!): User
+    me:User
 }
 
 type Mutation {
-    addUser(vendor:String):User
+    addUser:User
 }
 schema {
     query: Query

@@ -1,6 +1,6 @@
 import { log, ErrorInvalidToken } from '../lib'
 import { User, Maybe,  Gender, JoinPath } from '../types'
-import { ModelName, KakaoAccountModel, KakaoUserInfo, KakaoAccount, UserModel } from './model'
+import { ModelName, KakaoAccountModel, KakaoUserInfo, KakaoAccount, UserModel, ItemModel } from './model'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
 
@@ -12,8 +12,10 @@ class UserRepository extends RepositoryBase{
             const userModel = this.models.getModel(ModelName.user);
             const result:User = await userModel.findOne({
                 where: {id: userId},
-                raw:true
-            })
+                include: ['kakaoAccount'],
+                raw:true,
+                nest: true
+            });
             return result;
         }catch(e){
             log.error('exception> getUser : ', e);
@@ -28,13 +30,15 @@ class UserRepository extends RepositoryBase{
                 return await this.models.getModel(ModelName.user).findOne({
                     include:[{
                         model:KakaoAccountModel,
+                        as: 'kakaoAccount',
                         required: true,
                         where: {
                             id: id
                         }
                     }],
-                    raw: true
-                })
+                    raw: true,
+                    nest: true
+                });
             }
             return user;
         }catch(e){
@@ -81,10 +85,10 @@ class UserRepository extends RepositoryBase{
             properties.id = userInfo.id;
             properties.status = 0;
             properties.userId = user.id;
-            const KakaoAccountModel:KakaoAccountModel = await this.models.getModel(ModelName.kakaoAccount).create(properties);
-            user.KakaoAccount = KakaoAccountModel.get({plain: true});
+            const kakaoAccountModel:KakaoAccountModel = await this.models.getModel(ModelName.kakaoAccount).create(properties);
+            user.kakaoAccount = kakaoAccountModel.get({plain: true});
 
-            log.info('kakaoAccount : ', user.KakaoAccount);
+            log.info('kakaoAccount : ', user.kakaoAccount);
 
             return user;
         }catch(e){

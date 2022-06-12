@@ -14,6 +14,7 @@ export enum ErrMessage {
     ModuleNotFound = 'Module not found',
     ErrorInvalidBodyParameter = 'Missing required parameter',
     ErrorNotMatchedPasswd = 'Please check password',
+    ErrorUserNotFound = 'Could not find User',
     ErrorItemNotFound = 'Could not find item',
     ErrorInvalidString = 'Invalid String, it might be zero length',
     ErrorExceedStringLength = 'Invalid String, it might be longer string than maxium length',
@@ -45,6 +46,9 @@ export const ErrorNotMatchedPasswd = ()=>{
     return new cError(403, ErrMessage.ErrorNotMatchedPasswd);
 }
 
+export const ErrorUserNotFound = ()=>{
+    return new cError(404, ErrMessage.ErrorUserNotFound);
+}
 export const ErrorItemNotFound = ()=>{
     return new cError(404, ErrMessage.ErrorItemNotFound);
 }

@@ -22,7 +22,8 @@ class ItemRepository extends RepositoryBase{
             const model = this.models.getModel(ModelName.item);
             const result:Item = await model.findOne({
                 where: {id: itemId},
-                include: ['description', 'image', 'category']
+                include: ['description', 'image', 'category'],
+                raw:true, nest: true
             });
             return result;
         }catch(e){
@@ -34,7 +35,8 @@ class ItemRepository extends RepositoryBase{
         try{
             const model = this.models.getModel(ModelName.itemDescription);
             const result:ItemDescription = await model.findOne({
-                where: {id: itemId}
+                where: {id: itemId},
+                raw:true, nest: true
             });
             return result;
         }catch(e){
@@ -68,7 +70,8 @@ class ItemRepository extends RepositoryBase{
                 // attributes: [cursor],
                 where,
                 limit: 1,
-                order: [[cursor, 'ASC']]
+                order: [[cursor, 'ASC']],
+                raw:true, nest: true
             });
             log.info('First : ', first);
 
@@ -76,7 +79,8 @@ class ItemRepository extends RepositoryBase{
                 // attributes: [cursor],
                 where,
                 limit: 1,
-                order: [[cursor, 'DESC']]
+                order: [[cursor, 'DESC']],
+                raw:true, nest: true
             });
             log.info('last : ', last);
 
@@ -115,7 +119,13 @@ class ItemRepository extends RepositoryBase{
                 order = 'DESC'
             }
             const itemModel = this.models.getModel(ModelName.item);
-            const items = await itemModel.findAll({where, limit, order:[[cursor, order]], include: ['description', 'image', 'category']});
+            const items = await itemModel.findAll({
+                where, 
+                limit, 
+                order:[[cursor, order]], 
+                include: ['description', 'image', 'category'],
+                raw:true, nest: true
+            });
             if(last){
                 items.sort((a:Item,b:Item)=>{
                     const aDate = new Date(a.createdAt).getTime();
@@ -155,7 +165,13 @@ class ItemRepository extends RepositoryBase{
                 order = 'DESC'
             }
             const categoryModel = this.models.getModel(ModelName.category);
-            const items = await categoryModel.findAll({where, limit, order:[[cursor, order]], include: ['parent']});
+            const items = await categoryModel.findAll({
+                where, 
+                limit, 
+                order:[[cursor, order]], 
+                include: ['parent'],
+                raw:true, nest: true
+            });
             if(last){
                 items.sort((a:Item,b:Item)=>{
                     const aDate = new Date(a.createdAt).getTime();
@@ -175,7 +191,8 @@ class ItemRepository extends RepositoryBase{
             const categoryModel = this.models.getModel(ModelName.category);
             const result:Category = await categoryModel.findOne({
                 where: {id: id},
-                include: ['parent']
+                include: ['parent'],
+                raw:true, nest: true
             });
             return result;
         }catch(e){
@@ -189,7 +206,11 @@ class ItemRepository extends RepositoryBase{
             const cursor: CategoryModel[CursorName.createdAt] = CursorName.createdAt;
             let order:string = 'DESC';
             const categoryModel = this.models.getModel(ModelName.category);
-            const categoryList:Category[] = await categoryModel.findAll({order:[[cursor, order]], include: ['parent']});
+            const categoryList:Category[] = await categoryModel.findAll({
+                order:[[cursor, order]], 
+                include: ['parent'],
+                raw:true, nest: true
+            });
             return categoryList;
         }catch(e){
             log.error('exception > scanCategory : ', e);

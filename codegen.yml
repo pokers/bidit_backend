@@ -3,9 +3,10 @@ schema:
   - src/schema/User.graphql
   - src/schema/Item.graphql
   - src/schema/ItemCategory.graphql
+  - src/schema/KakaoAccount.graphql
 
 generates:
-  ./src/types/schema/schema.type.d.ts:
+  ./src/types/schema/index.ts:
     plugins:
       - typescript
           

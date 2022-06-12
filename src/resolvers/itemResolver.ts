@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { log } from '../lib/logger'
-import { AppSyncResolverEvent, Context } from 'aws-lambda'
+import { log, cError } from '../lib'
+import { AppSyncResolverEvent, Callback, Context } from 'aws-lambda'
 import { ItemService } from '../services';
 import { Provider } from './provider'
 import { Container } from 'typedi'
@@ -16,8 +16,8 @@ const initialize = async()=>{
 }
 
 const itemResolver = async (event:AppSyncResolverEvent<any, any>, context: Context)=>{
-    let payload:any
     try{
+        let payload:any
         log.info("Invoked itemResolver : ", JSON.stringify(event), JSON.stringify(context));
     
         await initialize();
@@ -40,10 +40,11 @@ const itemResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
             default:
                 break;
         }
-    }catch(e){
-        log.error('Exception > ', e)
-    }finally{
+
         return payload;
+    }catch(e){
+        log.error('Exception > resolver :', e);
+        throw e;
     }
 }
 

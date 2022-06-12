@@ -13,24 +13,24 @@ const {
 } = DataTypes;
 
 class UserModel extends Model {
-    public id!: number;
+    public id: number;
     public status: number;
     public uniqueId: string;
     public passwd: string;
-    public joinPath: number;
-    public gender: number;
+    public joinPath: string;
+    public gender: string;
     public birth: string;
     public email: string;
     public phone: string;
-    public createdAt!: string;
+    public createdAt: string;
     public updatedAt: string;
     public deletedAt: string;
     public description: string;
-    public items:ItemConnection;
+    // public items:ItemConnection;
 
-    setItemConnection(items:ItemConnection){
-        this.items = items;
-    }
+    // setItemConnection(items:ItemConnection){
+    //     this.items = items;
+    // }
     static initialize(sequelize:Sequelize){
         this.init({
             id: {
@@ -49,10 +49,10 @@ class UserModel extends Model {
                 type: STRING,
             },
             joinPath: {
-                type: INTEGER,
+                type: STRING,
             },
             gender: {
-                type: INTEGER,
+                type: STRING,
             },
             birth: {
                 type: STRING,

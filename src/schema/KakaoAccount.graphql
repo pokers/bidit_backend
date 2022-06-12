@@ -1,0 +1,39 @@
+
+scalar BIGINT
+
+type KakaoAccount{
+    id:BIGINT!
+    status:Int!
+    userId:Int!
+    profile_needs_agreement: Boolean
+    profile_nickname_needs_agreement:Boolean
+    profile_image_needs_agreement:Boolean
+    name_needs_agreement:Boolean
+    name:String
+    email_needs_agreement:Boolean
+    is_email_valid:Boolean
+    is_email_verified:Boolean
+    email:String
+    age_range_needs_agreement:Boolean
+    age_range:String
+    birthyear_needs_agreement:Boolean
+    birthyear:String
+    birthday_needs_agreement:Boolean
+    birthday:String
+    birthday_type:String
+    gender_needs_agreement:Boolean
+    gender:String
+    phone_number_needs_agreement:Boolean
+    phone_number:String
+    ci_needs_agreement:Boolean
+    ci:String
+    ci_authenticated_at:String             
+    nickname:String
+    thumbnail_image_url:String
+    profile_image_url:String
+    is_default_image:Boolean
+    createdAt:String!
+    updatedAt:String!
+    deletedAt:String
+    description:String
+}

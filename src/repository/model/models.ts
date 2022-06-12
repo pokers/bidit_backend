@@ -10,6 +10,7 @@ import {
 } from '.'
 import { UserModel } from './User';
 import { Service } from 'typedi';
+import { KakaoAccountModel } from './kakaoAccount';
 
 
 enum ModelName {
@@ -18,6 +19,7 @@ enum ModelName {
     itemImage = 'ItemImage',
     category = 'Category',
     user = 'User',
+    kakaoAccount = 'KakaoAccount'
 }
 
 enum CursorName {
@@ -43,6 +45,7 @@ class Models {
             ItemImageModel.initialize(this.sequelize.getDBInstance());
             CategoryModel.initialize(this.sequelize.getDBInstance());
             UserModel.initialize(this.sequelize.getDBInstance());
+            KakaoAccountModel.initialize(this.sequelize.getDBInstance());
             return this;
         }catch(e){
             log.error('exception : ', e);
@@ -67,6 +70,8 @@ class Models {
             UserModel.hasMany(ItemModel, {foreignKey: 'userId', as: 'items', sourceKey: 'id'});
             ItemModel.belongsTo(UserModel, {foreignKey: 'userId', targetKey: 'id'});
 
+            UserModel.hasOne(KakaoAccountModel, {foreignKey: 'userId', sourceKey: 'id'});
+            KakaoAccountModel.belongsTo(UserModel, {foreignKey: 'userId' ,targetKey: 'id'});
             return this;
         }catch(e){
             log.error('exception : ', e);
@@ -83,6 +88,7 @@ class Models {
                 case ModelName.itemImage: return ItemImageModel;
                 case ModelName.category: return CategoryModel;
                 case ModelName.user: return UserModel;
+                case ModelName.kakaoAccount: return KakaoAccountModel;
             }
             return ItemModel;
         }catch(e){

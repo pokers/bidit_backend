@@ -1,6 +1,6 @@
 import { User, Maybe, AuthResult, UserInfoResult } from '../types';
 import { Repositories } from '../repository';
-import { log, ErrorModuleNotFound, KakaoUserInfo } from '../lib';
+import { log, ErrorModuleNotFound } from '../lib';
 import { Service } from 'typedi';
 
 declare interface iUserService {

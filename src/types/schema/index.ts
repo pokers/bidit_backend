@@ -10,7 +10,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  BIGINT: any;
+  Long: any;
 };
 
 export type Category = {
@@ -162,7 +162,7 @@ export type KakaoAccount = {
   email_needs_agreement?: Maybe<Scalars['Boolean']>;
   gender?: Maybe<Scalars['String']>;
   gender_needs_agreement?: Maybe<Scalars['Boolean']>;
-  id: Scalars['BIGINT'];
+  id: Scalars['Long'];
   is_default_image?: Maybe<Scalars['Boolean']>;
   is_email_valid?: Maybe<Scalars['Boolean']>;
   is_email_verified?: Maybe<Scalars['Boolean']>;
@@ -186,11 +186,6 @@ export type Mutation = {
   addUser?: Maybe<User>;
 };
 
-
-export type MutationAddUserArgs = {
-  vendor?: InputMaybe<Scalars['String']>;
-};
-
 export type PageInfo = {
   __typename?: 'PageInfo';
   endCursor?: Maybe<Scalars['String']>;
@@ -206,6 +201,7 @@ export type Query = {
   getItem?: Maybe<Item>;
   getItemList?: Maybe<ItemConnection>;
   getUser?: Maybe<User>;
+  me?: Maybe<User>;
   scanCategory?: Maybe<Array<Maybe<Category>>>;
 };
 
@@ -244,7 +240,6 @@ export type QueryGetUserArgs = {
 
 export type User = {
   __typename?: 'User';
-  KakaoAccount?: Maybe<KakaoAccount>;
   birth?: Maybe<Scalars['String']>;
   createdAt: Scalars['String'];
   deletedAt?: Maybe<Scalars['String']>;
@@ -254,6 +249,7 @@ export type User = {
   id: Scalars['Int'];
   items?: Maybe<ItemConnection>;
   joinPath?: Maybe<JoinPath>;
+  kakaoAccount?: Maybe<KakaoAccount>;
   passwd?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
   status: Scalars['Int'];

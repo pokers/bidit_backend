@@ -64,6 +64,11 @@ custom:
         request: false
         response: false
       - dataSource: userResolverDataSource
+        type: Query
+        field: me
+        request: false
+        response: false
+      - dataSource: userResolverDataSource
         type: Mutation
         field: addUser
         request: false

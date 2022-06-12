@@ -1,8 +1,8 @@
 
-scalar BIGINT
+scalar Long
 
 type KakaoAccount{
-    id:BIGINT!
+    id:Long!
     status:Int!
     userId:Int!
     profile_needs_agreement: Boolean

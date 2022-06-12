@@ -10,6 +10,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  BIGINT: any;
 };
 
 export type Category = {
@@ -142,6 +143,54 @@ export enum JoinPath {
   Kakao = 'KAKAO'
 }
 
+export type KakaoAccount = {
+  __typename?: 'KakaoAccount';
+  age_range?: Maybe<Scalars['String']>;
+  age_range_needs_agreement?: Maybe<Scalars['Boolean']>;
+  birthday?: Maybe<Scalars['String']>;
+  birthday_needs_agreement?: Maybe<Scalars['Boolean']>;
+  birthday_type?: Maybe<Scalars['String']>;
+  birthyear?: Maybe<Scalars['String']>;
+  birthyear_needs_agreement?: Maybe<Scalars['Boolean']>;
+  ci?: Maybe<Scalars['String']>;
+  ci_authenticated_at?: Maybe<Scalars['String']>;
+  ci_needs_agreement?: Maybe<Scalars['Boolean']>;
+  createdAt: Scalars['String'];
+  deletedAt?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  email_needs_agreement?: Maybe<Scalars['Boolean']>;
+  gender?: Maybe<Scalars['String']>;
+  gender_needs_agreement?: Maybe<Scalars['Boolean']>;
+  id: Scalars['BIGINT'];
+  is_default_image?: Maybe<Scalars['Boolean']>;
+  is_email_valid?: Maybe<Scalars['Boolean']>;
+  is_email_verified?: Maybe<Scalars['Boolean']>;
+  name?: Maybe<Scalars['String']>;
+  name_needs_agreement?: Maybe<Scalars['Boolean']>;
+  nickname?: Maybe<Scalars['String']>;
+  phone_number?: Maybe<Scalars['String']>;
+  phone_number_needs_agreement?: Maybe<Scalars['Boolean']>;
+  profile_image_needs_agreement?: Maybe<Scalars['Boolean']>;
+  profile_image_url?: Maybe<Scalars['String']>;
+  profile_needs_agreement?: Maybe<Scalars['Boolean']>;
+  profile_nickname_needs_agreement?: Maybe<Scalars['Boolean']>;
+  status: Scalars['Int'];
+  thumbnail_image_url?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['String'];
+  userId: Scalars['Int'];
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  addUser?: Maybe<User>;
+};
+
+
+export type MutationAddUserArgs = {
+  vendor?: InputMaybe<Scalars['String']>;
+};
+
 export type PageInfo = {
   __typename?: 'PageInfo';
   endCursor?: Maybe<Scalars['String']>;
@@ -195,15 +244,16 @@ export type QueryGetUserArgs = {
 
 export type User = {
   __typename?: 'User';
+  KakaoAccount?: Maybe<KakaoAccount>;
   birth?: Maybe<Scalars['String']>;
   createdAt: Scalars['String'];
   deletedAt?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   email?: Maybe<Scalars['String']>;
-  gender?: Maybe<Scalars['Int']>;
+  gender?: Maybe<Gender>;
   id: Scalars['Int'];
   items?: Maybe<ItemConnection>;
-  joinPath?: Maybe<Scalars['Int']>;
+  joinPath?: Maybe<JoinPath>;
   passwd?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
   status: Scalars['Int'];

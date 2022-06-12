@@ -14,5 +14,8 @@ const dbConfig = {
 const devEnv = {
     logLevel: (process.env.LOG_LEVEL || 'info')
 }
+const kakaoEnv = {
+    baseURL: (process.env.KAKAO_BASE_URL || '')
 
-export { dbConfig, devEnv }
+}
+export { dbConfig, devEnv, kakaoEnv }

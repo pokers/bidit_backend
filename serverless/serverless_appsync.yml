@@ -38,12 +38,15 @@ custom:
     prod: bidit
   appSync:
     name: "${self:provider.environment.APPSYNC_NAME}"
-    authenticationType: API_KEY
+    authenticationType: AWS_LAMBDA
     serviceRole: appSyncServiceRole
     schema: 
       - src/schema/User.graphql
       - src/schema/Item.graphql
       - src/schema/ItemCategory.graphql
+      - src/schema/KakaoAccount.graphql
+    lambdaAuthorizerConfig:
+      functionName: authResolver
     dataSources:
       - type: AWS_LAMBDA
         name: userResolverDataSource
@@ -58,6 +61,11 @@ custom:
       - dataSource: userResolverDataSource
         type: Query
         field: getUser
+        request: false
+        response: false
+      - dataSource: userResolverDataSource
+        type: Mutation
+        field: addUser
         request: false
         response: false
       # Item Resolver
@@ -114,6 +122,20 @@ functions:
     package:
       include:
         - ./bundle/itemResolver.js
+    environment:
+      BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
+      BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}
+      BIDIT_RDS_MAIN_PORT: ${env:BIDIT_RDS_MAIN_PORT}
+      BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
+      BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
+      BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+  
+  authResolver:
+    handler: bundle/authResolver.authorizer
+    name: bidit-authResolver
+    package:
+      include:
+        - ./bundle/authResolver.js
     environment:
       BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
       BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}

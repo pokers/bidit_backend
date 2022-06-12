@@ -21,4 +21,5 @@ sls_pokers.sh
 **/.DS_Store
 terraform_1.2.1
 **/dist/*
+**/bundle/*
 practice.js

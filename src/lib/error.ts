@@ -18,7 +18,11 @@ export enum ErrMessage {
     ErrorInvalidString = 'Invalid String, it might be zero length',
     ErrorExceedStringLength = 'Invalid String, it might be longer string than maxium length',
     ErrorInvalidPageInfo = 'Invalid page number or size.',
-    ErrorNotMatchedArticle = 'Invalid parent comment ID or article ID'
+    ErrorNotMatchedArticle = 'Invalid parent comment ID or article ID',
+    ErrorInvalidToken = 'Invalid token, it can be expired or wrong token',
+    ErrorRequireAddUser = 'Cannot find User information, Please add user first.',
+    ErrorNotFoundSocialUserInfo = 'Cannot find Social User Info.',
+    ErrorCouldNotAdd = 'Could not add item'
 }
 
 export const ErrorNotSupportedParameters = ()=>{
@@ -27,6 +31,10 @@ export const ErrorNotSupportedParameters = ()=>{
 
 export const ErrorModuleNotFound = ()=>{
     return new cError(500, ErrMessage.ModuleNotFound);
+}
+
+export const ErrorCouldNotAdd = ()=>{
+    return new cError(500, ErrMessage.ErrorCouldNotAdd);
 }
 
 export const ErrorInvalidBodyParameter = ()=>{
@@ -52,4 +60,20 @@ export const ErrorInvalidPageInfo = ()=>{
 }
 export const ErrorNotMatchedArticle = ()=>{
     return new cError(400, ErrMessage.ErrorNotMatchedArticle);
+}
+
+export const ErrorInvalidToken = ()=>{
+    return new cError(401, ErrMessage.ErrorInvalidToken)
+}
+
+export const ErrorAxiosException = (status:number, message:ErrMessage|string)=>{
+    return new cError(status, message)
+}
+
+export const ErrorRequireAddUser = ()=>{
+    return new cError(404, ErrMessage.ErrorRequireAddUser);
+}
+
+export const ErrorNotFoundSocialUserInfo = ()=>{
+    return new cError(404, ErrMessage.ErrorNotFoundSocialUserInfo);
 }

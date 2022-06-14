@@ -1,16 +1,12 @@
 import { Service } from "typedi";
-import { Repositories } from "../repository";
 import { log, cError, ErrorInvalidToken } from '../lib'
-import { KakaoAPI, KakaoResult, KakaoTokenInfo, KakaoUserInfo } from "../lib/kakaoAPI";
-import { Maybe, User, AuthResult, UserInfoResult } from '../types'
+import { KakaoResult, KakaoTokenInfo, KakaoUserInfo } from "../lib/kakaoAPI";
+import { AuthResult, UserInfoResult } from '../types'
+import { ServiceBase } from './serviceBase'
 
 
 @Service()
-class AuthService {
-    constructor(private repositories:Repositories, private kakaoAPI:KakaoAPI){
-
-    }
-
+class AuthService extends ServiceBase {
     errorHandler(error: Error|any){
         if(error instanceof cError){
             log.error('statusCode : ', error.getStatusCode());

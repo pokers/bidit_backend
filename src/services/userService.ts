@@ -1,16 +1,10 @@
 import { User, Maybe, AuthResult, UserInfoResult } from '../types';
-import { Repositories } from '../repository';
 import { log, ErrorModuleNotFound } from '../lib';
 import { Service } from 'typedi';
-
-declare interface iUserService {
-    getUser(arg: any, selectionSetList:string[]): Promise<User>
-}
+import { ServiceBase } from './serviceBase'
 
 @Service()
-class UserService implements iUserService {
-    constructor(private repositories:Repositories){
-    }
+class UserService extends ServiceBase {
 
     async getUser(arg: any, selectionSetList?:string[]): Promise<User>{
         try{

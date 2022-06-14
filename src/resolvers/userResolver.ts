@@ -5,6 +5,7 @@ import { User, ItemQueryInput, ItemConnection, Maybe, UserInfoResult } from '../
 import { Provider } from './provider'
 import { UserService, ItemService, AuthService } from '../services'
 import { Container } from 'typedi'
+import { Transaction } from 'sequelize/types';
 
 const getUser = async(event:AppSyncResolverEvent<any, any>):Promise<User>=>{
     try{
@@ -33,6 +34,8 @@ const getUser = async(event:AppSyncResolverEvent<any, any>):Promise<User>=>{
 }
 
 const addUser = async(event:AppSyncResolverEvent<any, any>):Promise<User>=>{
+    let transaction:Transaction|null = null;
+    let userService:UserService|null = null;
     try{
         const getSocialUserInfo = async ():Promise<UserInfoResult>=>{
             if(event.request.headers.authorization){
@@ -44,18 +47,20 @@ const addUser = async(event:AppSyncResolverEvent<any, any>):Promise<User>=>{
         const [socialUserInfo]= await Promise.all([getSocialUserInfo()]);
         log.info('socialUserInfo : ', socialUserInfo);
 
-        const addUser = async (socialUserInfo:UserInfoResult):Promise<Maybe<User>>=>{
-            return await Container.get(UserService).addUser(socialUserInfo);
-        }
-
-        const [user]= await Promise.all([addUser(socialUserInfo)]);
+        userService = Container.get(UserService);
+        transaction = await userService.startTransaction();
+        const user = await userService.addUser(socialUserInfo);
         log.info('addUser result : ', user);
 
         if(!user){
             throw ErrorCouldNotAdd();
         }
+        await userService.commit(transaction);
         return user;
     }catch(e){
+        if(transaction && userService){
+            await userService.rollback(transaction);
+        }
         log.error('exception > getUser : ', e);
         throw e;
     }

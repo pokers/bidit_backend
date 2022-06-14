@@ -1,16 +1,16 @@
 import { log } from '../../lib'
-import { SequelizeORM } from '../../lib/SequelizeORM';
+import { SequelizeORM, Transaction } from '../../lib/SequelizeORM';
 
 // Models
 import { 
     ItemModel,
     ItemDescriptionModel,
     ItemImageModel,
-    CategoryModel
+    CategoryModel,
+    KakaoAccountModel
 } from '.'
 import { UserModel } from './User';
 import { Service } from 'typedi';
-import { KakaoAccountModel } from './kakaoAccount';
 
 
 enum ModelName {
@@ -79,6 +79,16 @@ class Models {
         }
     }
 
+    async startTransaction():Promise<Transaction>{
+        return await this.sequelize.startTransaction();
+    }
+    async commit(transaction:Transaction){
+        await this.sequelize.commit(transaction);
+    }
+    async rollback(transaction:Transaction){
+        await this.sequelize.rollback(transaction);
+    }
+
     getModel(name:ModelName):any{
         try{
             // TODO : it shoud be updated, because structure or class name is Item which means that it starts Upper case but the table name is not.
@@ -99,4 +109,4 @@ class Models {
 }
 
 
-export { Models, ModelName, CursorName, Order }
+export { Models, ModelName, CursorName, Order, Transaction }

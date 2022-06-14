@@ -1,7 +1,7 @@
 import { log } from './logger';
 import { SecretMySql } from '../types';
 import { SecretsManager } from 'aws-sdk';
-import { Sequelize } from 'sequelize'
+import { Sequelize, Transaction } from 'sequelize'
 import mysql2 from 'mysql2'
 
 class SequelizeORM {
@@ -22,6 +22,17 @@ class SequelizeORM {
     isConnected():Boolean{
         return this._isConnected;
     }
+
+    async startTransaction():Promise<Transaction>{
+        return await this.dbInst.transaction();
+    }
+    async commit(transaction:Transaction){
+        await transaction.commit();
+    }
+    async rollback(transaction:Transaction){
+        await transaction.rollback();
+    }
+
 
     async initialize(secretId: string): Promise<SequelizeORM>{
         try{
@@ -82,6 +93,6 @@ const sequelizeInst = new Sequelize(
         }
     },
 );
-export { SequelizeORM };
+export { SequelizeORM, Transaction };
 
 

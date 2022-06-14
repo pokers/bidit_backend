@@ -15,29 +15,24 @@ import {
 
     Repos
 } from '../types';
-import { Repositories, ItemRepository } from '../repository';
+import { ItemRepository } from '../repository';
 import { log } from '../lib/logger';
 import { ErrorModuleNotFound, ErrorNotSupportedParameters } from '../lib';
 import { ModelName, CursorName, Order } from '../repository/model';
 import { Service } from 'typedi'
+import { ServiceBase } from './serviceBase'
+
 enum DefaultDate {
     PAST='2022-01-01 00:00:00',
     FUTURE='2999-01-01 00:00:00'
 }
-
-declare interface iItemService {
-    
-}
-
 interface defaultRowInfo {
     createdAt: string
 }
 
 @Service()
-class ItemService implements iItemService {
-    constructor(private repositories:Repositories){
-
-    }
+class ItemService extends ServiceBase{
+    
     // Private Methods
     private buildPageInfo<T extends defaultRowInfo>(firstLast: FirstLastItem<T>, items:T[], order:Order):PageInfo{
         try{

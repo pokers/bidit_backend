@@ -17,6 +17,7 @@ class AuroraMySql {
     isConnected():Boolean{
         return this._isConnected;
     }
+    
     async init(scriteId: string): Promise<AuroraMySql>{
         try{
             let secMgr = await this.secretManager.getSecretValue({SecretId: scriteId}).promise();

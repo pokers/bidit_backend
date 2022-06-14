@@ -10,7 +10,7 @@ provider:
   lambdaHashingVersion: 20201221
   stage: prod
   profile: ${self:custom.profiles.${sls:stage}}
-  memorySize: 256
+  memorySize: 1536
   timeout: 75
   logRetentionInDays: 60
   iamRoleStatements:
@@ -109,6 +109,7 @@ functions:
   userResolver:
     handler: bundle/userResolver.userResolver
     name: bidit-userResolver
+    maximumRetryAttempts: 0
     package:
       include:
         - ./bundle/userResolver.js
@@ -124,6 +125,7 @@ functions:
   itemResolver:
     handler: bundle/itemResolver.itemResolver
     name: bidit-itemResolver
+    maximumRetryAttempts: 0
     package:
       include:
         - ./bundle/itemResolver.js
@@ -138,6 +140,7 @@ functions:
   authResolver:
     handler: bundle/authResolver.authorizer
     name: bidit-authResolver
+    maximumRetryAttempts: 0
     package:
       include:
         - ./bundle/authResolver.js

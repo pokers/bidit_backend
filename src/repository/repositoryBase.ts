@@ -1,4 +1,4 @@
-import { Models } from './model'
+import { Models, Transaction } from './model'
 import { Service } from 'typedi'
 @Service()
 export class RepositoryBase {

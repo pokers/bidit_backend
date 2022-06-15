@@ -3,7 +3,9 @@ import { SecretMySql } from '../types';
 import { SecretsManager } from 'aws-sdk';
 import { Sequelize, Transaction } from 'sequelize'
 import mysql2 from 'mysql2'
+import { Service } from 'typedi'
 
+@Service()
 class SequelizeORM {
     private secretManager:SecretsManager;
     private dbInst:Sequelize = {} as Sequelize;
@@ -33,35 +35,62 @@ class SequelizeORM {
         await transaction.rollback();
     }
 
+    async close(){
+        try{
+            if(this._isConnected){
+                this._isConnected = false;
+                // this.dbInst.close();
+                this.dbInst.connectionManager.close();  // For using the Lambda
+            }
+        }catch(e){
+            log.error("exception > ", e)
+            throw e;
+        }
+    }
 
     async initialize(secretId: string): Promise<SequelizeORM>{
         try{
-            let secMgr = await this.secretManager.getSecretValue({SecretId: secretId}).promise();
-            this.secret = JSON.parse(secMgr.SecretString || "");
-            // log.info('secret : ', this.secret);
-            this.dbInst = new Sequelize({
-                database: this.secret.dbName,
-                username: this.secret.username,
-                password: this.secret.password,
-                host: this.secret.host,
-                dialect: 'mysql',
-                dialectModule: mysql2,
-                define: {
-                    timestamps: false
-                },
-                // timezone: "+09:00",
-                logging: false,
-                pool:{
-                    max: 5,
-                    min: 0,
-                    idle:0,
-                    acquire: 3000,
+            if(!this._isConnected){
+                this._isConnected = true;
+                let secMgr = await this.secretManager.getSecretValue({SecretId: secretId}).promise();
+                this.secret = JSON.parse(secMgr.SecretString || "");
+                log.info('secret : ', this.secret);
+                /**
+                 * For the limitation between nodejs and sequelize, it's necessary below weired code.
+                 * please ref : https://sequelize.org/docs/v7/other-topics/aws-lambda/
+                 */
+                if( this.dbInst.connectionManager){
+                    this.dbInst.connectionManager.initPools();
+                    if(this.dbInst.connectionManager.hasOwnProperty("getConnection")){
+                        delete this.dbInst.connectionManager.getConnection;
+                    }
+                }else{
+                    this.dbInst = new Sequelize({
+                        database: this.secret.dbName,
+                        username: this.secret.username,
+                        password: this.secret.password,
+                        host: this.secret.host,
+                        dialect: 'mysql',
+                        dialectModule: mysql2,
+                        define: {
+                            timestamps: false
+                        },
+                        // timezone: "+09:00",
+                        logging: false,
+                        pool:{
+                            max: 2,
+                            min: 0,
+                            idle:0,
+                            acquire: 3000,
+                            evict: 75
+                        }
+                    })
+                    await this.dbInst.authenticate();
                 }
-            })
-            await this.dbInst.authenticate();
-            this._isConnected = true;
+            }
             return this;
         }catch(e){
+            this._isConnected = false;
             log.error("exception > ", e)
             throw e;
         }
@@ -71,28 +100,29 @@ class SequelizeORM {
 
 // TODO : Refactorying should be applied on this.
 // Currently It just use for compare and testing on the Lambda.
-import { dbConfig } from '../config';
-const sequelizeInst = new Sequelize(
-    dbConfig.rdsMain.database,
-    dbConfig.rdsMain.user,
-    dbConfig.rdsMain.password,
-    {
-        dialect: 'mysql',
-        dialectModule: mysql2,
-        define: {
-            timestamps: false
-        },
-        timezone: '+09:00',
-        host: dbConfig.rdsMain.host,
-        logging: false,
-        pool:{
-            max: 2,
-            min: 0,
-            idle:0,
-            acquire: 3000,
-        }
-    },
-);
+// import { dbConfig } from '../config';
+// import { Service } from 'typedi';
+// const sequelizeInst = new Sequelize(
+//     dbConfig.rdsMain.database,
+//     dbConfig.rdsMain.user,
+//     dbConfig.rdsMain.password,
+//     {
+//         dialect: 'mysql',
+//         dialectModule: mysql2,
+//         define: {
+//             timestamps: false
+//         },
+//         timezone: '+09:00',
+//         host: dbConfig.rdsMain.host,
+//         logging: false,
+//         pool:{
+//             max: 2,
+//             min: 0,
+//             idle:0,
+//             acquire: 3000,
+//         }
+//     },
+// );
 export { SequelizeORM, Transaction };
 
 

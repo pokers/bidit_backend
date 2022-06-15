@@ -12,7 +12,17 @@ const initialize = async()=>{
         const provider:Provider = Container.get(Provider);
         await provider.initialize();
     }catch(e){
-        log.error('exception > getUser : ', e);
+        log.error('exception > initialize : ', e);
+        throw e;
+    }
+}
+
+const destroy = async ()=>{
+    try{
+        const provider:Provider = Container.get(Provider);
+        await provider.destroy();
+    }catch(e){
+        log.error('exception > destroy : ', e);
         throw e;
     }
 }
@@ -71,10 +81,11 @@ const authorizer = async (event:AppSyncAuthorizerEvent, context: Context)=>{
                 log.info('Add user : the user is already existed');
             }
         }
-
         log.info('success authentication : ', result);
+        await destroy();
         return result;
     }catch(e){
+        await destroy();
         log.error('Exception > resolver :', e);
         throw e;
     }

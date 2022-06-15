@@ -11,21 +11,22 @@ import { Service } from 'typedi'
 
 @Service()
 class Provider {
-    private sequelize:SequelizeORM|null;
+    // private sequelize:SequelizeORM|null;
     private isInitialized:boolean = false;
 
     constructor(
         private models:Models,
         private repositories:Repositories,
-        private services:Services){
+        private services:Services,
+        private sequelize:SequelizeORM){
     }
 
     async initialize(){
         try{
             if(!this.isInitialized){
-                this.sequelize = new SequelizeORM(dbConfig.rdsMain.region);
+                // this.sequelize = new SequelizeORM(dbConfig.rdsMain.region);
                 await this.sequelize.initialize(dbConfig.rdsMain.secretId);
-                this.models.initialize(this.sequelize).associateHasMany();
+                this.models.initialize().associateHasMany();
                 this.isInitialized = true;
             }
         }catch(e){
@@ -53,7 +54,7 @@ class Provider {
     public async destroy(){
         try{
             if(this.isInitialized){
-                this.sequelize = null;
+                await this.sequelize.close();
                 this.isInitialized = false;
             }
         }catch(e){

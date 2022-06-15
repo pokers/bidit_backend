@@ -18,7 +18,7 @@ class UserRepository extends RepositoryBase{
             });
             return result;
         }catch(e){
-            log.error('exception> getUser : ', e);
+            log.error('exception> UserRepository.getUser : ', e);
             throw e;
         }
     }
@@ -42,7 +42,7 @@ class UserRepository extends RepositoryBase{
             }
             return user;
         }catch(e){
-            log.error('exception> getUser : ', e);
+            log.error('exception> getUserBySocialId : ', e);
             throw e;
         }
     }
@@ -92,7 +92,7 @@ class UserRepository extends RepositoryBase{
 
             return user;
         }catch(e){
-            log.error('exception> getUser : ', e);
+            log.error('exception> addKakaoUserAccount : ', e);
             throw e;
         }
     }
@@ -104,7 +104,7 @@ class UserRepository extends RepositoryBase{
             }
             return null;
         }catch(e){
-            log.error('exception> getUser : ', e);
+            log.error('exception> addUserBySocialAccount : ', e);
             throw e;
         }
     }

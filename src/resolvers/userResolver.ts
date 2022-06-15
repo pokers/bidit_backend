@@ -61,7 +61,7 @@ const addUser = async(event:AppSyncResolverEvent<any, any>):Promise<User>=>{
         if(transaction && userService){
             await userService.rollback(transaction);
         }
-        log.error('exception > getUser : ', e);
+        log.error('exception > addUser : ', e);
         throw e;
     }
 }
@@ -95,7 +95,7 @@ const me = async(event:AppSyncResolverEvent<any, any>):Promise<User>=>{
         user.items = items;
         return user;
     }catch(e){
-        log.error('exception > getUser : ', e);
+        log.error('exception > me : ', e);
         throw e;
     }
 }
@@ -106,7 +106,17 @@ const initialize = async()=>{
         const provider:Provider = Container.get(Provider);
         await provider.initialize();
     }catch(e){
-        log.error('exception > getUser : ', e);
+        log.error('exception > initialize : ', e);
+        throw e;
+    }
+}
+
+const destroy = async ()=>{
+    try{
+        const provider:Provider = Container.get(Provider);
+        await provider.destroy();
+    }catch(e){
+        log.error('exception > destroy : ', e);
         throw e;
     }
 }
@@ -130,9 +140,11 @@ const userResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
             default:
                 break;
         }
-        log.info('payload : ', payload)
+        log.info('payload : ', payload);
+        await destroy();
         return payload;
     }catch(e){
+        await destroy();
         log.error('Exception > resolver :', e);
         throw e;
     }

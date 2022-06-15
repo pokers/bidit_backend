@@ -33,19 +33,24 @@ enum Order {
 
 @Service()
 class Models {
-    private sequelize:SequelizeORM;
-    constructor(){
+    // private sequelize:SequelizeORM;
+    private isInitialized:Boolean = false;
+    private isAssociated:Boolean = false;
+    constructor(private sequelize:SequelizeORM){
     }
 
-    initialize(sequelize:SequelizeORM):Models{
+    // initialize(sequelize:SequelizeORM):Models{
+    initialize():Models{
         try{
-            this.sequelize = sequelize;
-            ItemModel.initialize(this.sequelize.getDBInstance());
-            ItemDescriptionModel.initialize(this.sequelize.getDBInstance());
-            ItemImageModel.initialize(this.sequelize.getDBInstance());
-            CategoryModel.initialize(this.sequelize.getDBInstance());
-            UserModel.initialize(this.sequelize.getDBInstance());
-            KakaoAccountModel.initialize(this.sequelize.getDBInstance());
+            if(!this.isInitialized){
+                this.isInitialized = true;
+                ItemModel.initialize(this.sequelize.getDBInstance());
+                ItemDescriptionModel.initialize(this.sequelize.getDBInstance());
+                ItemImageModel.initialize(this.sequelize.getDBInstance());
+                CategoryModel.initialize(this.sequelize.getDBInstance());
+                UserModel.initialize(this.sequelize.getDBInstance());
+                KakaoAccountModel.initialize(this.sequelize.getDBInstance());
+            }
             return this;
         }catch(e){
             log.error('exception : ', e);
@@ -55,23 +60,26 @@ class Models {
 
     associateHasMany():Models{
         try{
-            ItemModel.hasMany(ItemDescriptionModel, { foreignKey: 'itemId', as: 'description', sourceKey: 'id'});
-            ItemDescriptionModel.belongsTo(ItemModel, { foreignKey: 'itemId', targetKey: 'id'});
-            
-            ItemModel.hasMany(ItemImageModel, { foreignKey: 'itemId', as: 'image', sourceKey: 'id'});
-            ItemImageModel.belongsTo(ItemModel, { foreignKey: 'itemId', targetKey: 'id'});
+            if(!this.isAssociated){
+                this.isAssociated = true;
+                ItemModel.hasMany(ItemDescriptionModel, { foreignKey: 'itemId', as: 'description', sourceKey: 'id'});
+                ItemDescriptionModel.belongsTo(ItemModel, { foreignKey: 'itemId', targetKey: 'id'});
+                
+                ItemModel.hasMany(ItemImageModel, { foreignKey: 'itemId', as: 'image', sourceKey: 'id'});
+                ItemImageModel.belongsTo(ItemModel, { foreignKey: 'itemId', targetKey: 'id'});
 
-            ItemModel.hasOne(CategoryModel, {foreignKey: 'id', sourceKey: 'categoryId', as: 'category'});
-            // CategoryModel.hasOne(ItemModel, {foreignKey: 'categoryId', as: 'item', sourceKey: 'id'});
+                ItemModel.hasOne(CategoryModel, {foreignKey: 'id', sourceKey: 'categoryId', as: 'category'});
+                // CategoryModel.hasOne(ItemModel, {foreignKey: 'categoryId', as: 'item', sourceKey: 'id'});
 
-            CategoryModel.belongsTo(CategoryModel, {foreignKey: 'parentId', targetKey: 'id', as: 'parent'});
-            // CategoryModel.hasOne(CategoryModel, {foreignKey: 'parentId', sourceKey: 'id'});
+                CategoryModel.belongsTo(CategoryModel, {foreignKey: 'parentId', targetKey: 'id', as: 'parent'});
+                // CategoryModel.hasOne(CategoryModel, {foreignKey: 'parentId', sourceKey: 'id'});
 
-            UserModel.hasMany(ItemModel, {foreignKey: 'userId', as: 'items', sourceKey: 'id'});
-            ItemModel.belongsTo(UserModel, {foreignKey: 'userId', targetKey: 'id'});
+                UserModel.hasMany(ItemModel, {foreignKey: 'userId', as: 'items', sourceKey: 'id'});
+                ItemModel.belongsTo(UserModel, {foreignKey: 'userId', targetKey: 'id'});
 
-            UserModel.hasOne(KakaoAccountModel, {foreignKey: 'userId', as:'kakaoAccount', sourceKey: 'id'});
-            KakaoAccountModel.belongsTo(UserModel, {foreignKey: 'userId' ,targetKey: 'id'});
+                UserModel.hasOne(KakaoAccountModel, {foreignKey: 'userId', as:'kakaoAccount', sourceKey: 'id'});
+                KakaoAccountModel.belongsTo(UserModel, {foreignKey: 'userId' ,targetKey: 'id'});
+            }
             return this;
         }catch(e){
             log.error('exception : ', e);

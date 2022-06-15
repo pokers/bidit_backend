@@ -10,7 +10,17 @@ const initialize = async()=>{
         const provider:Provider = Container.get(Provider);
         await provider.initialize();
     }catch(e){
-        log.error('exception > getUser : ', e);
+        log.error('exception > initialize : ', e);
+        throw e;
+    }
+}
+
+const destroy = async ()=>{
+    try{
+        const provider:Provider = Container.get(Provider);
+        await provider.destroy();
+    }catch(e){
+        log.error('exception > destroy : ', e);
         throw e;
     }
 }
@@ -41,8 +51,10 @@ const itemResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
                 break;
         }
 
+        await destroy();
         return payload;
     }catch(e){
+        await destroy();
         log.error('Exception > resolver :', e);
         throw e;
     }

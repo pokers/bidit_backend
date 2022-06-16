@@ -1,0 +1,17 @@
+config:
+  target: "https://wypcpelqdbhlxgrexisgez7vba.appsync-api.ap-northeast-2.amazonaws.com"
+  phases:
+    - duration: 1
+      arrivalRate: 30
+      name: test
+
+scenarios:
+  - name: "me"
+    flow:
+      - post:
+          url: "/graphql"
+          headers:
+            Authorization: Bearer zMct0TLma6Y-fdTbt3icwcc_Amb-JcFzbHg-rhJSCisMpwAAAYFmqn38 kakao
+            Content-Type: application/json
+          json:
+            query: "{me {id}}"

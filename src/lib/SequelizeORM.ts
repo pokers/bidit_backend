@@ -1,7 +1,7 @@
 import { log } from './logger';
 import { SecretMySql } from '../types';
 import { SecretsManager } from 'aws-sdk';
-import { Sequelize, Transaction } from 'sequelize'
+import { Sequelize, Transaction, UniqueConstraintError } from 'sequelize'
 import mysql2 from 'mysql2'
 import { Service } from 'typedi'
 
@@ -123,6 +123,6 @@ class SequelizeORM {
 //         }
 //     },
 // );
-export { SequelizeORM, Transaction };
+export { SequelizeORM, Transaction, UniqueConstraintError };
 
 

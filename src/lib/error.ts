@@ -23,7 +23,8 @@ export enum ErrMessage {
     ErrorInvalidToken = 'Invalid token, it can be expired or wrong token',
     ErrorRequireAddUser = 'Cannot find User information, Please add user first.',
     ErrorNotFoundSocialUserInfo = 'Cannot find Social User Info.',
-    ErrorCouldNotAdd = 'Could not add item'
+    ErrorCouldNotAdd = 'Could not add item',
+    ErrorDuplicatedItem = 'Could not completed due to duplicated item'
 }
 
 export const ErrorNotSupportedParameters = ()=>{
@@ -80,4 +81,8 @@ export const ErrorRequireAddUser = ()=>{
 
 export const ErrorNotFoundSocialUserInfo = ()=>{
     return new cError(404, ErrMessage.ErrorNotFoundSocialUserInfo);
+}
+
+export const ErrorDuplicatedItem = ()=>{
+    return new cError(409, ErrMessage.ErrorDuplicatedItem);
 }

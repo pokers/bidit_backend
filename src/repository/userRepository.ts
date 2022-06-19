@@ -1,10 +1,12 @@
 import { log, ErrorInvalidToken } from '../lib'
 import { User, Maybe,  Gender, JoinPath } from '../types'
-import { ModelName, KakaoAccountModel, KakaoUserInfo, KakaoAccount, UserModel, ItemModel } from './model'
+import { ModelName, KakaoAccountModel, KakaoUserInfo, KakaoAccount, UserModel, ItemModel, Transaction } from './model'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
+import { sealed } from '../lib/decorators'
 
 @Service()
+@sealed
 class UserRepository extends RepositoryBase{
 
     async getUser(userId:number): Promise<User>{
@@ -48,7 +50,7 @@ class UserRepository extends RepositoryBase{
     }
 
 
-    async addKakaoUserAccount(vendor:JoinPath, userInfo:Maybe<KakaoUserInfo>):Promise<Maybe<User>>{
+    async addKakaoUserAccount(vendor:JoinPath, userInfo:Maybe<KakaoUserInfo>, transaction?:Transaction):Promise<Maybe<User>>{
         try{
             const defaultUserInfo:User = {
                 id:undefined!,
@@ -73,7 +75,7 @@ class UserRepository extends RepositoryBase{
                 defaultUserInfo.gender = userInfo.kakao_account.gender === 'male'? Gender.Male:Gender.Female;
             }
             // const user:User = await this.models.getModel(ModelName.user).create(defaultUserInfo).get({plain:true});
-            const userModel:UserModel = await this.models.getModel(ModelName.user).create(defaultUserInfo);
+            const userModel:UserModel = await this.models.getModel(ModelName.user).create(defaultUserInfo,{transaction: transaction});
             const user:User = userModel.get({plain: true});
             log.info('User : ', user);
             
@@ -85,25 +87,27 @@ class UserRepository extends RepositoryBase{
             properties.id = userInfo.id;
             properties.status = 0;
             properties.userId = user.id;
-            const kakaoAccountModel:KakaoAccountModel = await this.models.getModel(ModelName.kakaoAccount).create(properties);
+            const kakaoAccountModel:KakaoAccountModel = await this.models.getModel(ModelName.kakaoAccount).create(properties, {transaction: transaction});
             user.kakaoAccount = kakaoAccountModel.get({plain: true});
 
             log.info('kakaoAccount : ', user.kakaoAccount);
 
             return user;
         }catch(e){
+            this.isUniqueConstraintError(e);
             log.error('exception> addKakaoUserAccount : ', e);
             throw e;
         }
     }
 
-    async addUserBySocialAccount(vendor: string, userInfo:Maybe<KakaoUserInfo>):Promise<Maybe<User>>{
+    async addUserBySocialAccount(vendor: string, userInfo:Maybe<KakaoUserInfo>, transaction?: Transaction):Promise<Maybe<User>>{
         try{
             if(vendor === 'kakao'){
-                return await this.addKakaoUserAccount(JoinPath.Kakao, userInfo);
+                return await this.addKakaoUserAccount(JoinPath.Kakao, userInfo, transaction);
             }
             return null;
         }catch(e){
+            this.isUniqueConstraintError(e);
             log.error('exception> addUserBySocialAccount : ', e);
             throw e;
         }

@@ -3,8 +3,10 @@ import { Service } from "typedi";
 import { ItemRepository } from "./itemRepository";
 import { UserRepository } from "./userRepository";
 import { Models, Transaction } from './model';
+import { sealed } from '../lib/decorators';
 
 @Service()
+@sealed
 export class Repositories {
     constructor(
         private itemRepository:ItemRepository,

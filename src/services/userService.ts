@@ -2,6 +2,7 @@ import { User, Maybe, AuthResult, UserInfoResult } from '../types';
 import { log, ErrorModuleNotFound } from '../lib';
 import { Service } from 'typedi';
 import { ServiceBase } from './serviceBase'
+import { Transaction } from '../repository'
 
 @Service()
 class UserService extends ServiceBase {
@@ -32,12 +33,11 @@ class UserService extends ServiceBase {
         }
     }
 
-    async addUser(userinfo:UserInfoResult):Promise<Maybe<User>>{
+    async addUser(userinfo:UserInfoResult, transaction?: Transaction):Promise<Maybe<User>>{
         try{
             const { result, data, vendor } = userinfo;
             if(vendor === 'kakao'){
-                return await this.repositories.getRepository().userRepo.addUserBySocialAccount(vendor, data!);
-                
+                return await this.repositories.getRepository().userRepo.addUserBySocialAccount(vendor, data!, transaction);
             }
             return null;
         }catch(e){

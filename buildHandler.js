@@ -6,9 +6,9 @@ const esbuild = require('esbuild');
 // const functionsDir = `src/resolvers`;
 // const outDir = `dist/resolvers/`;
 // const filterReg = new RegExp('\Resolver.ts$', 'i')
-const functionsDir = `dist/src/resolvers`;
+const functionsDir = `dist/src/handlers`;
 const outDir = `bundle/`;
-const filterReg = new RegExp('\Resolver.js$', 'i')
+const filterReg = new RegExp('\Handler.js$', 'i')
 const entryPoints = fs
   .readdirSync(path.join(__dirname, functionsDir))
   .map(entry => {

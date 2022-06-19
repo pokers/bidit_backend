@@ -11,8 +11,10 @@ import { Item,
 } from '../types'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
+import { sealed } from '../lib/decorators'
 
 @Service()
+@sealed
 class ItemRepository extends RepositoryBase{
     // Private Methods
 

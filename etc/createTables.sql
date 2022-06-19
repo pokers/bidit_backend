@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS user(
     deletedAt   DATETIME NULL,
     description VARCHAR(255) CHARACTER SET UTF8MB4 NULL,
     PRIMARY KEY(id),
+    UNIQUE KEY unique_user (joinPath, email, phone),
     INDEX status(status),
     INDEX uniqueID(uniqueID),
     INDEX createdAt(createdAt)
@@ -74,6 +75,7 @@ CREATE TABLE IF NOT EXISTS category (
     updatedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deletedAt   DATETIME NULL,
     PRIMARY KEY(id),
+    UNIQUE KEY unique_category (status, parentId, depth, name),
     CONSTRAINT fk_category_category FOREIGN KEY(parentId) REFERENCES category(id),
     INDEX depth(depth),
     INDEX createdAt(createdAt)
@@ -97,6 +99,7 @@ CREATE TABLE IF NOT EXISTS item (
     updatedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deletedAt   DATETIME NULL,
     PRIMARY KEY(id),
+    UNIQUE KEY unique_item (status, userId, categoryId, name, title),
     CONSTRAINT fk_user_item FOREIGN KEY(userId) REFERENCES user(id),
     CONSTRAINT fk_category_item FOREIGN KEY(categoryId) REFERENCES category(id),
     INDEX dueDate(dueDate),
@@ -129,6 +132,7 @@ CREATE TABLE IF NOT EXISTS itemImage (
     updatedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deletedAt   DATETIME NULL,
     PRIMARY KEY(id),
+    UNIQUE KEY unique_itemImage (status, itemId, type, url),
     CONSTRAINT fk_item_itemImage FOREIGN KEY(itemId) REFERENCES item(id),
     INDEX type(type),
     INDEX createdAt(createdAt)

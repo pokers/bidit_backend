@@ -6,7 +6,7 @@ plugins:
 provider:
   name: aws
   region: ap-northeast-2
-  runtime: nodejs12.x
+  runtime: nodejs16.x
   lambdaHashingVersion: 20201221
   stage: prod
   profile: ${self:custom.profiles.${sls:stage}}
@@ -25,6 +25,11 @@ provider:
       Action: secretsmanager:GetSecretValue
       Resource:
         - arn:aws:secretsmanager:*:*
+    - Effect: Allow
+      Action:
+        - SQS:*
+      Resource:
+        - arn:aws:sqs:${self:provider.region}:*:*
 
   environment:
     REGION: "${self:provider.region}"
@@ -33,6 +38,7 @@ provider:
 
 
 custom:
+  nodeOption: "--report-uncaught-exception --report-on-fatalerror --report-on-signal"
   profiles:
     dev: biditDev
     prod: bidit
@@ -114,7 +120,23 @@ functions:
       include:
         - ./bundle/userResolver.js
     environment:
-      environment:
+      NODE_OPTIONS: ${self:custom.nodeOption}
+      BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
+      BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}
+      BIDIT_RDS_MAIN_PORT: ${env:BIDIT_RDS_MAIN_PORT}
+      BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
+      BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
+      BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+
+  userHandler:
+    handler: bundle/userHandler.userHandler
+    name: bidit-userHandler
+    maximumRetryAttempts: 0
+    package:
+      include:
+        - ./bundle/userHandler.js
+    environment:
+      NODE_OPTIONS: ${self:custom.nodeOption}
       BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
       BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}
       BIDIT_RDS_MAIN_PORT: ${env:BIDIT_RDS_MAIN_PORT}
@@ -130,6 +152,7 @@ functions:
       include:
         - ./bundle/itemResolver.js
     environment:
+      NODE_OPTIONS: ${self:custom.nodeOption}
       BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
       BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}
       BIDIT_RDS_MAIN_PORT: ${env:BIDIT_RDS_MAIN_PORT}
@@ -145,6 +168,7 @@ functions:
       include:
         - ./bundle/authResolver.js
     environment:
+      NODE_OPTIONS: ${self:custom.nodeOption}
       BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
       BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}
       BIDIT_RDS_MAIN_PORT: ${env:BIDIT_RDS_MAIN_PORT}

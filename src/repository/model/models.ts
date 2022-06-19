@@ -1,5 +1,5 @@
 import { log } from '../../lib'
-import { SequelizeORM, Transaction } from '../../lib/SequelizeORM';
+import { SequelizeORM, Transaction, UniqueConstraintError } from '../../lib/SequelizeORM';
 
 // Models
 import { 
@@ -117,4 +117,4 @@ class Models {
 }
 
 
-export { Models, ModelName, CursorName, Order, Transaction }
+export { Models, ModelName, CursorName, Order, Transaction, UniqueConstraintError }

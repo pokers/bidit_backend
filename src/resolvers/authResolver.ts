@@ -61,7 +61,9 @@ const authorizer = async (event:AppSyncAuthorizerEvent, context: Context)=>{
         result.isAuthorized = authResult.result;
         if(authResult.result){
             result.resolverContext = {
-                authType: authResult.authType
+                authType: authResult.authType,
+                kakaoAccountId: authResult.kakaoAccountId,
+                appleAccountId: authResult.appleAccountId,
             }
         }
 
@@ -69,8 +71,6 @@ const authorizer = async (event:AppSyncAuthorizerEvent, context: Context)=>{
         if(authResult.userId){
             result.resolverContext = {
                 userId: authResult.userId,
-                kakaoAccountId: authResult.kakaoAccountId,
-                appleAccountId: authResult.appleAccountId,
             }
         }
 

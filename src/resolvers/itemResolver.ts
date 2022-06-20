@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { log, cError } from '../lib'
-import { AppSyncResolverEvent, Callback, Context } from 'aws-lambda'
+import { log, cError, ErrorNotFoundSocialUserInfo } from '../lib'
+import { AppSyncResolverEvent, Callback, Context, AppSyncIdentityLambda } from 'aws-lambda'
 import { ItemService } from '../services';
 import { Provider } from './provider'
 import { Container } from 'typedi'
@@ -30,6 +30,10 @@ const itemResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
         let payload:any
         log.info("Invoked itemResolver : ", JSON.stringify(event), JSON.stringify(context));
     
+        const identity:AppSyncIdentityLambda = event.identity as AppSyncIdentityLambda;
+        if(!identity || !identity.resolverContext){
+            throw ErrorNotFoundSocialUserInfo();
+        }
         await initialize();
         switch(event.info.fieldName){
             case 'getItem':
@@ -37,6 +41,9 @@ const itemResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
                 break;
             case 'getItemList':
                 payload = await Container.get(ItemService).getItemList(event.arguments, event.info.selectionSetList);
+                break;
+            case 'addItem':
+                payload = await Container.get(ItemService).addItem(identity.resolverContext, event.arguments, event.info.selectionSetList);
                 break;
             case 'getCategoryList':
                 payload = await Container.get(ItemService).getCategoryList(event.arguments);

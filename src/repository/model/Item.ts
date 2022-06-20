@@ -11,14 +11,31 @@ const {
     TEXT,
 } = DataTypes;
 
-class ItemModel extends Model {
+interface ItemAttributes {
+    status: number;
+    userId: number;
+    categoryId: number;
+    sPrice?: number;
+    cPrice?: number;
+    buyNow?: number;
+    viewCount?: number;
+    name: string;
+    title: string;
+    dueDate: string;
+    deliveryType: number;
+    sCondition?: number;
+    aCondition?: number;
+}
+
+class ItemModel extends Model implements ItemAttributes {
     public id!: number;
-    public status: number;
-    public userId: number;
+    public status!: number;
+    public userId!: number;
     public categoryId: number;
     public sPrice: number;
     public cPrice: number;
     public buyNow: number;
+    public viewCount: number;
     public name: string;
     public title: string;
     public dueDate: string;
@@ -53,6 +70,9 @@ class ItemModel extends Model {
                 type: INTEGER,
             },
             buyNow: {
+                type: INTEGER,
+            },
+            viewCount: {
                 type: INTEGER,
             },
             name:{
@@ -95,5 +115,5 @@ class ItemModel extends Model {
     }
 }
 
-export { ItemModel }
+export { ItemModel, ItemAttributes }
     

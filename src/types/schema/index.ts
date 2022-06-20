@@ -68,7 +68,7 @@ export type Item = {
   createdAt: Scalars['String'];
   deletedAt?: Maybe<Scalars['String']>;
   deliveryType?: Maybe<Scalars['Int']>;
-  description?: Maybe<Array<Maybe<ItemDescription>>>;
+  description?: Maybe<ItemDescription>;
   dueDate?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   image?: Maybe<Array<Maybe<ItemImage>>>;
@@ -79,6 +79,19 @@ export type Item = {
   title?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['String']>;
   userId: Scalars['Int'];
+  viewCount?: Maybe<Scalars['Int']>;
+};
+
+export type ItemAddInput = {
+  aCondition: Scalars['Int'];
+  buyNow?: InputMaybe<Scalars['Int']>;
+  categoryId: Scalars['Int'];
+  deliveryType: Scalars['Int'];
+  dueDate: Scalars['String'];
+  name: Scalars['String'];
+  sCondition: Scalars['Int'];
+  sPrice: Scalars['Int'];
+  title: Scalars['String'];
 };
 
 export type ItemConnection = {
@@ -183,7 +196,15 @@ export type KakaoAccount = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addItem?: Maybe<Item>;
   addUser?: Maybe<User>;
+};
+
+
+export type MutationAddItemArgs = {
+  description?: InputMaybe<Scalars['String']>;
+  images?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  itemAdd?: InputMaybe<ItemAddInput>;
 };
 
 export type PageInfo = {
@@ -230,6 +251,7 @@ export type QueryGetItemListArgs = {
   before?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Int']>;
   itemQuery?: InputMaybe<ItemQueryInput>;
+  keyword?: InputMaybe<Scalars['String']>;
   last?: InputMaybe<Scalars['Int']>;
 };
 

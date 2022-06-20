@@ -13,12 +13,12 @@ import {
     FirstLastItem, 
     CategoryEdge,
 
-    Repos
+    AuthResult
 } from '../types';
 import { ItemRepository } from '../repository';
 import { log } from '../lib/logger';
-import { ErrorModuleNotFound, ErrorNotSupportedParameters } from '../lib';
-import { ModelName, CursorName, Order } from '../repository/model';
+import { ErrorModuleNotFound, ErrorNotSupportedParameters, ErrorInvalidBodyParameter, ErrorUserNotFound } from '../lib';
+import { ModelName, CursorName, Order, Transaction } from '../repository/model';
 import { Service } from 'typedi'
 import { ServiceBase } from './serviceBase'
 
@@ -89,8 +89,8 @@ class ItemService extends ServiceBase{
 
     async getItemList(arg: any, selectionSetList:string[]): Promise<ItemConnection>{
         try{
-            const { itemQuery , first , last , after , before } = arg;
-            console.log('arg : ', arg);
+            const { itemQuery, keyword, first , last , after , before } = arg;
+            
             if(first && last){
                 throw ErrorNotSupportedParameters();
             }
@@ -102,10 +102,10 @@ class ItemService extends ServiceBase{
             const order = first? Order.ASC:Order.DESC;
             const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
             
-            const firstLastItem:FirstLastItem<Item> = await itemRepo.getFirstLastItem<Item>(CursorName.createdAt, ModelName.item, itemQuery);
+            const firstLastItem:FirstLastItem<Item> = await itemRepo.getFirstLastItem<Item>(CursorName.createdAt, ModelName.item, itemQuery, keyword);
             log.info('firstLastItem : ', firstLastItem);
 
-            const itemList:Item[] = await itemRepo.getItemList(itemQuery, first, last, after, before);
+            const itemList:Item[] = await itemRepo.getItemList(itemQuery, keyword, first, last, after, before);
             log.info('item List : ', JSON.stringify(itemList));
 
             const totalCount = itemList.length;
@@ -122,6 +122,40 @@ class ItemService extends ServiceBase{
             return result;
         }catch(e){
             log.error('exception > getItemList : ', e);
+            throw e;
+        }
+    }
+
+    async addItem(authInfo:AuthResult, arg: any, selectionSetList:string[]): Promise<Item>{
+        let transaction:Transaction|null = null;
+        try{
+            const { itemAdd, descriptions, images } = arg;
+            console.log('arg : ', arg);
+
+            if(!authInfo.userId){
+                throw ErrorUserNotFound();
+            }
+            if(!itemAdd){
+                throw ErrorInvalidBodyParameter();
+            }
+            if(!this.repositories.getRepository().itemRepo){
+                throw ErrorModuleNotFound();
+            }
+            const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
+            transaction = await this.startTransaction();
+            const newItem:Item = await itemRepo.addItem(authInfo.userId, itemAdd, transaction, descriptions, images);
+            await this.commit(transaction);
+            transaction = null;
+
+            const result:Item = await this.getItem({id:newItem.id}, selectionSetList);
+            log.info('addItem result : ', result);
+            
+            return result;
+        }catch(e){
+            if(transaction){
+                await this.rollback(transaction);
+            }
+            log.error('exception > addItem : ', e);
             throw e;
         }
     }

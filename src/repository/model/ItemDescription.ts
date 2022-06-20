@@ -12,7 +12,13 @@ const {
     TEXT,
 } = DataTypes;
 
-class ItemDescriptionModel extends Model {
+interface ItemDescriptionAttributes {
+    status: number;
+    itemId: number;
+    type: number;
+    description: string;
+}
+class ItemDescriptionModel extends Model implements ItemDescriptionAttributes{
     public id!: number;
     public status: number;
     public itemId: number;
@@ -63,4 +69,4 @@ class ItemDescriptionModel extends Model {
     }
 }
 
-export { ItemDescriptionModel }
+export { ItemDescriptionModel, ItemDescriptionAttributes }

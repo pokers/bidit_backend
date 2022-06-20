@@ -5,11 +5,11 @@ INSERT INTO category VALUES (NULL, 0, 3, '기타 모바일', 1, '2022-06-05 21:0
 INSERT INTO category VALUES (NULL, 0, 3, '스마트워치', 1, '2022-06-06 02:00:00', now(), NULL);
 INSERT INTO category VALUES (NULL, 0, 3, '노트북', 1, '2022-06-06 06:00:00', now(), NULL);
 INSERT INTO category VALUES (NULL, 0, 3, '테블릿', 1, '2022-06-06 11:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, 'TV/모니터', 1, '2022-06-07 07:00:00'), now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 3, 'TV/모니터', 1, '2022-06-07 07:00:00', now(), NULL);
 INSERT INTO category VALUES (NULL, 0, 3, '게임', 1, '2022-06-07 18:00:00', now(), NULL);
 INSERT INTO category VALUES (NULL, 0, 3, '음향기기', 1, '2022-06-08 11:00:00', now(), NULL);
 INSERT INTO category VALUES (NULL, 0, 3, '카메라', 1, '2022-06-08 21:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, '드론', 1, '2022-06-09 22:00:00'), now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 3, '드론', 1, '2022-06-09 22:00:00', now(), NULL);
 INSERT INTO category VALUES (NULL, 0, 3, '기타', 1, '2022-06-10 19:00:00', now(), NULL);
 
 

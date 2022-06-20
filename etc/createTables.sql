@@ -1,7 +1,7 @@
--- DROP DATABASE IF EXISTS bidit;
+DROP DATABASE IF EXISTS bidit;
 
--- CREATE DATABASE bidit;
--- USE bidit;
+CREATE DATABASE bidit;
+USE bidit;
 
 CREATE TABLE IF NOT EXISTS user(
     id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -65,6 +65,45 @@ CREATE TABLE IF NOT EXISTS kakaoAccount(
     INDEX createdAt(createdAt)
 );
 
+CREATE TABLE IF NOT EXISTS pushToken(
+    id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    status      INT UNSIGNED NOT NULL,
+    userId      INT UNSIGNED NOT NULL,
+    token       VARCHAR(512) NULL,
+    createdAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deletedAt   DATETIME NULL,
+    PRIMARY KEY(id),
+    UNIQUE KEY unique_pushToken (userId, token),
+    CONSTRAINT fk_user_pushToken FOREIGN KEY(userId) REFERENCES user(id)
+);
+
+CREATE TABLE IF NOT EXISTS userAlarm(
+    id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    status      INT UNSIGNED NOT NULL,
+    userId      INT UNSIGNED NOT NULL,
+    alarmId     INT UNSIGNED NOT NULL,
+    createdAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deletedAt   DATETIME NULL,
+    PRIMARY KEY(id),
+    CONSTRAINT fk_user_userAlarm FOREIGN KEY(userId) REFERENCES user(id),
+    CONSTRAINT fk_alarm_userAlarm FOREIGN KEY(alarmId) REFERENCES alarm(id)
+);
+
+CREATE TABLE IF NOT EXISTS alarm(
+    id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    status      INT UNSIGNED NOT NULL,
+    type        INT UNSIGNED NULL,
+    title       VARCHAR(255) CHARACTER SET UTF8MB4 NULL,
+    content     VARCHAR(511) CHARACTER SET UTF8MB4 NULL,    
+    createdAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deletedAt   DATETIME NULL,
+    PRIMARY KEY(id),
+    INDEX (type)
+);
+
 CREATE TABLE IF NOT EXISTS category (
     id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
     status      INT UNSIGNED NOT NULL,
@@ -75,7 +114,7 @@ CREATE TABLE IF NOT EXISTS category (
     updatedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deletedAt   DATETIME NULL,
     PRIMARY KEY(id),
-    UNIQUE KEY unique_category (status, parentId, depth, name),
+    UNIQUE KEY unique_category (parentId, depth, name),
     CONSTRAINT fk_category_category FOREIGN KEY(parentId) REFERENCES category(id),
     INDEX depth(depth),
     INDEX createdAt(createdAt)
@@ -89,6 +128,7 @@ CREATE TABLE IF NOT EXISTS item (
     sPrice      INT UNSIGNED NULL,
     cPrice      INT UNSIGNED NULL,
     buyNow      INT UNSIGNED NULL,
+    viewCount   INT UNSIGNED NULL,
     name        VARCHAR(255) CHARACTER SET UTF8MB4 NULL,
     title       VARCHAR(255) CHARACTER SET UTF8MB4 NULL,
     dueDate         DATETIME NULL,
@@ -99,7 +139,7 @@ CREATE TABLE IF NOT EXISTS item (
     updatedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deletedAt   DATETIME NULL,
     PRIMARY KEY(id),
-    UNIQUE KEY unique_item (status, userId, categoryId, name, title),
+    UNIQUE KEY unique_item (userId, categoryId, name, title),
     CONSTRAINT fk_user_item FOREIGN KEY(userId) REFERENCES user(id),
     CONSTRAINT fk_category_item FOREIGN KEY(categoryId) REFERENCES category(id),
     INDEX dueDate(dueDate),
@@ -132,7 +172,6 @@ CREATE TABLE IF NOT EXISTS itemImage (
     updatedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deletedAt   DATETIME NULL,
     PRIMARY KEY(id),
-    UNIQUE KEY unique_itemImage (status, itemId, type, url),
     CONSTRAINT fk_item_itemImage FOREIGN KEY(itemId) REFERENCES item(id),
     INDEX type(type),
     INDEX createdAt(createdAt)

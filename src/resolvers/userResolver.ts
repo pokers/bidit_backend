@@ -8,15 +8,16 @@ import { Container } from 'typedi'
 import { Transaction } from 'sequelize/types';
 import { SQS } from 'aws-sdk';
 
-const getUser = async(event:AppSyncResolverEvent<any, any>):Promise<User>=>{
+
+const _getUser = async(userId: number, selectionSetList:string[]):Promise<User>=>{
     try{
         const getUser = async ():Promise<User>=>{
-            return await Container.get(UserService).getUser(event.arguments, event.info.selectionSetList);
+            return await Container.get(UserService).getUser({id: userId}, selectionSetList);
         }
         const getItem = async ():Promise<ItemConnection>=>{
-            if(event.info.selectionSetList?.indexOf('items') >= 0){
-                const itemQuery:ItemQueryInput = {userId: event.arguments.id};
-                return Container.get(ItemService).getItemList({itemQuery}, event.info.selectionSetList);
+            if(selectionSetList?.indexOf('items') >= 0){
+                const itemQuery:ItemQueryInput = {userId: userId};
+                return Container.get(ItemService).getItemList({itemQuery}, selectionSetList);
             }
             return {};
         }
@@ -28,6 +29,14 @@ const getUser = async(event:AppSyncResolverEvent<any, any>):Promise<User>=>{
         }
         log.info('result : ', user);
         return user;
+    }catch(e){
+        log.error('exception > getUser : ', e);
+        throw e;
+    }
+}
+const getUser = async(event:AppSyncResolverEvent<any, any>):Promise<User>=>{
+    try{
+        return await _getUser(event.arguments.id, event.info.selectionSetList);
     }catch(e){
         log.error('exception > getUser : ', e);
         throw e;
@@ -50,15 +59,17 @@ const addUser = async(event:AppSyncResolverEvent<any, any>):Promise<User>=>{
 
         userService = Container.get(UserService);
         transaction = await userService.startTransaction();
-        const user = await userService.addUser(socialUserInfo, transaction);
-        log.info('addUser result : ', user);
-
-        if(!user){
+        log.info('transaction : ', transaction);
+        const newUser = await userService.addUser(socialUserInfo, transaction);
+        log.info('addUser result : ', newUser);
+        if(!newUser){
             throw ErrorCouldNotAdd();
         }
         await userService.commit(transaction);
-        return user;
+        return await _getUser(newUser.id, event.info.selectionSetList);
     }catch(e){
+        log.info('transaction : ', transaction);
+        log.info('userService : ', userService);
         if(transaction && userService){
             log.error('exception > addUser : rollback!!!');
             await userService.rollback(transaction);

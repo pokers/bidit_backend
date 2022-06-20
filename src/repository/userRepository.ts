@@ -1,6 +1,6 @@
 import { log, ErrorInvalidToken } from '../lib'
 import { User, Maybe,  Gender, JoinPath } from '../types'
-import { ModelName, KakaoAccountModel, KakaoUserInfo, KakaoAccount, UserModel, ItemModel, Transaction } from './model'
+import { ModelName, KakaoAccountModel, KakaoUserInfo, KakaoAccount, UserModel, ItemModel, Transaction, UserAttributes } from './model'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
 import { sealed } from '../lib/decorators'
@@ -52,9 +52,7 @@ class UserRepository extends RepositoryBase{
 
     async addKakaoUserAccount(vendor:JoinPath, userInfo:Maybe<KakaoUserInfo>, transaction?:Transaction):Promise<Maybe<User>>{
         try{
-            const defaultUserInfo:User = {
-                id:undefined!,
-                createdAt:undefined!,
+            const defaultUserInfo:UserAttributes = {
                 status: 0,
                 joinPath: vendor
             }
@@ -76,9 +74,9 @@ class UserRepository extends RepositoryBase{
             }
             // const user:User = await this.models.getModel(ModelName.user).create(defaultUserInfo).get({plain:true});
             const userModel:UserModel = await this.models.getModel(ModelName.user).create(defaultUserInfo,{transaction: transaction});
-            const user:User = userModel.get({plain: true});
+            let user:User = userModel.get({plain: true});
             log.info('User : ', user);
-            
+
             if(!userInfo?.kakao_account){
                 throw ErrorInvalidToken();
             }

@@ -1,5 +1,5 @@
 import { log } from '../lib/logger'
-import { ItemModel, CategoryModel, ModelName, CursorName } from './model'
+import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes } from './model'
 import { Op, WhereOptions } from 'sequelize'
 import { Item, 
     ItemQueryInput, 
@@ -8,6 +8,8 @@ import { Item,
     CategoryQueryInput, 
     FirstLastItem, 
     Category,
+    ItemAddInput,
+    User,
 } from '../types'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
@@ -60,12 +62,19 @@ class ItemRepository extends RepositoryBase{
         }
     }
 
-    async getFirstLastItem<T>(cursor: string, modelName:ModelName, query?: ItemQueryInput,): Promise<FirstLastItem<T>>{
+    async getFirstLastItem<T>(cursor: string, modelName:ModelName, query?: ItemQueryInput, keyword?: String): Promise<FirstLastItem<T>>{
         try{
             let result: FirstLastItem<T> = {} as FirstLastItem<T>;
             let where: WhereOptions = {};
             if(query){
                 where = { ...where, ...query};
+            }
+            if(keyword){
+                const substr = {
+                    name: {[Op.substring]: keyword},
+                    title: {[Op.substring]: keyword}
+                }
+                where = { ...where, ...substr};
             }
             const model = this.models.getModel(modelName);
             const first = await model.findOne({
@@ -96,7 +105,7 @@ class ItemRepository extends RepositoryBase{
         }
     }
 
-    async getItemList(itemQuery?: ItemQueryInput, first?:number, last?:number, after?:string, before?:string): Promise<Item[]>{
+    async getItemList(itemQuery?: ItemQueryInput, keyword?:String, first?:number, last?:number, after?:string, before?:string): Promise<Item[]>{
         try{
             const cursor: ItemModel[CursorName.createdAt] = CursorName.createdAt;
             let where: WhereOptions = {};
@@ -105,6 +114,13 @@ class ItemRepository extends RepositoryBase{
 
             if(itemQuery){
                 where = { ...where, ...itemQuery};
+            }
+            if(keyword){
+                const substr = {
+                    name: {[Op.substring]: keyword},
+                    title: {[Op.substring]: keyword}
+                }
+                where = { ...where, ...substr};
             }
             if(after){
                 where = { ...where, createdAt: {[Op.gt]: after}};
@@ -142,6 +158,102 @@ class ItemRepository extends RepositoryBase{
         }
     }
     
+
+
+    async addItemImages(itemId:number, imageUrls: string[], transaction:Transaction): Promise<ItemImage[]>{
+        try{
+            const itemImages = await Promise.all(imageUrls.map(async url=>{
+                const itemImageModel = this.models.getModel(ModelName.itemImage);
+                const result = await itemImageModel.create({
+                    status: 0,
+                    itemId: itemId,
+                    type: 0,
+                    url: url
+                },{transaction: transaction});
+                return result.get({plain: true});
+            }));
+            log.info('addItemImages result : ', itemImages);
+            return itemImages;
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > addItemImages : ', e);
+            throw e;
+        }
+    }
+
+    async addItemDescription(itemId:number, description: string, transaction:Transaction): Promise<ItemDescription>{
+        try{
+            const newItem:ItemDescriptionAttributes = {
+                status: 0,
+                itemId: itemId,
+                type: 0,
+                description:description
+            }
+            
+            const itemDescriptionModel = this.models.getModel(ModelName.itemDescription);
+            const result = await itemDescriptionModel.create(
+                newItem,
+                {transaction: transaction}
+            );
+
+            return result.get({plain: true});
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > addItemDescription : ', e);
+            throw e;
+        }
+    }
+
+    async addItem(userId:number, itemAdd: ItemAttributes, transaction:Transaction, description: string,  images?:string[]): Promise<Item>{
+        try{
+            const newItem:ItemAttributes = {
+                status: 0, // 0=registered
+                userId: userId,
+                categoryId: itemAdd.categoryId,
+                sPrice: itemAdd.sPrice,
+                cPrice: itemAdd.cPrice,
+                buyNow: itemAdd.buyNow,
+                viewCount: 0,
+                name: itemAdd.name,
+                title: itemAdd.title,
+                dueDate: itemAdd.dueDate,
+                deliveryType: itemAdd.deliveryType,
+                sCondition: itemAdd.sCondition,
+                aCondition: itemAdd.aCondition,
+            }
+            
+            const itemModel = this.models.getModel(ModelName.item);
+            const item:ItemModel = await itemModel.create(
+                newItem,
+                {transaction: transaction}
+            );
+            log.info('item : ', item);
+
+            const tasks = [];
+            
+            tasks.push(this.addItemDescription(item.id, description, transaction));
+            tasks.push(this.getCategory(itemAdd.categoryId));
+            if(images){
+                tasks.push(this.addItemImages(item.id, images, transaction));
+            }
+            const [itemDescription, itemCategory, itemImages] = await Promise.all(tasks);
+
+            log.info('addItem item : ', item);
+            log.info('addItem description : ', itemDescription);
+            log.info('addItem itemCategory : ', itemCategory);
+            log.info('addItem images : ', itemImages);
+
+
+            return item;
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > getItemList : ', e);
+            throw e;
+        }
+    }
+
+
+
     async getCategoryList(categoryQuery: CategoryQueryInput, first?:number, last?:number, after?:string, before?:string): Promise<Category[]>{
         try{
             const cursor: CategoryModel[CursorName.createdAt] = CursorName.createdAt;

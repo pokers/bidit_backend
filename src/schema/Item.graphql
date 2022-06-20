@@ -17,6 +17,7 @@ type Item {
     sPrice: Int
     cPrice: Int
     buyNow: Int
+    viewCount: Int
     name: String
     title: String
     dueDate: String
@@ -26,7 +27,7 @@ type Item {
     createdAt: String!
     updatedAt: String
     deletedAt: String
-    description:[ItemDescription]
+    description:ItemDescription
     image:[ItemImage]
     category: Category
 }
@@ -73,7 +74,11 @@ type ItemConnection {
 
 type Query{
     getItem(id: Int!):Item
-    getItemList(itemQuery: ItemQueryInput, first: Int, last: Int, after: String, before: String):ItemConnection
+    getItemList(itemQuery: ItemQueryInput, keyword:String, first: Int, last: Int, after: String, before: String):ItemConnection
+}
+
+type Mutation{
+    addItem(itemAdd:ItemAddInput, description:String, images:[String]):Item
 }
 
 input ItemQueryInput {
@@ -89,6 +94,19 @@ input ItemQueryInput {
     createdAt: Int
 }
 
+input ItemAddInput {
+    categoryId: Int!
+    sPrice: Int!
+    buyNow: Int
+    name: String!
+    title: String!
+    dueDate: String!
+    deliveryType: Int!
+    sCondition: Int!
+    aCondition: Int!
+}
+
 schema {
     query: Query
+    mutation: Mutation
 }

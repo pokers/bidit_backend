@@ -105,6 +105,11 @@ custom:
         field: scanCategory
         request: false
         response: false
+      - dataSource: itemResolverDataSource
+        type: Mutation
+        field: addItem
+        request: false
+        response: false
 
 package:
   individually: true

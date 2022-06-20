@@ -12,7 +12,13 @@ const {
     TEXT,
 } = DataTypes;
 
-class ItemImageModel extends Model {
+interface ItemImageAttributes {
+    status: number;
+    itemId: number;
+    type: number;
+    url: string;
+}
+class ItemImageModel extends Model implements ItemImageAttributes{
     public id!: number;
     public status: number;
     public itemId: number;
@@ -63,6 +69,7 @@ class ItemImageModel extends Model {
     }
 }
 
-export { ItemImageModel }
+export { ItemImageModel, ItemImageAttributes }
 
 
+``

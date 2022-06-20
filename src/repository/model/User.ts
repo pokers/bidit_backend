@@ -12,7 +12,18 @@ const {
     TEXT,
 } = DataTypes;
 
-class UserModel extends Model {
+interface UserAttributes {
+    status: number;
+    uniqueId?: string;
+    passwd?: string;
+    joinPath: string;
+    gender?: string;
+    birth?: string;
+    email?: string;
+    phone?: string;
+    description?: string;
+}
+class UserModel extends Model implements UserAttributes{
     public id: number;
     public status: number;
     public uniqueId: string;
@@ -88,5 +99,5 @@ class UserModel extends Model {
     }
 }
 
-export { UserModel }
+export { UserModel, UserAttributes }
     

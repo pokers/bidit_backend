@@ -110,6 +110,16 @@ custom:
         field: addItem
         request: false
         response: false
+      - dataSource: itemResolverDataSource
+        type: Mutation
+        field: updateItem
+        request: false
+        response: false
+      - dataSource: itemResolverDataSource
+        type: Mutation
+        field: updateItemImage
+        request: false
+        response: false
 
 package:
   individually: true

@@ -79,6 +79,8 @@ type Query{
 
 type Mutation{
     addItem(itemAdd:ItemAddInput, description:String, images:[String]):Item
+    updateItem(itemId:Int, itemUpdate:ItemUpdateInput, description:String):Item
+    updateItemImage(itemId:Int, itemImageUpdate:ItemImageUpdateInput):Item
 }
 
 input ItemQueryInput {
@@ -95,6 +97,7 @@ input ItemQueryInput {
 }
 
 input ItemAddInput {
+    status: Int
     categoryId: Int!
     sPrice: Int!
     buyNow: Int
@@ -104,6 +107,24 @@ input ItemAddInput {
     deliveryType: Int!
     sCondition: Int!
     aCondition: Int!
+}
+
+input ItemUpdateInput {
+    status: Int
+    categoryId: Int
+    sPrice: Int
+    buyNow: Int
+    name: String
+    title: String
+    dueDate: String
+    deliveryType: Int
+    sCondition: Int
+    aCondition: Int
+}
+
+input ItemImageUpdateInput{
+    itemImageId:Int
+    image:String
 }
 
 schema {

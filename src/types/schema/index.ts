@@ -91,6 +91,7 @@ export type ItemAddInput = {
   name: Scalars['String'];
   sCondition: Scalars['Int'];
   sPrice: Scalars['Int'];
+  status?: InputMaybe<Scalars['Int']>;
   title: Scalars['String'];
 };
 
@@ -131,6 +132,11 @@ export type ItemImage = {
   url?: Maybe<Scalars['String']>;
 };
 
+export type ItemImageUpdateInput = {
+  image?: InputMaybe<Scalars['String']>;
+  itemImageId?: InputMaybe<Scalars['Int']>;
+};
+
 export type ItemQueryInput = {
   aCondition?: InputMaybe<Scalars['Int']>;
   categoryId?: InputMaybe<Scalars['Int']>;
@@ -149,6 +155,19 @@ export enum ItemStatus {
   Registed = 'REGISTED',
   Sold = 'SOLD'
 }
+
+export type ItemUpdateInput = {
+  aCondition?: InputMaybe<Scalars['Int']>;
+  buyNow?: InputMaybe<Scalars['Int']>;
+  categoryId?: InputMaybe<Scalars['Int']>;
+  deliveryType?: InputMaybe<Scalars['Int']>;
+  dueDate?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  sCondition?: InputMaybe<Scalars['Int']>;
+  sPrice?: InputMaybe<Scalars['Int']>;
+  status?: InputMaybe<Scalars['Int']>;
+  title?: InputMaybe<Scalars['String']>;
+};
 
 export enum JoinPath {
   Apple = 'APPLE',
@@ -198,6 +217,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   addItem?: Maybe<Item>;
   addUser?: Maybe<User>;
+  updateItem?: Maybe<Item>;
+  updateItemImage?: Maybe<Item>;
 };
 
 
@@ -205,6 +226,19 @@ export type MutationAddItemArgs = {
   description?: InputMaybe<Scalars['String']>;
   images?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   itemAdd?: InputMaybe<ItemAddInput>;
+};
+
+
+export type MutationUpdateItemArgs = {
+  description?: InputMaybe<Scalars['String']>;
+  itemId?: InputMaybe<Scalars['Int']>;
+  itemUpdate?: InputMaybe<ItemUpdateInput>;
+};
+
+
+export type MutationUpdateItemImageArgs = {
+  itemId?: InputMaybe<Scalars['Int']>;
+  itemImageUpdate?: InputMaybe<ItemImageUpdateInput>;
 };
 
 export type PageInfo = {

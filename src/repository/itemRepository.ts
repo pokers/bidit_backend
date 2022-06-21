@@ -8,6 +8,7 @@ import { Item,
     CategoryQueryInput, 
     FirstLastItem, 
     Category,
+    ItemImageUpdateInput,
     ItemAddInput,
     User,
 } from '../types'
@@ -181,6 +182,23 @@ class ItemRepository extends RepositoryBase{
         }
     }
 
+    async updateItemImage(itemId:number, itemImageUpdate:ItemImageUpdateInput): Promise<ItemImage>{
+        try{
+            const itemImageModel = this.models.getModel(ModelName.itemImage);
+            
+            const itemImage = itemImageModel.update({
+                url: itemImageUpdate.image
+            }, {where: {id:itemImageUpdate.itemImageId}});
+            log.info('updateItemImage : ', itemImage);
+            return itemImage;
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > updateItem : ', e);
+            throw e;
+        }
+    }
+
+
     async addItemDescription(itemId:number, description: string, transaction:Transaction): Promise<ItemDescription>{
         try{
             const newItem:ItemDescriptionAttributes = {
@@ -200,6 +218,29 @@ class ItemRepository extends RepositoryBase{
         }catch(e){
             this.isUniqueConstraintError(e);
             log.error('exception > addItemDescription : ', e);
+            throw e;
+        }
+    }
+
+
+    async updateItemDescription(itemId:number, description: string): Promise<ItemDescription>{
+        try{
+            const updateItem:ItemDescriptionAttributes = {
+                status: 0,
+                itemId: itemId,
+                type: 0,
+                description:description
+            }
+            
+            const itemDescriptionModel = this.models.getModel(ModelName.itemDescription);
+            const itemDescription = await itemDescriptionModel.update(
+                updateItem, {where: {itemId:itemId}}
+            )
+            log.info('updateItemDescription : ', itemDescription);
+            return itemDescription;
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > updateItemDescription : ', e);
             throw e;
         }
     }
@@ -253,6 +294,28 @@ class ItemRepository extends RepositoryBase{
     }
 
 
+
+    async updateItem(itemId:number, itemUpdate: ItemAttributes, description?: string): Promise<Item>{
+        try{
+            const itemModel = this.models.getModel(ModelName.item);
+            const tasks = [];
+            
+            tasks.push(itemModel.update(itemUpdate, {where: {id:itemId}}));
+            if(description){
+                tasks.push(this.updateItemDescription(itemId, description));
+            }
+            const [itemResult, itemDescriptionResult] = await Promise.all(tasks);
+            if(itemDescriptionResult){
+                itemResult.description = itemDescriptionResult;
+            }
+            log.info('updateItem item : ', itemResult);
+            return itemResult;
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > updateItem : ', e);
+            throw e;
+        }
+    }
 
     async getCategoryList(categoryQuery: CategoryQueryInput, first?:number, last?:number, after?:string, before?:string): Promise<Category[]>{
         try{

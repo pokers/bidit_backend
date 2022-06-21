@@ -176,3 +176,4 @@ CREATE TABLE IF NOT EXISTS itemImage (
     INDEX type(type),
     INDEX createdAt(createdAt)
 );
+

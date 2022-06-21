@@ -2,7 +2,8 @@ import {
     // Items
     Item, 
     ItemConnection, 
-    ItemEdge, 
+    ItemEdge,
+    ItemImage, 
     
     // Category
     Category, 
@@ -129,7 +130,7 @@ class ItemService extends ServiceBase{
     async addItem(authInfo:AuthResult, arg: any, selectionSetList:string[]): Promise<Item>{
         let transaction:Transaction|null = null;
         try{
-            const { itemAdd, descriptions, images } = arg;
+            const { itemAdd, description, images } = arg;
             console.log('arg : ', arg);
 
             if(!authInfo.userId){
@@ -143,7 +144,7 @@ class ItemService extends ServiceBase{
             }
             const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
             transaction = await this.startTransaction();
-            const newItem:Item = await itemRepo.addItem(authInfo.userId, itemAdd, transaction, descriptions, images);
+            const newItem:Item = await itemRepo.addItem(authInfo.userId, itemAdd, transaction, description, images);
             await this.commit(transaction);
             transaction = null;
 
@@ -156,6 +157,57 @@ class ItemService extends ServiceBase{
                 await this.rollback(transaction);
             }
             log.error('exception > addItem : ', e);
+            throw e;
+        }
+    }
+
+    async updateItem(authInfo:AuthResult, arg: any, selectionSetList:string[]): Promise<Item>{
+        try{
+            const { itemId, itemUpdate, description } = arg;
+            console.log('arg : ', arg);
+
+            if(!authInfo.userId){
+                throw ErrorUserNotFound();
+            }
+            if(!itemUpdate){
+                throw ErrorInvalidBodyParameter();
+            }
+            if(!this.repositories.getRepository().itemRepo){
+                throw ErrorModuleNotFound();
+            }
+            const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
+            const newItem:Item = await itemRepo.updateItem(itemId, itemUpdate, description);
+
+            const result:Item = await this.getItem({id:itemId}, selectionSetList);
+            log.info('updateItem result : ', result);
+            
+            return result;
+        }catch(e){
+            log.error('exception > updateItem : ', e);
+            throw e;
+        }
+    }
+
+    
+
+    async updateItemImage(authInfo:AuthResult, arg: any, selectionSetList:string[]): Promise<ItemImage>{
+        try{
+            const { itemId, itemImageUpdate} = arg;
+            console.log('arg : ', arg);
+
+            if(!itemImageUpdate){
+                throw ErrorInvalidBodyParameter();
+            }
+            if(!this.repositories.getRepository().itemRepo){
+                throw ErrorModuleNotFound();
+            }
+
+            const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
+            const itemImage = await itemRepo.updateItemImage(itemId, itemImageUpdate);
+
+            return itemImage;
+        }catch(e){
+            log.error('exception > updateItemImage : ', e);
             throw e;
         }
     }

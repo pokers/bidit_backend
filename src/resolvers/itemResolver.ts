@@ -45,6 +45,12 @@ const itemResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
             case 'addItem':
                 payload = await Container.get(ItemService).addItem(identity.resolverContext, event.arguments, event.info.selectionSetList);
                 break;
+            case 'updateItem':
+                payload = await Container.get(ItemService).updateItem(identity.resolverContext, event.arguments, event.info.selectionSetList);
+                break;
+            case 'updateItemImage':
+                payload = await Container.get(ItemService).updateItemImage(identity.resolverContext, event.arguments, event.info.selectionSetList);
+                break;
             case 'getCategoryList':
                 payload = await Container.get(ItemService).getCategoryList(event.arguments);
                 break;

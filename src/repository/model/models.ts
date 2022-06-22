@@ -11,6 +11,7 @@ import {
 } from '.'
 import { UserModel } from './User';
 import { Service } from 'typedi';
+import { PushTokenModel } from './pushToken';
 
 
 enum ModelName {
@@ -19,7 +20,8 @@ enum ModelName {
     itemImage = 'ItemImage',
     category = 'Category',
     user = 'User',
-    kakaoAccount = 'KakaoAccount'
+    kakaoAccount = 'KakaoAccount',
+    pushToken = 'pushToken'
 }
 
 enum CursorName {
@@ -50,6 +52,7 @@ class Models {
                 CategoryModel.initialize(this.sequelize.getDBInstance());
                 UserModel.initialize(this.sequelize.getDBInstance());
                 KakaoAccountModel.initialize(this.sequelize.getDBInstance());
+                PushTokenModel.initialize(this.sequelize.getDBInstance());
             }
             return this;
         }catch(e){
@@ -79,6 +82,9 @@ class Models {
 
                 UserModel.hasOne(KakaoAccountModel, {foreignKey: 'userId', as:'kakaoAccount', sourceKey: 'id'});
                 KakaoAccountModel.belongsTo(UserModel, {foreignKey: 'userId' ,targetKey: 'id'});
+
+                UserModel.hasOne(PushTokenModel, {foreignKey: 'userId', as:'pushToken', sourceKey: 'id'});
+                PushTokenModel.belongsTo(UserModel, {foreignKey: 'userId' ,targetKey: 'id'});
             }
             return this;
         }catch(e){
@@ -107,6 +113,7 @@ class Models {
                 case ModelName.category: return CategoryModel;
                 case ModelName.user: return UserModel;
                 case ModelName.kakaoAccount: return KakaoAccountModel;
+                case ModelName.pushToken: return PushTokenModel;
             }
             return ItemModel;
         }catch(e){

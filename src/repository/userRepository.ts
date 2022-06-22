@@ -1,9 +1,10 @@
 import { log, ErrorInvalidToken } from '../lib'
 import { User, Maybe,  Gender, JoinPath } from '../types'
-import { ModelName, KakaoAccountModel, KakaoUserInfo, KakaoAccount, UserModel, ItemModel, Transaction, UserAttributes } from './model'
+import { ModelName, KakaoAccountModel, KakaoUserInfo, KakaoAccount, UserModel, ItemModel, Transaction, UserAttributes, PushTokenAttributes } from './model'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
 import { sealed } from '../lib/decorators'
+import { PushToken } from 'aws-sdk/clients/cognitosync'
 
 @Service()
 @sealed
@@ -107,6 +108,42 @@ class UserRepository extends RepositoryBase{
         }catch(e){
             this.isUniqueConstraintError(e);
             log.error('exception> addUserBySocialAccount : ', e);
+            throw e;
+        }
+    }
+
+    async updateUser(userId:number, userUpdate:UserAttributes):Promise<Maybe<User>>{
+        try{
+            const user = await this.models.getModel(ModelName.user).update(userUpdate, {where: {id: userId}});
+            log.info('updateUser : ', user);
+            return user;
+        }catch(e){
+            log.error('exception> updateUser : ', e);
+            throw e;
+        }
+    }
+
+    async updatePushToken(userId:number, pushTokenUpdate:PushTokenAttributes):Promise<PushToken>{
+        try{
+            const pushTokenModel = this.models.getModel(ModelName.pushToken);
+            const pushToken = await pushTokenModel.findOne({
+                where: {userId: userId},
+                raw: true,
+                nest: true
+            });
+            if(pushToken){
+                log.info('updatePushToken : ', pushToken);
+                return await pushTokenModel.update(pushTokenUpdate, {where: {userId: userId}});
+            }
+            const newPushToken:PushTokenAttributes = {
+                status: 0,
+                userId: userId,
+                token: pushTokenUpdate.token
+            }
+            log.info('repo > updatePushToken > newPushToken :  ', newPushToken)
+            return await pushTokenModel.create(newPushToken);
+        }catch(e){
+            log.error('exception> updateUser : ', e);
             throw e;
         }
     }

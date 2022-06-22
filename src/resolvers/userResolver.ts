@@ -204,7 +204,8 @@ const userResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
     let payload:any
     try{
         log.info("Invoked userResolver : ", JSON.stringify(event), JSON.stringify(context));
-    
+        const identity:AppSyncIdentityLambda = event.identity as AppSyncIdentityLambda;
+        
         await initialize();
         switch(event.info.fieldName){
             case 'getUser':
@@ -213,6 +214,18 @@ const userResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
             case 'addUser':
                 payload = await addUser(event);
                 // payload = await produceAddUserEvent(event);
+                break;
+            case 'updateUser':
+                if(!identity || !identity.resolverContext){
+                    throw ErrorNotFoundSocialUserInfo();
+                }
+                payload = await Container.get(UserService).updateUser(identity.resolverContext, event.arguments, event.info.selectionSetList);
+                break;
+            case 'updatePushToken':
+                if(!identity || !identity.resolverContext){
+                    throw ErrorNotFoundSocialUserInfo();
+                }
+                payload = await Container.get(UserService).updatePushToken(identity.resolverContext, event.arguments, event.info.selectionSetList);
                 break;
             case 'me':
                 payload = await me(event);

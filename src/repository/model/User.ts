@@ -14,7 +14,7 @@ const {
 
 interface UserAttributes {
     status: number;
-    uniqueId?: string;
+    nickname?: string;
     passwd?: string;
     joinPath: string;
     gender?: string;
@@ -26,7 +26,7 @@ interface UserAttributes {
 class UserModel extends Model implements UserAttributes{
     public id: number;
     public status: number;
-    public uniqueId: string;
+    public nickname: string;
     public passwd: string;
     public joinPath: string;
     public gender: string;
@@ -53,7 +53,7 @@ class UserModel extends Model implements UserAttributes{
             status:{
                 type: INTEGER,
             },
-            uniqueId:{
+            nickname:{
                 type: STRING,
             },
             passwd:{

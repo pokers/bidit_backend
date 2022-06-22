@@ -79,6 +79,16 @@ custom:
         field: addUser
         request: false
         response: false
+      - dataSource: userResolverDataSource
+        type: Mutation
+        field: updateUser
+        request: false
+        response: false
+      - dataSource: userResolverDataSource
+        type: Mutation
+        field: updatePushToken
+        request: false
+        response: false
       # Item Resolver
       - dataSource: itemResolverDataSource
         type: Query

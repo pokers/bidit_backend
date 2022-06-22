@@ -219,6 +219,8 @@ export type Mutation = {
   addUser?: Maybe<User>;
   updateItem?: Maybe<Item>;
   updateItemImage?: Maybe<Item>;
+  updatePushToken?: Maybe<Scalars['Boolean']>;
+  updateUser?: Maybe<User>;
 };
 
 
@@ -239,6 +241,16 @@ export type MutationUpdateItemArgs = {
 export type MutationUpdateItemImageArgs = {
   itemId?: InputMaybe<Scalars['Int']>;
   itemImageUpdate?: InputMaybe<ItemImageUpdateInput>;
+};
+
+
+export type MutationUpdatePushTokenArgs = {
+  pushTokenUpdate?: InputMaybe<PushTokenUpdateInput>;
+};
+
+
+export type MutationUpdateUserArgs = {
+  userUpdate?: InputMaybe<UserUpdateInput>;
 };
 
 export type PageInfo = {
@@ -306,10 +318,10 @@ export type User = {
   items?: Maybe<ItemConnection>;
   joinPath?: Maybe<JoinPath>;
   kakaoAccount?: Maybe<KakaoAccount>;
+  nickname?: Maybe<Scalars['String']>;
   passwd?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
   status: Scalars['Int'];
-  uniqueId?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['String']>;
 };
 
@@ -322,3 +334,17 @@ export enum Gender {
   Female = 'FEMALE',
   Male = 'MALE'
 }
+
+export type PushTokenUpdateInput = {
+  status?: InputMaybe<Scalars['Int']>;
+  token?: InputMaybe<Scalars['String']>;
+};
+
+export type UserUpdateInput = {
+  birth?: InputMaybe<Scalars['String']>;
+  deletedAt?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  gender?: InputMaybe<Gender>;
+  nickname?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<Scalars['Int']>;
+};

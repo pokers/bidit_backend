@@ -15,7 +15,7 @@ enum gender{
 type User {
     id: Int!
     status: Int!    # 0=VALID, 1=INVALID
-    uniqueId: String
+    nickname: String
     passwd: String
     joinPath: JoinPath
     gender: gender
@@ -37,7 +37,22 @@ type Query {
 
 type Mutation {
     addUser:User
+    updateUser(userUpdate:userUpdateInput):User
+    updatePushToken(pushTokenUpdate:pushTokenUpdateInput):Boolean
 }
+input userUpdateInput{
+    status: Int
+    nickname: String
+    gender: gender
+    birth: String
+    deletedAt: String
+    description: String
+}
+input pushTokenUpdateInput{
+    status: Int
+    token: String
+}
+
 schema {
     query: Query
     mutation: Mutation

@@ -1,5 +1,5 @@
 import { User, Maybe, AuthResult, UserInfoResult } from '../types';
-import { log, ErrorModuleNotFound } from '../lib';
+import { log, ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound } from '../lib';
 import { Service } from 'typedi';
 import { ServiceBase } from './serviceBase'
 import { Transaction } from '../repository'
@@ -40,6 +40,51 @@ class UserService extends ServiceBase {
                 return await this.repositories.getRepository().userRepo.addUserBySocialAccount(vendor, data!, transaction);
             }
             return null;
+        }catch(e){
+            log.error('exception > ', e);
+            throw e;
+        }
+    }
+
+    async updateUser(authInfo:AuthResult, arg: any, selectionSetList:string[]):Promise<Maybe<User>>{
+        try{
+            const { userUpdate } = arg;
+
+            if(!authInfo.userId){
+                throw ErrorUserNotFound();
+            }
+            if(!userUpdate){
+                throw ErrorInvalidBodyParameter();
+            }
+            if(!this.repositories.getRepository().userRepo){
+                throw ErrorModuleNotFound();
+            }
+            const updatedUser = await this.repositories.getRepository().userRepo.updateUser(authInfo.userId, userUpdate);
+
+            return await this.getUser({id:authInfo.userId});
+        }catch(e){
+            log.error('exception > ', e);
+            throw e;
+        }
+    }
+
+    async updatePushToken(authInfo:AuthResult, arg: any, selectionSetList:string[]):Promise<boolean>{
+        try{
+            const { pushTokenUpdate } = arg;
+
+            if(!authInfo.userId){
+                throw ErrorUserNotFound();
+            }
+            if(!pushTokenUpdate){
+                throw ErrorInvalidBodyParameter();
+            }
+            if(!this.repositories.getRepository().userRepo){
+                throw ErrorModuleNotFound();
+            }
+            log.info('pushTokenUpdate : ', pushTokenUpdate);
+            const pushToken = await this.repositories.getRepository().userRepo.updatePushToken(authInfo.userId, pushTokenUpdate);
+
+            return pushToken? true:false;
         }catch(e){
             log.error('exception > ', e);
             throw e;

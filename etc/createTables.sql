@@ -6,8 +6,8 @@ USE bidit;
 CREATE TABLE IF NOT EXISTS user(
     id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
     status      INT UNSIGNED NOT NULL,
-    uniqueID    VARCHAR(255) NULL,
-    passwd      VARCHAR(255),
+    nickname    VARCHAR(255) NULL,
+    passwd      VARCHAR(255) NULL,
     joinPath    VARCHAR(16) NULL,
     gender      VARCHAR(16) NULL,
     birth       VARCHAR(64) NULL,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS user(
     PRIMARY KEY(id),
     UNIQUE KEY unique_user (joinPath, email, phone),
     INDEX status(status),
-    INDEX uniqueID(uniqueID),
+    INDEX nickname(nickname),
     INDEX createdAt(createdAt)
 );
 
@@ -174,6 +174,19 @@ CREATE TABLE IF NOT EXISTS itemImage (
     PRIMARY KEY(id),
     CONSTRAINT fk_item_itemImage FOREIGN KEY(itemId) REFERENCES item(id),
     INDEX type(type),
+    INDEX createdAt(createdAt)
+);
+
+CREATE TABLE IF NOT EXISTS bidding (
+    id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    status      INT UNSIGNED NOT NULL,
+    userId      INT UNSIGNED NOT NULL,
+    itemId      INT UNSIGNED NOT NULL,
+    price       INT UNSIGNED NOT NULL,
+    createdAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(id),
+    CONSTRAINT fk_user_bidding FOREIGN KEY(userId) REFERENCES user(id),
+    CONSTRAINT fk_item_bidding FOREIGN KEY(itemId) REFERENCES item(id),
     INDEX createdAt(createdAt)
 );
 

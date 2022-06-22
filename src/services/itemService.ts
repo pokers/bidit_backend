@@ -193,7 +193,6 @@ class ItemService extends ServiceBase{
     async updateItemImage(authInfo:AuthResult, arg: any, selectionSetList:string[]): Promise<ItemImage>{
         try{
             const { itemId, itemImageUpdate} = arg;
-            console.log('arg : ', arg);
 
             if(!itemImageUpdate){
                 throw ErrorInvalidBodyParameter();

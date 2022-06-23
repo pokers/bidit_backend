@@ -41,9 +41,10 @@ class SequelizeORM {
                 this._isConnected = false;
                 // this.dbInst.close();
                 this.dbInst.connectionManager.close();  // For using the Lambda
+                log.info('SequelizeORM : close ');
             }
         }catch(e){
-            log.error("exception > ", e)
+            log.error("exception > ", e);
             throw e;
         }
     }
@@ -60,11 +61,13 @@ class SequelizeORM {
                  * please ref : https://sequelize.org/docs/v7/other-topics/aws-lambda/
                  */
                 if( this.dbInst.connectionManager){
+                    log.info('SequelizeORM : reuse connect pool');
                     this.dbInst.connectionManager.initPools();
                     if(this.dbInst.connectionManager.hasOwnProperty("getConnection")){
                         delete this.dbInst.connectionManager.getConnection;
                     }
                 }else{
+                    log.info('SequelizeORM : Initialize connection pool');
                     this.dbInst = new Sequelize({
                         database: this.secret.dbName,
                         username: this.secret.username,
@@ -81,7 +84,7 @@ class SequelizeORM {
                             max: 2,
                             min: 0,
                             idle:0,
-                            acquire: 3000,
+                            acquire: 30000,
                             evict: 75
                         }
                     })
@@ -91,7 +94,7 @@ class SequelizeORM {
             return this;
         }catch(e){
             this._isConnected = false;
-            log.error("exception > ", e)
+            log.error("exception > ", e);
             throw e;
         }
     }

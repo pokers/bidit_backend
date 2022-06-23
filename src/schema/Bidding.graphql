@@ -1,0 +1,37 @@
+
+type Bidding {
+    id: Int!
+    status: Int!
+    userId: Int!
+    itemId: Int!
+    price: Int!
+    createdAt: String!
+    item: Item
+    user: User
+}
+
+input BiddingQueryInput {
+    status: Int
+    itemId: Int
+    price: Int
+}
+
+input BidInput {
+    status: Int
+    itemId: Int!
+    price: Int!
+}
+
+type Query{
+    getMyBidding(biddingQuery:BiddingQueryInput):[Bidding]
+    getBidding(biddingQuery:BiddingQueryInput):[Bidding]
+}
+
+type Mutation{
+    bid(bid:BidInput):Bidding
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+}

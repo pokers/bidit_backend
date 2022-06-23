@@ -4,6 +4,7 @@ import { ItemRepository } from "./itemRepository";
 import { UserRepository } from "./userRepository";
 import { Models, Transaction } from './model';
 import { sealed } from '../lib/decorators';
+import { BiddingRepository } from './biddingRespository';
 
 @Service()
 @sealed
@@ -11,6 +12,7 @@ export class Repositories {
     constructor(
         private itemRepository:ItemRepository,
         private userRepository:UserRepository,
+        private biddingRepository:BiddingRepository,
         private models:Models
     ){
     }
@@ -29,7 +31,8 @@ export class Repositories {
         try{
             return {
                 itemRepo: this.itemRepository,
-                userRepo: this.userRepository
+                userRepo: this.userRepository,
+                biddingRepo: this.biddingRepository
             }
         }catch(e){
             log.error('exception > getRepository : ', e);

@@ -273,7 +273,7 @@ class ItemRepository extends RepositoryBase{
             const tasks = [];
             
             tasks.push(this.addItemDescription(item.id, description, transaction));
-            tasks.push(this.getCategory(itemAdd.categoryId));
+            tasks.push(this.getCategory(itemAdd.categoryId!));
             if(images){
                 tasks.push(this.addItemImages(item.id, images, transaction));
             }
@@ -295,12 +295,12 @@ class ItemRepository extends RepositoryBase{
 
 
 
-    async updateItem(itemId:number, itemUpdate: ItemAttributes, description?: string): Promise<Item>{
+    async updateItem(itemId:number, itemUpdate: ItemAttributes, description?: string, transaction?:Transaction): Promise<Item>{
         try{
             const itemModel = this.models.getModel(ModelName.item);
             const tasks = [];
             
-            tasks.push(itemModel.update(itemUpdate, {where: {id:itemId}}));
+            tasks.push(itemModel.update(itemUpdate, {where: {id:itemId}, transaction: transaction}));
             if(description){
                 tasks.push(this.updateItemDescription(itemId, description));
             }

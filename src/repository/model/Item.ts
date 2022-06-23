@@ -12,17 +12,17 @@ const {
 } = DataTypes;
 
 interface ItemAttributes {
-    status: number;
-    userId: number;
-    categoryId: number;
+    status?: number;
+    userId?: number;
+    categoryId?: number;
     sPrice?: number;
     cPrice?: number;
     buyNow?: number;
     viewCount?: number;
-    name: string;
-    title: string;
-    dueDate: string;
-    deliveryType: number;
+    name?: string;
+    title?: string;
+    dueDate?: string;
+    deliveryType?: number;
     sCondition?: number;
     aCondition?: number;
 }

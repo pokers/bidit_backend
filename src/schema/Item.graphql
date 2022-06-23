@@ -15,7 +15,7 @@ type Item {
     userId: Int!
     categoryId: Int
     sPrice: Int
-    cPrice: Int
+    cPrice: Int # It's not used. Temporary.
     buyNow: Int
     viewCount: Int
     name: String

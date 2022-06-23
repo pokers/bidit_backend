@@ -13,6 +13,30 @@ export type Scalars = {
   Long: any;
 };
 
+export type BidInput = {
+  itemId: Scalars['Int'];
+  price: Scalars['Int'];
+  status?: InputMaybe<Scalars['Int']>;
+};
+
+export type Bidding = {
+  __typename?: 'Bidding';
+  createdAt: Scalars['String'];
+  id: Scalars['Int'];
+  item?: Maybe<Item>;
+  itemId: Scalars['Int'];
+  price: Scalars['Int'];
+  status: Scalars['Int'];
+  user?: Maybe<User>;
+  userId: Scalars['Int'];
+};
+
+export type BiddingQueryInput = {
+  itemId?: InputMaybe<Scalars['Int']>;
+  price?: InputMaybe<Scalars['Int']>;
+  status?: InputMaybe<Scalars['Int']>;
+};
+
 export type Category = {
   __typename?: 'Category';
   createdAt: Scalars['String'];
@@ -217,6 +241,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addItem?: Maybe<Item>;
   addUser?: Maybe<User>;
+  bid?: Maybe<Bidding>;
   updateItem?: Maybe<Item>;
   updateItemImage?: Maybe<Item>;
   updatePushToken?: Maybe<Scalars['Boolean']>;
@@ -228,6 +253,11 @@ export type MutationAddItemArgs = {
   description?: InputMaybe<Scalars['String']>;
   images?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   itemAdd?: InputMaybe<ItemAddInput>;
+};
+
+
+export type MutationBidArgs = {
+  bid?: InputMaybe<BidInput>;
 };
 
 
@@ -263,13 +293,20 @@ export type PageInfo = {
 
 export type Query = {
   __typename?: 'Query';
+  getBidding?: Maybe<Array<Maybe<Bidding>>>;
   getCategory?: Maybe<Category>;
   getCategoryList?: Maybe<CategoryConnection>;
   getItem?: Maybe<Item>;
   getItemList?: Maybe<ItemConnection>;
+  getMyBidding?: Maybe<Array<Maybe<Bidding>>>;
   getUser?: Maybe<User>;
   me?: Maybe<User>;
   scanCategory?: Maybe<Array<Maybe<Category>>>;
+};
+
+
+export type QueryGetBiddingArgs = {
+  biddingQuery?: InputMaybe<BiddingQueryInput>;
 };
 
 
@@ -299,6 +336,11 @@ export type QueryGetItemListArgs = {
   itemQuery?: InputMaybe<ItemQueryInput>;
   keyword?: InputMaybe<Scalars['String']>;
   last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryGetMyBiddingArgs = {
+  biddingQuery?: InputMaybe<BiddingQueryInput>;
 };
 
 

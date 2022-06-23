@@ -17,4 +17,10 @@ export class ServiceBase {
     async rollback(transaction:Transaction){
         await this.repositories.rollback(transaction);
     }
+    extractUserIdFromContext(authInfo:any):number|null{
+        if(authInfo.userId){
+            return parseInt(authInfo.userId);
+        }
+        return null;
+    }
 }

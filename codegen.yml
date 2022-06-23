@@ -4,6 +4,7 @@ schema:
   - src/schema/Item.graphql
   - src/schema/ItemCategory.graphql
   - src/schema/KakaoAccount.graphql
+  - src/schema/Bidding.graphql
 
 generates:
   ./src/types/schema/index.ts:

@@ -131,7 +131,6 @@ class ItemService extends ServiceBase{
         let transaction:Transaction|null = null;
         try{
             const { itemAdd, description, images } = arg;
-            console.log('arg : ', arg);
 
             if(!authInfo.userId){
                 throw ErrorUserNotFound();
@@ -164,7 +163,6 @@ class ItemService extends ServiceBase{
     async updateItem(authInfo:AuthResult, arg: any, selectionSetList:string[]): Promise<Item>{
         try{
             const { itemId, itemUpdate, description } = arg;
-            console.log('arg : ', arg);
 
             if(!authInfo.userId){
                 throw ErrorUserNotFound();

@@ -51,6 +51,7 @@ custom:
       - src/schema/Item.graphql
       - src/schema/ItemCategory.graphql
       - src/schema/KakaoAccount.graphql
+      - src/schema/Bidding.graphql
     lambdaAuthorizerConfig:
       functionName: authResolver
     dataSources:
@@ -62,6 +63,10 @@ custom:
         name: itemResolverDataSource
         config:
           functionName: itemResolver
+      - type: AWS_LAMBDA
+        name: biddingResolverDataSource
+        config:
+          functionName: biddingResolver
     mappingTemplates:
       # User Resolver
       - dataSource: userResolverDataSource
@@ -130,6 +135,22 @@ custom:
         field: updateItemImage
         request: false
         response: false
+      # Bidding Resolver
+      - dataSource: biddingResolverDataSource
+        type: Query
+        field: getMyBidding
+        request: false
+        response: false
+      - dataSource: biddingResolverDataSource
+        type: Query
+        field: getBidding
+        request: false
+        response: false
+      - dataSource: biddingResolverDataSource
+        type: Mutation
+        field: bid
+        request: false
+        response: false
 
 package:
   individually: true
@@ -192,6 +213,22 @@ functions:
     package:
       include:
         - ./bundle/authResolver.js
+    environment:
+      NODE_OPTIONS: ${self:custom.nodeOption}
+      BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
+      BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}
+      BIDIT_RDS_MAIN_PORT: ${env:BIDIT_RDS_MAIN_PORT}
+      BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
+      BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
+      BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+
+  biddingResolver:
+    handler: bundle/biddingResolver.biddingResolver
+    name: bidit-biddingResolver
+    maximumRetryAttempts: 0
+    package:
+      include:
+        - ./bundle/biddingResolver.js
     environment:
       NODE_OPTIONS: ${self:custom.nodeOption}
       BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}

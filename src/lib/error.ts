@@ -24,7 +24,10 @@ export enum ErrMessage {
     ErrorRequireAddUser = 'Cannot find User information, Please add user first.',
     ErrorNotFoundSocialUserInfo = 'Cannot find Social User Info.',
     ErrorCouldNotAdd = 'Could not add item',
-    ErrorDuplicatedItem = 'Could not completed due to duplicated item'
+    ErrorDuplicatedItem = 'Could not completed due to duplicated item',
+    ErrorLowPriceBidding = 'Could not bid low price than current.',
+    ErrorSameUserBidding = 'Could not bid over your price.',
+    ErrorOwnItemBidding = 'Not allowed to bid your item.'
 }
 
 export const ErrorNotSupportedParameters = ()=>{
@@ -85,4 +88,16 @@ export const ErrorNotFoundSocialUserInfo = ()=>{
 
 export const ErrorDuplicatedItem = ()=>{
     return new cError(409, ErrMessage.ErrorDuplicatedItem);
+}
+
+export const ErrorLowPriceBidding = ()=>{
+    return new cError(400, ErrMessage.ErrorLowPriceBidding);
+}
+
+export const ErrorSameUserBidding = ()=>{
+    return new cError(400, ErrMessage.ErrorSameUserBidding);
+}
+
+export const ErrorOwnItemBidding = ()=>{
+    return new cError(403, ErrMessage.ErrorOwnItemBidding);
 }

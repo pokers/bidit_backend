@@ -18,4 +18,7 @@ const kakaoEnv = {
     baseURL: (process.env.KAKAO_BASE_URL || '')
 
 }
-export { dbConfig, devEnv, kakaoEnv }
+const sqsEnv = {
+    bidQueue: (process.env.BIDIT_SQS_BID_QUEUE || '')
+}
+export { dbConfig, devEnv, kakaoEnv, sqsEnv }

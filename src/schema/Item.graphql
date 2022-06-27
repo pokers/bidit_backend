@@ -9,6 +9,11 @@ enum ItemStatus{
     SOLD
 }
 
+enum CursorType{
+    createdAt,
+    dueDate
+}
+
 type Item {
     id: Int!
     status: Int! # 0=REGISTED, 1=ONGOING, 2=SOLD
@@ -74,7 +79,8 @@ type ItemConnection {
 
 type Query{
     getItem(id: Int!):Item
-    getItemList(itemQuery: ItemQueryInput, keyword:String, first: Int, last: Int, after: String, before: String):ItemConnection
+    getItemList(itemQuery: ItemQueryInput, keyword:String, first: Int, last: Int, after: String, before: String, cursorType:CursorType):ItemConnection
+    getEndingSoonItems(itemQuery: ItemQueryInput, keyword:String, count:Int):[Item]
 }
 
 type Mutation{

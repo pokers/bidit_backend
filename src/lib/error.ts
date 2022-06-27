@@ -27,7 +27,8 @@ export enum ErrMessage {
     ErrorDuplicatedItem = 'Could not completed due to duplicated item',
     ErrorLowPriceBidding = 'Could not bid low price than current.',
     ErrorSameUserBidding = 'Could not bid over your price.',
-    ErrorOwnItemBidding = 'Not allowed to bid your item.'
+    ErrorOwnItemBidding = 'Not allowed to bid your item.',
+    ErrorEndBidingItem = 'Not allowed to bid finished item'
 }
 
 export const ErrorNotSupportedParameters = ()=>{
@@ -100,4 +101,8 @@ export const ErrorSameUserBidding = ()=>{
 
 export const ErrorOwnItemBidding = ()=>{
     return new cError(403, ErrMessage.ErrorOwnItemBidding);
+}
+
+export const ErrorEndBidingItem = ()=>{
+    return new cError(400, ErrMessage.ErrorEndBidingItem);
 }

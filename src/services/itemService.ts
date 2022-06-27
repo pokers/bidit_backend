@@ -4,6 +4,7 @@ import {
     ItemConnection, 
     ItemEdge,
     ItemImage, 
+    ItemQueryInput,
     
     // Category
     Category, 
@@ -16,7 +17,7 @@ import {
 
     AuthResult
 } from '../types';
-import { ItemRepository } from '../repository';
+import { ItemRepository, QueryOptions } from '../repository';
 import { log } from '../lib/logger';
 import { ErrorModuleNotFound, ErrorNotSupportedParameters, ErrorInvalidBodyParameter, ErrorUserNotFound } from '../lib';
 import { ModelName, CursorName, Order, Transaction } from '../repository/model';
@@ -90,7 +91,7 @@ class ItemService extends ServiceBase{
 
     async getItemList(arg: any, selectionSetList:string[]): Promise<ItemConnection>{
         try{
-            const { itemQuery, keyword, first , last , after , before } = arg;
+            const { itemQuery, keyword, first , last , after , before, cursorType } = arg;
             
             if(first && last){
                 throw ErrorNotSupportedParameters();
@@ -103,10 +104,10 @@ class ItemService extends ServiceBase{
             const order = first? Order.ASC:Order.DESC;
             const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
             
-            const firstLastItem:FirstLastItem<Item> = await itemRepo.getFirstLastItem<Item>(CursorName.createdAt, ModelName.item, itemQuery, keyword);
+            const firstLastItem:FirstLastItem<Item> = await itemRepo.getFirstLastItem<Item>(cursorType||CursorName.createdAt, ModelName.item, itemQuery, keyword);
             log.info('firstLastItem : ', firstLastItem);
 
-            const itemList:Item[] = await itemRepo.getItemList(itemQuery, keyword, first, last, after, before);
+            const itemList:Item[] = await itemRepo.getItemList(itemQuery, keyword, first, last, after, before, cursorType);
             log.info('item List : ', JSON.stringify(itemList));
 
             const totalCount = itemList.length;
@@ -274,6 +275,31 @@ class ItemService extends ServiceBase{
             const categoryList:Category[] = await itemRepo.scanCategory();
 
             return categoryList;
+        }catch(e){
+            log.error('exception > scanCategory : ', e);
+            throw e;
+        }
+    }
+
+    async getEndingSoonItems(arg: any, selectionSetList:string[]):Promise<Item[]>{
+        try{
+            const { itemQuery, keyword, count } = arg;
+            if(!this.repositories.getRepository().itemRepo){
+                throw ErrorModuleNotFound();
+            }
+            const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
+            const first = this.getTimeNow().toISOString();
+            console.log('getEndingSoonItems first : ', first);
+            const queryOptions:QueryOptions = {
+                keyword: keyword,
+                start: this.getTimeNow().toISOString(),
+                order: Order.ASC,
+                limit: count
+            }
+            const itemList:Item[] = await itemRepo.getItemsByDueDate(itemQuery, queryOptions)
+            log.info('svc > getEndingSoonItems > itemList : ', itemList);
+
+            return itemList;
         }catch(e){
             log.error('exception > scanCategory : ', e);
             throw e;

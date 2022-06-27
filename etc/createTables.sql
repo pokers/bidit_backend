@@ -190,3 +190,17 @@ CREATE TABLE IF NOT EXISTS bidding (
     INDEX createdAt(createdAt)
 );
 
+CREATE TABLE IF NOT EXISTS successfulBid (
+    id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    status      INT UNSIGNED NOT NULL,
+    userId      INT UNSIGNED NOT NULL,
+    itemId      INT UNSIGNED NOT NULL,
+    biddingId   INT UNSIGNED NOT NULL,
+    createdAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(id),
+    CONSTRAINT fk_user_successfulBid FOREIGN KEY(userId) REFERENCES user(id),
+    CONSTRAINT fk_item_successfulBid FOREIGN KEY(itemId) REFERENCES item(id),
+    CONSTRAINT fk_bidding_successfulBid FOREIGN KEY(biddingId) REFERENCES bidding(id),
+    INDEX createdAt(createdAt)
+);
+

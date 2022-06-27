@@ -76,6 +76,11 @@ export enum CategoryStatus {
   Valid = 'VALID'
 }
 
+export enum CursorType {
+  CreatedAt = 'createdAt',
+  DueDate = 'dueDate'
+}
+
 export enum DeliveryType {
   Both = 'BOTH',
   Direct = 'DIRECT',
@@ -296,6 +301,7 @@ export type Query = {
   getBidding?: Maybe<Array<Maybe<Bidding>>>;
   getCategory?: Maybe<Category>;
   getCategoryList?: Maybe<CategoryConnection>;
+  getEndingSoonItems?: Maybe<Array<Maybe<Item>>>;
   getItem?: Maybe<Item>;
   getItemList?: Maybe<ItemConnection>;
   getMyBidding?: Maybe<Array<Maybe<Bidding>>>;
@@ -324,6 +330,13 @@ export type QueryGetCategoryListArgs = {
 };
 
 
+export type QueryGetEndingSoonItemsArgs = {
+  count?: InputMaybe<Scalars['Int']>;
+  itemQuery?: InputMaybe<ItemQueryInput>;
+  keyword?: InputMaybe<Scalars['String']>;
+};
+
+
 export type QueryGetItemArgs = {
   id: Scalars['Int'];
 };
@@ -332,6 +345,7 @@ export type QueryGetItemArgs = {
 export type QueryGetItemListArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
+  cursorType?: InputMaybe<CursorType>;
   first?: InputMaybe<Scalars['Int']>;
   itemQuery?: InputMaybe<ItemQueryInput>;
   keyword?: InputMaybe<Scalars['String']>;
@@ -346,6 +360,18 @@ export type QueryGetMyBiddingArgs = {
 
 export type QueryGetUserArgs = {
   id: Scalars['Int'];
+};
+
+export type SuccessfulBid = {
+  __typename?: 'SuccessfulBid';
+  biddingId: Scalars['Int'];
+  createdAt: Scalars['String'];
+  id: Scalars['Int'];
+  item?: Maybe<Item>;
+  itemId: Scalars['Int'];
+  status: Scalars['Int'];
+  user?: Maybe<User>;
+  userId: Scalars['Int'];
 };
 
 export type User = {

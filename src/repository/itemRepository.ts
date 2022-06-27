@@ -1,5 +1,5 @@
 import { log } from '../lib/logger'
-import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes } from './model'
+import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, Order } from './model'
 import { Op, WhereOptions } from 'sequelize'
 import { Item, 
     ItemQueryInput, 
@@ -15,6 +15,14 @@ import { Item,
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
 import { sealed } from '../lib/decorators'
+
+type QueryOptions = {
+    keyword?: string,
+    start?: string,
+    end?: string,
+    order?: Order
+    limit?: number
+}
 
 @Service()
 @sealed
@@ -63,12 +71,16 @@ class ItemRepository extends RepositoryBase{
         }
     }
 
-    async getFirstLastItem<T>(cursor: string, modelName:ModelName, query?: ItemQueryInput, keyword?: String): Promise<FirstLastItem<T>>{
+    async getFirstLastItem<T>(cursor: CursorName, modelName:ModelName, itemQuery?: ItemQueryInput, keyword?: String): Promise<FirstLastItem<T>>{
         try{
             let result: FirstLastItem<T> = {} as FirstLastItem<T>;
             let where: WhereOptions = {};
-            if(query){
-                where = { ...where, ...query};
+            if(itemQuery){
+                if(itemQuery.dueDate){
+                    where = {...where, dueDate: {[Op.lte]: itemQuery.dueDate}};
+                    delete itemQuery.dueDate;
+                }
+                where = { ...where, ...itemQuery};
             }
             if(keyword){
                 const substr = {
@@ -106,14 +118,18 @@ class ItemRepository extends RepositoryBase{
         }
     }
 
-    async getItemList(itemQuery?: ItemQueryInput, keyword?:String, first?:number, last?:number, after?:string, before?:string): Promise<Item[]>{
+    async getItemList(itemQuery?: ItemQueryInput, keyword?:String, first?:number, last?:number, after?:string, before?:string, cursorType?:CursorName): Promise<Item[]>{
         try{
-            const cursor: ItemModel[CursorName.createdAt] = CursorName.createdAt;
+            const cursor: CursorName = cursorType || CursorName.createdAt;
             let where: WhereOptions = {};
             let limit: number = 50;
             let order:string = 'DESC';
 
             if(itemQuery){
+                if(itemQuery.dueDate){
+                    where = {...where, dueDate: {[Op.lte]: itemQuery.dueDate}};
+                    delete itemQuery.dueDate;
+                }
                 where = { ...where, ...itemQuery};
             }
             if(keyword){
@@ -160,7 +176,46 @@ class ItemRepository extends RepositoryBase{
     }
     
 
+    async getItemsByDueDate(itemQuery?: ItemQueryInput, options?:QueryOptions): Promise<Item[]>{
+        try{
+            const queryOptions = options || {};
+            let where: WhereOptions = {};
+            let limit: number = queryOptions.limit || 50;
 
+            if(itemQuery){
+                where = { ...where, ...itemQuery};
+            }
+            if(queryOptions.keyword){
+                const substr = {
+                    name: {[Op.substring]: queryOptions.keyword},
+                    title: {[Op.substring]: queryOptions.keyword}
+                }
+                where = { ...where, ...substr};
+            }
+            if(queryOptions.start){
+                where = { ...where, dueDate: {[Op.gte]: queryOptions.start}};
+            }
+            if(queryOptions.end){
+                where = { ...where, dueDate: {[Op.lte]: queryOptions.end}};
+            }
+
+            const itemModel = this.models.getModel(ModelName.item);
+            const items = await itemModel.findAll({
+                where, 
+                limit, 
+                order: queryOptions.order? [['dueDate', queryOptions.order]]:null,
+                include: ['description', 'image', 'category'],
+                raw:true, nest: true
+            });
+
+            log.info('repo> getItemsByDueDate > result : ', items);
+            return items;
+        }catch(e){
+            log.error('exception > getItemsByDueDate : ', e);
+            throw e;
+        }
+    }
+    
     async addItemImages(itemId:number, imageUrls: string[], transaction:Transaction): Promise<ItemImage[]>{
         try{
             const itemImages = await Promise.all(imageUrls.map(async url=>{
@@ -398,4 +453,4 @@ class ItemRepository extends RepositoryBase{
     
 }
 
-export { ItemRepository }
+export { ItemRepository, QueryOptions }

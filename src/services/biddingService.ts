@@ -15,12 +15,13 @@ import {
     CategoryEdge,
 
     AuthResult,
-    Bidding
+    Bidding,
+    SuccessfulBid
 } from '../types';
 import { ItemRepository } from '../repository';
 import { log } from '../lib/logger';
-import { ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound, ErrorLowPriceBidding, ErrorSameUserBidding, ErrorOwnItemBidding } from '../lib';
-import { ModelName, CursorName, Order, Transaction, ItemAttributes } from '../repository/model';
+import { ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound, ErrorLowPriceBidding, ErrorSameUserBidding, ErrorOwnItemBidding, ErrorEndBidingItem,ErrorItemNotFound } from '../lib';
+import { ModelName, CursorName, Order, Transaction, ItemAttributes, SuccessfulBidModel, SuccessfulBidAttributes } from '../repository/model';
 import { Service } from 'typedi'
 import { ServiceBase } from './serviceBase'
 import { BiddingRepository } from '../repository/biddingRespository';
@@ -53,10 +54,31 @@ class BiddingService extends ServiceBase{
                 if(item.userId === userId){
                     throw ErrorOwnItemBidding();
                 }
+                if(item.status === 2){
+                    throw ErrorEndBidingItem();
+                }
             }
             return;
         }catch(e){
             log.error('exception > svc > checkMaxBidItem : ', e);
+            throw e;
+        }
+    }
+
+    private checkSuccessfulBidItem(maxBidItem:Bidding|null, item:Item|null){
+        try{
+            if(!maxBidItem){
+                throw ErrorItemNotFound();
+            }
+            if(!item){
+                throw ErrorItemNotFound();
+            }
+            if(item.status !== 1){
+                    throw ErrorEndBidingItem();
+            }
+            return;
+        }catch(e){
+            log.error('exception > svc > checkSuccessfulBidItem : ', e);
             throw e;
         }
     }
@@ -124,7 +146,7 @@ class BiddingService extends ServiceBase{
             const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
 
 
-            const [maxBid, item ] = await Promise.all([
+            const [ maxBid, item ] = await Promise.all([
                 biddingRepo.getMaxPriceBid(bid.itemId),
                 itemRepo.getItem(bid.itemId)
             ]);
@@ -136,7 +158,7 @@ class BiddingService extends ServiceBase{
             const newBidding:Bidding = await biddingRepo.addBid(userId, bid, transaction);
             this.logInfo('addBid > newBidding : ', newBidding)
 
-            const updatedItem:Item = await itemRepo.updateItem(bid.itemId, {cPrice: bid.price}, undefined, transaction);
+            const updatedItem:Item = await itemRepo.updateItem(bid.itemId, {status: 1, cPrice: bid.price}, undefined, transaction);
             
             await this.commit(transaction);
             transaction = null;
@@ -148,6 +170,51 @@ class BiddingService extends ServiceBase{
                 await this.rollback(transaction);
             }
             log.error('exception > svc > addBid : ', e);
+            throw e;
+        }
+    }
+
+    async successfulBid(arg: any): Promise<SuccessfulBid>{
+        let transaction:Transaction|null = null;
+        try{
+            const { item } = arg;
+            if(!item){
+                throw ErrorInvalidBodyParameter();
+            }
+            if(!this.repositories.getRepository().biddingRepo || !this.repositories.getRepository().itemRepo){
+                throw ErrorModuleNotFound();
+            }
+
+            transaction = await this.startTransaction();
+
+            const biddingRepo:BiddingRepository = this.repositories.getRepository().biddingRepo;
+            const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
+
+            const foundItem:Item = await itemRepo.getItem(item.id);
+            const maxBid = await biddingRepo.getMaxPriceBid(item.id, item.dueDate);
+
+            this.logInfo('addBid > maxBid : ', maxBid);
+            this.logInfo('addBid > item : ', item);
+            this.checkSuccessfulBidItem(maxBid, foundItem);
+
+            const bidInput:SuccessfulBidAttributes = {
+                userId: maxBid.userId,
+                itemId: maxBid.itemId,
+                biddingId: maxBid.id
+            };
+            const successfulBid:SuccessfulBid = await biddingRepo.addSuccessfulBid(bidInput, transaction);
+            const updatedItem:Item = await itemRepo.updateItem(item.id, {status: 2}, undefined, transaction);
+
+            await this.commit(transaction);
+            transaction = null;
+            log.info('svc > successfulBid > Item result : ', updatedItem);
+            
+            return successfulBid;
+        }catch(e){
+            if(transaction){
+                await this.rollback(transaction);
+            }
+            log.error('exception > svc > successfulBid : ', e);
             throw e;
         }
     }

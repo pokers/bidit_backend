@@ -10,6 +10,17 @@ type Bidding {
     user: User
 }
 
+type SuccessfulBid {
+    id: Int!
+    status: Int!
+    userId: Int!
+    itemId: Int!
+    biddingId: Int!
+    createdAt: String!
+    item: Item
+    user: User
+}
+
 input BiddingQueryInput {
     status: Int
     itemId: Int

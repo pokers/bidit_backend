@@ -107,6 +107,11 @@ custom:
         response: false
       - dataSource: itemResolverDataSource
         type: Query
+        field: getEndingSoonItems
+        request: false
+        response: false
+      - dataSource: itemResolverDataSource
+        type: Query
         field: getCategoryList
         request: false
         response: false

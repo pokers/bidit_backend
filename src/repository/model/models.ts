@@ -8,7 +8,8 @@ import {
     ItemImageModel,
     CategoryModel,
     KakaoAccountModel,
-    BiddingModel
+    BiddingModel,
+    SuccessfulBidModel
 } from '.'
 import { UserModel } from './User';
 import { Service } from 'typedi';
@@ -23,11 +24,13 @@ enum ModelName {
     user = 'User',
     kakaoAccount = 'KakaoAccount',
     pushToken = 'pushToken',
-    bidding = 'bidding'
+    bidding = 'bidding',
+    successfulBid = 'successfulBid'
 }
 
 enum CursorName {
-    createdAt ='createdAt'
+    createdAt ='createdAt',
+    dueDate ='dueDate'
 }
 
 enum Order {
@@ -56,6 +59,7 @@ class Models {
                 KakaoAccountModel.initialize(this.sequelize.getDBInstance());
                 PushTokenModel.initialize(this.sequelize.getDBInstance());
                 BiddingModel.initialize(this.sequelize.getDBInstance());
+                SuccessfulBidModel.initialize(this.sequelize.getDBInstance());
             }
             return this;
         }catch(e){
@@ -93,6 +97,13 @@ class Models {
                 ItemModel.hasMany(BiddingModel, {foreignKey: 'itemId', sourceKey: 'id'});
                 BiddingModel.belongsTo(UserModel, {foreignKey: 'userId', as: 'user', targetKey: 'id'});
                 BiddingModel.belongsTo(ItemModel, {foreignKey: 'itemId', as: 'item', targetKey: 'id'});
+
+                UserModel.hasMany(SuccessfulBidModel, {foreignKey: 'userId', sourceKey: 'id'});
+                ItemModel.hasMany(SuccessfulBidModel, {foreignKey: 'itemId', sourceKey: 'id'});
+                BiddingModel.hasOne(SuccessfulBidModel, {foreignKey: 'userId', sourceKey: 'id'});
+                SuccessfulBidModel.belongsTo(UserModel, {foreignKey: 'userId', as: 'user', targetKey: 'id'});
+                SuccessfulBidModel.belongsTo(ItemModel, {foreignKey: 'itemId', as: 'item', targetKey: 'id'});
+                SuccessfulBidModel.belongsTo(BiddingModel, {foreignKey: 'biddingId', as: 'bidding', targetKey: 'id'});
             }
             return this;
         }catch(e){
@@ -123,6 +134,7 @@ class Models {
                 case ModelName.kakaoAccount: return KakaoAccountModel;
                 case ModelName.pushToken: return PushTokenModel;
                 case ModelName.bidding: return BiddingModel;
+                case ModelName.successfulBid: return SuccessfulBidModel;
             }
             return ItemModel;
         }catch(e){

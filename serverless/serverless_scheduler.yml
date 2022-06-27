@@ -1,0 +1,76 @@
+service: bidit-scheduler
+
+plugins:
+  - serverless-appsync-plugin
+
+provider:
+  name: aws
+  region: ap-northeast-2
+  runtime: nodejs16.x
+  lambdaHashingVersion: 20201221
+  stage: prod
+  profile: ${self:custom.profiles.${sls:stage}}
+  memorySize: 1536
+  timeout: 75
+  logRetentionInDays: 60
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - lambda:*
+        - s3:*
+      Resource:
+        - arn:aws:lambda:${self:provider.region}:*:*
+    - Effect: Allow
+      Action: secretsmanager:GetSecretValue
+      Resource:
+        - arn:aws:secretsmanager:*:*
+    - Effect: Allow
+      Action:
+        - SQS:*
+      Resource:
+        - arn:aws:sqs:${self:provider.region}:*:*
+
+  environment:
+    REGION: "${self:provider.region}"
+    STAGE: "${self:provider.stage}"
+    APPSYNC_NAME: "${self:service}-appsync"
+
+
+custom:
+  nodeOption: "--report-uncaught-exception --report-on-fatalerror --report-on-signal"
+  profiles:
+    dev: biditDev
+    prod: bidit
+
+
+package:
+  individually: true
+  exclude:
+    - ./**
+
+functions:
+  bidScheduleHandler:
+    handler: bundle/bidScheduleHandler.bidScheduleHandler
+    name: bidit-bidScheduleHandler
+    events:
+      - schedule:
+          name: retrieveEndingSoonItem
+          description: every 3minutes
+          rate: rate(3 minutes)
+          enabled: true
+          input:
+            command: "retrieveEndingSoonItem"
+    maximumRetryAttempts: 0
+    package:
+      include:
+        - ./bundle/bidScheduleHandler.js
+    environment:
+      NODE_OPTIONS: ${self:custom.nodeOption}
+      BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
+      BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}
+      BIDIT_RDS_MAIN_PORT: ${env:BIDIT_RDS_MAIN_PORT}
+      BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
+      BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
+      BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+      BIDIT_SQS_BID_QUEUE: https://sqs.ap-northeast-2.amazonaws.com/164739657386/biditBidQueue

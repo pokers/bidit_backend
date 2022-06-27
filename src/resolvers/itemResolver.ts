@@ -42,6 +42,9 @@ const itemResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
             case 'getItemList':
                 payload = await Container.get(ItemService).getItemList(event.arguments, event.info.selectionSetList);
                 break;
+            case 'getEndingSoonItems':
+                payload = await Container.get(ItemService).getEndingSoonItems(event.arguments, event.info.selectionSetList);
+                break;
             case 'addItem':
                 payload = await Container.get(ItemService).addItem(identity.resolverContext, event.arguments, event.info.selectionSetList);
                 break;

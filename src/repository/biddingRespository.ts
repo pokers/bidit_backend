@@ -1,10 +1,11 @@
 import { log } from '../lib/logger'
-import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, BiddingAttributes, UserModel } from './model'
+import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, BiddingAttributes, UserModel, SuccessfulBidAttributes } from './model'
 import { Op, WhereOptions } from 'sequelize'
 import { 
     Bidding,
     BiddingQueryInput,
-    BidInput
+    BidInput,
+    SuccessfulBid
 } from '../types'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
@@ -62,12 +63,15 @@ class BiddingRepository extends RepositoryBase{
         }
     }
 
-    async getMaxPriceBid(itemId:number): Promise<Bidding>{
+    async getMaxPriceBid(itemId:number, dueDate?:string|null): Promise<Bidding>{
         try{
             const model = this.models.getModel(ModelName.bidding);
-            
+            let where:WhereOptions = {itemId: itemId};
+            if(dueDate){
+                where = {...where, createdAt: {[Op.lte]: dueDate}}
+            }
             const result = await model.findOne({
-                where: {itemId: itemId},
+                where: where,
                 limit: 1,
                 order: [['price', 'DESC']],
                 raw:true, nest: true
@@ -89,6 +93,19 @@ class BiddingRepository extends RepositoryBase{
         }catch(e){
             this.isUniqueConstraintError(e);
             log.error('exception > addBid : ', e);
+            throw e;
+        }
+    }
+
+    async addSuccessfulBid(successBidItem:SuccessfulBidAttributes, transaction:Transaction): Promise<SuccessfulBid>{
+        try{
+            const model = this.models.getModel(ModelName.successfulBid);
+            const bidding = await model.create(successBidItem,{transaction: transaction});
+            log.info('repo > addSuccessfulBid > result : ', bidding);
+            return bidding.get({plain: true});
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > addSuccessfulBid : ', e);
             throw e;
         }
     }

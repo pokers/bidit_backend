@@ -5,7 +5,8 @@ import { SQSRecord } from 'aws-lambda';
 import { Service } from 'typedi'
 
 enum MessageCommand {
-    successfulBid
+    successfulBid,
+    notifyHigherBidder,
 }
 type MessageBody = {
     command: MessageCommand,

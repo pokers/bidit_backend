@@ -6,7 +6,8 @@ enum DeliveryType {
 enum ItemStatus{
     REGISTED,
     ONGOING,
-    SOLD
+    SOLD,
+    PENDING
 }
 
 enum CursorType{
@@ -16,7 +17,7 @@ enum CursorType{
 
 type Item {
     id: Int!
-    status: Int! # 0=REGISTED, 1=ONGOING, 2=SOLD
+    status: Int! # 0=REGISTED, 1=ONGOING, 2=SOLD, 3=PENDING
     userId: Int!
     categoryId: Int
     sPrice: Int

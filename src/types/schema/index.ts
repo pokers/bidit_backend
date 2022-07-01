@@ -181,6 +181,7 @@ export type ItemQueryInput = {
 
 export enum ItemStatus {
   Ongoing = 'ONGOING',
+  Pending = 'PENDING',
   Registed = 'REGISTED',
   Sold = 'SOLD'
 }
@@ -296,6 +297,16 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']>;
 };
 
+export type PushToken = {
+  __typename?: 'PushToken';
+  createdAt?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['Int']>;
+  token?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['String']>;
+  userId?: Maybe<Scalars['Int']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   getBidding?: Maybe<Array<Maybe<Bidding>>>;
@@ -389,6 +400,7 @@ export type User = {
   nickname?: Maybe<Scalars['String']>;
   passwd?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
+  pushToken?: Maybe<PushToken>;
   status: Scalars['Int'];
   updatedAt?: Maybe<Scalars['String']>;
 };

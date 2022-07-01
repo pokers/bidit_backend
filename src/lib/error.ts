@@ -28,7 +28,9 @@ export enum ErrMessage {
     ErrorLowPriceBidding = 'Could not bid low price than current.',
     ErrorSameUserBidding = 'Could not bid over your price.',
     ErrorOwnItemBidding = 'Not allowed to bid your item.',
-    ErrorEndBidingItem = 'Not allowed to bid finished item'
+    ErrorEndBidingItem = 'Not allowed to bid finished item',
+    ErrorInvalidPushToken = 'Cannot found push token.',
+    ErrorIsNotInitialized = 'Is not Initialized'
 }
 
 export const ErrorNotSupportedParameters = ()=>{
@@ -105,4 +107,12 @@ export const ErrorOwnItemBidding = ()=>{
 
 export const ErrorEndBidingItem = ()=>{
     return new cError(400, ErrMessage.ErrorEndBidingItem);
+}
+
+export const ErrorInvalidPushToken = ()=>{
+    return new cError(400, ErrMessage.ErrorInvalidPushToken);
+}
+
+export const ErrorIsNotInitialized = ()=>{
+    return new cError(400, ErrMessage.ErrorIsNotInitialized);
 }

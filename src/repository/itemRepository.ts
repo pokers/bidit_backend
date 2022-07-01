@@ -176,7 +176,7 @@ class ItemRepository extends RepositoryBase{
     }
     
 
-    async getItemsByDueDate(itemQuery?: ItemQueryInput, options?:QueryOptions): Promise<Item[]>{
+    async getItemsByDueDate(itemQuery?: ItemQueryInput, options?:QueryOptions, include?:string[]): Promise<Item[]>{
         try{
             const queryOptions = options || {};
             let where: WhereOptions = {};
@@ -204,7 +204,7 @@ class ItemRepository extends RepositoryBase{
                 where, 
                 limit, 
                 order: queryOptions.order? [['dueDate', queryOptions.order]]:null,
-                include: ['description', 'image', 'category'],
+                include: include,//['description', 'image', 'category'],
                 raw:true, nest: true
             });
 

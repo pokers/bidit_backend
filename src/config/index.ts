@@ -21,4 +21,8 @@ const kakaoEnv = {
 const sqsEnv = {
     bidQueue: (process.env.BIDIT_SQS_BID_QUEUE || '')
 }
-export { dbConfig, devEnv, kakaoEnv, sqsEnv }
+const fcmEnv = {
+    credential: (process.env.BIDIT_FCM_CREDENTIAL || ''),
+    url: (process.env.BIDIT_FCM_URL || '')
+}
+export { dbConfig, devEnv, kakaoEnv, sqsEnv, fcmEnv }

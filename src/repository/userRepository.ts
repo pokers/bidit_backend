@@ -15,7 +15,7 @@ class UserRepository extends RepositoryBase{
             const userModel = this.models.getModel(ModelName.user);
             const result:User = await userModel.findOne({
                 where: {id: userId},
-                include: ['kakaoAccount'],
+                include: ['kakaoAccount', 'pushToken'],
                 raw:true,
                 nest: true
             });

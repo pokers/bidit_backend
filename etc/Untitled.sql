@@ -4,9 +4,13 @@ select * from user;
 select * from kakaoAccount;
 delete from user where id=9;
 delete from kakaoAccount where id=2233153000;
+update kakaoAccount set id=2233153001 where id=2233153000;
 
+
+select * from successfulBid;
+select * from bidding;
 select * from item;
-update item set status = 1, dueDate = "2022-06-26 23:58:00" where id=2;
+update item set status = 1, dueDate = "2022-07-26 23:58:00" where id=5;
 select * from itemDescription;
 select * from category;
 delete from category where id=3;

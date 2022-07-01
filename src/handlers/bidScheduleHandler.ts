@@ -28,7 +28,7 @@ const destroy = async ()=>{
 
 const bidScheduleHandler = async (event:any)=>{
     try{
-        log.info('invked bidScheduleHandler : ', JSON.stringify(event));
+        log.info('invoked bidScheduleHandler : ', JSON.stringify(event));
 
         await initialize();
         switch(event.command){

@@ -44,6 +44,24 @@ const processAuthentication = async (authorizationToken:string):Promise<AuthResu
     }
 }
 
+////////////////////////////////////////////////
+const isTestAccount = (event:AppSyncAuthorizerEvent)=>{
+    const { authorizationToken } = event;
+    const [type, token, vendor] = authorizationToken.split(' ');
+    if(vendor && vendor === 'testbidit'){
+        return {
+            isAuthorized: true,
+            resolverContext:{
+                userId: 1,
+                authType: 'kakao',
+                kakaoAccountId: 2233153001,
+            }
+        }
+    }
+    return null;
+}
+////////////////////////////////////////////////
+
 const authorizer = async (event:AppSyncAuthorizerEvent, context: Context)=>{
     try{
         const result = {
@@ -52,8 +70,16 @@ const authorizer = async (event:AppSyncAuthorizerEvent, context: Context)=>{
         }
         log.info("Invoked authorizer : ", JSON.stringify(event), JSON.stringify(context));
        
+        ////////////////////////////////////////////////
+        const testResult = isTestAccount(event);
+        if(testResult){
+            return testResult;
+        }
+        ////////////////////////////////////////////////
+
         await initialize();
         const { authorizationToken } = event;
+
         const authResult:AuthResult = await processAuthentication(authorizationToken);
 
         log.info('authResult : ', authResult);

@@ -296,7 +296,7 @@ class ItemService extends ServiceBase{
                 order: Order.ASC,
                 limit: count
             }
-            const itemList:Item[] = await itemRepo.getItemsByDueDate(itemQuery, queryOptions)
+            const itemList:Item[] = await itemRepo.getItemsByDueDate(itemQuery, queryOptions, ['description', 'image', 'category'])
             log.info('svc > getEndingSoonItems > itemList : ', itemList);
 
             return itemList;

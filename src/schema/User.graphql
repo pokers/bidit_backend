@@ -12,6 +12,16 @@ enum gender{
     MALE,
     FEMALE
 }
+
+type PushToken {
+    id: Int
+    status: Int
+    userId: Int
+    token: String
+    createdAt: String
+    updatedAt: String
+}
+
 type User {
     id: Int!
     status: Int!    # 0=VALID, 1=INVALID
@@ -28,6 +38,7 @@ type User {
     description: String
     items:ItemConnection
     kakaoAccount:KakaoAccount
+    pushToken: PushToken
 }
 
 type Query {

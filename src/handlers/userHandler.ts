@@ -5,7 +5,7 @@ import { ServiceQuotas, SQS } from 'aws-sdk';
 
 const userHandler = async (event: SQSEvent)=>{
     try{
-        log.info('invked userHandler : ', JSON.stringify(event));
+        log.info('invoked userHandler : ', JSON.stringify(event));
 
         if(event.Records && event.Records.length > 0){
             const record = event.Records[0];

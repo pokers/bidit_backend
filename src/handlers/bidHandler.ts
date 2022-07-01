@@ -6,6 +6,7 @@ import { sqsEnv } from '../config'
 import { Container } from 'typedi';
 import { BiddingService } from '../services/biddingService';
 import { Provider } from '../resolvers/provider'
+import { PushService } from '../services';
 
 const initialize = async()=>{
     try{
@@ -54,9 +55,10 @@ const getRecord = (event:SQSEvent):SQSRecord|null=>{
 }
 
 const bidHandler = async (event:SQSEvent)=>{
+    let message = null;
     try{
-        log.info('invked bidHandler : ', JSON.stringify(event));
-        const message = getRecord(event);
+        log.info('invoked bidHandler : ', JSON.stringify(event));
+        message = getRecord(event);
         await initialize();
         if(message){
             const body = JSON.parse(message.body);
@@ -65,11 +67,17 @@ const bidHandler = async (event:SQSEvent)=>{
                 case MessageCommand.successfulBid:
                     const payload = await Container.get(BiddingService).successfulBid(body);
                     break;
+                case MessageCommand.notifyHigherBidder:
+                    await Container.get(PushService).notifyHighBidder(body);
+                    break;
             }
             await delRecord(message);
         }
         await destroy();
     }catch(e){
+        if(message){
+            await delRecord(message);
+        }
         await destroy();
         log.error('Exception > bidHandler :', e);
         throw e;

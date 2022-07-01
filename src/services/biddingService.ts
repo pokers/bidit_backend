@@ -20,11 +20,12 @@ import {
 } from '../types';
 import { ItemRepository } from '../repository';
 import { log } from '../lib/logger';
-import { ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound, ErrorLowPriceBidding, ErrorSameUserBidding, ErrorOwnItemBidding, ErrorEndBidingItem,ErrorItemNotFound } from '../lib';
+import { ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound, ErrorLowPriceBidding, ErrorSameUserBidding, ErrorOwnItemBidding, ErrorEndBidingItem,ErrorItemNotFound, MessageCommand } from '../lib';
 import { ModelName, CursorName, Order, Transaction, ItemAttributes, SuccessfulBidModel, SuccessfulBidAttributes } from '../repository/model';
 import { Service } from 'typedi'
 import { ServiceBase } from './serviceBase'
 import { BiddingRepository } from '../repository/biddingRespository';
+import { MessageBody } from '../lib'
 
 enum DefaultDate {
     PAST='2022-01-01 00:00:00',
@@ -74,9 +75,23 @@ class BiddingService extends ServiceBase{
                 throw ErrorItemNotFound();
             }
             if(item.status !== 1){
-                    throw ErrorEndBidingItem();
+                throw ErrorEndBidingItem();
             }
             return;
+        }catch(e){
+            log.error('exception > svc > checkSuccessfulBidItem : ', e);
+            throw e;
+        }
+    }
+
+    private sendMessageToBidQueue(command:MessageCommand, body:any, delaySeconds?:number){
+        try{
+            const messageBody:MessageBody = {
+                command: command,
+                item: body,
+                delaySeconds: delaySeconds || 0
+            }
+            return this.messageQueue.sendMessageToBidQueue(messageBody);
         }catch(e){
             log.error('exception > svc > checkSuccessfulBidItem : ', e);
             throw e;
@@ -164,6 +179,9 @@ class BiddingService extends ServiceBase{
             transaction = null;
             log.info('svc > addBid > Item result : ', updatedItem);
             
+            // TODO: consider code structuresend
+            await this.sendMessageToBidQueue(MessageCommand.notifyHigherBidder, maxBid);
+
             return newBidding;
         }catch(e){
             if(transaction){
@@ -194,7 +212,7 @@ class BiddingService extends ServiceBase{
             const maxBid = await biddingRepo.getMaxPriceBid(item.id, item.dueDate);
 
             this.logInfo('addBid > maxBid : ', maxBid);
-            this.logInfo('addBid > item : ', item);
+            this.logInfo('addBid > item : ', foundItem);
             this.checkSuccessfulBidItem(maxBid, foundItem);
 
             const bidInput:SuccessfulBidAttributes = {

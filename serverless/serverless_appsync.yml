@@ -178,6 +178,7 @@ functions:
       BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
       BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
       BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+      BIDIT_SQS_BID_QUEUE: https://sqs.ap-northeast-2.amazonaws.com/164739657386/biditBidQueue
 
   userHandler:
     handler: bundle/userHandler.userHandler
@@ -194,6 +195,7 @@ functions:
       BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
       BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
       BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+      BIDIT_SQS_BID_QUEUE: https://sqs.ap-northeast-2.amazonaws.com/164739657386/biditBidQueue
 
   itemResolver:
     handler: bundle/itemResolver.itemResolver
@@ -210,6 +212,7 @@ functions:
       BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
       BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
       BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+      BIDIT_SQS_BID_QUEUE: https://sqs.ap-northeast-2.amazonaws.com/164739657386/biditBidQueue
   
   authResolver:
     handler: bundle/authResolver.authorizer
@@ -226,6 +229,7 @@ functions:
       BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
       BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
       BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+      BIDIT_SQS_BID_QUEUE: https://sqs.ap-northeast-2.amazonaws.com/164739657386/biditBidQueue
 
   biddingResolver:
     handler: bundle/biddingResolver.biddingResolver
@@ -242,5 +246,6 @@ functions:
       BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
       BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
       BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+      BIDIT_SQS_BID_QUEUE: https://sqs.ap-northeast-2.amazonaws.com/164739657386/biditBidQueue
 
 

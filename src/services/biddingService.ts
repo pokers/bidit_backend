@@ -230,8 +230,14 @@ class BiddingService extends ServiceBase{
             await this.commit(transaction);
             transaction = null;
             log.info('svc > successfulBid > Item result : ', updatedItem);
+            
             // TODO: consider code structuresend
-            await this.sendMessageToBidQueue(MessageCommand.notifySuccessfulBid, maxBid);
+            const task = [];
+            task.push(this.sendMessageToBidQueue(MessageCommand.notifySuccessfulBid, maxBid));
+            highBids.slice(1).map((item)=>{
+                task.push(this.sendMessageToBidQueue(MessageCommand.notifyFailedBid, item));
+            });
+            await Promise.all(task);
             
             return successfulBid;
         }catch(e){

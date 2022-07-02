@@ -163,6 +163,56 @@ class PushService extends ServiceBase{
             throw e;
         }
     }
+
+    async notifyFailedBid(arg:any){
+        try{
+            if(!arg.item){
+                throw ErrorInvalidBodyParameter();
+            }
+            const bidding:Bidding = arg.item;
+            if(!this.repositories.getRepository().biddingRepo){
+                throw ErrorModuleNotFound();
+            }
+            const userRepo:UserRepository = this.repositories.getRepository().userRepo;
+            const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
+            
+            const buyer:User = await userRepo.getUser(bidding.userId);
+            log.info('notifyFailedBid> buyer : ', buyer);
+            if(!buyer){
+                throw ErrorUserNotFound();
+            }
+            if(!buyer.pushToken){
+                throw ErrorInvalidPushToken();
+            }
+
+            const item:Item = await itemRepo.getItem(bidding.itemId);
+            const seller:User = await userRepo.getUser(item.userId);
+            log.info('notifyFailedBid> buyer : ', seller);
+            if(!seller){
+                throw ErrorUserNotFound();
+            }
+
+            if(!seller.pushToken){
+                throw ErrorInvalidPushToken();
+            }
+            const buyerMessage:FcmMessage = {
+                title: '경매 종료 알림',
+                body: `💔 UNLUCKY 아쉽게도 BID하셨던 ${item.name}낙찰에 실패했습니다. 더 좋은 기회가 있을거에요!`,
+                token: buyer.pushToken.token!
+            }
+            const sellerMessage:FcmMessage = {
+                title: '경매 종료 알림',
+                body: `🥳 HOORAY! ${item.name}가 최고입찰가 ${bidding.price}원에 낙찰되었습니다! 채팅을 통해 판매를 완료해주세요!`,
+                token: seller.pushToken.token!
+            }
+
+            // send push message
+            await Promise.all([this.sendPushMessage(buyerMessage), this.sendPushMessage(sellerMessage)]);
+        }catch(e){
+            log.error('exception > svc > notifyFailedBid:  ', e);
+            throw e;
+        }
+    }
 }
 
 export { PushService }

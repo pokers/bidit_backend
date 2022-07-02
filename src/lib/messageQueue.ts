@@ -9,6 +9,7 @@ enum MessageCommand {
     notifyHigherBidder,
     notifyEndingSoon,
     notifySuccessfulBid,
+    notifyFailedBid,
 }
 type MessageBody = {
     command: MessageCommand,

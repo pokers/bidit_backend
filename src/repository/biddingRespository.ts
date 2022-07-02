@@ -83,7 +83,7 @@ class BiddingRepository extends RepositoryBase{
         }
     }
 
-    async getHighPriceBid(itemId:number, dueDate?:string|null, limit?:number,): Promise<Bidding[]>{
+    async getHighPriceBid(itemId:number, dueDate?:string|null, limit?:number): Promise<Bidding[]>{
         try{
             const model = this.models.getModel(ModelName.bidding);
             let where:WhereOptions = {itemId: itemId};

@@ -55,16 +55,16 @@ functions:
     name: bidit-bidScheduleHandler
     events:
       - schedule:
-          name: retrieveSuccessfulBid
-          description: every 3minutes
-          rate: rate(3 minutes)
+          name: retrieveEndingSoonItem
+          description: every 10minutes
+          rate: rate(10 minutes)
           enabled: true
           input:
             command: "retrieveEndingSoonItem"
       - schedule:
-          name: retrieveEndingSoonItem
-          description: every 10minutes
-          rate: rate(10 minutes)
+          name: retrieveSuccessfulBid
+          description: every 3minutes
+          rate: rate(3 minutes)
           enabled: true
           input:
             command: "retrieveEndingSoonItem"

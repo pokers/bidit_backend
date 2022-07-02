@@ -1,10 +1,10 @@
 import { log, ErrorInvalidToken } from '../lib'
-import { User, Maybe,  Gender, JoinPath } from '../types'
+import { User, Maybe,  Gender, JoinPath, PushToken } from '../types'
 import { ModelName, KakaoAccountModel, KakaoUserInfo, KakaoAccount, UserModel, ItemModel, Transaction, UserAttributes, PushTokenAttributes } from './model'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
 import { sealed } from '../lib/decorators'
-import { PushToken } from 'aws-sdk/clients/cognitosync'
+import { Op } from 'sequelize'
 
 @Service()
 @sealed
@@ -144,6 +144,22 @@ class UserRepository extends RepositoryBase{
             return await pushTokenModel.create(newPushToken);
         }catch(e){
             log.error('exception> updateUser : ', e);
+            throw e;
+        }
+    }
+
+    async getPushTokens(userIds:number[]):Promise<PushToken[]>{
+        try{
+            const pushTokenModel = this.models.getModel(ModelName.pushToken);
+            const pushTokens = await pushTokenModel.findOne({
+                where: {userId: {[Op.or]: userIds}},
+                raw: true,
+                nest: true
+            });
+
+            return pushTokens;
+        }catch(e){
+            log.error('exception> getPushTokens : ', e);
             throw e;
         }
     }

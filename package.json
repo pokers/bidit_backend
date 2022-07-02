@@ -12,7 +12,7 @@
     "deploy": "sls deploy -c ./serverless/serverless_appsync.yml",
     "clean": "rm -rf ./dist/* ./bundle/*",
     "deploy-appsync": "cp ./serverless/serverless_appsync.yml ./serverless.yml && sls deploy",
-    "deploy-queue": "cp ./serverless/serverless_queue.yml ./serverless.yml && sls deploy",
+    "deploy-queue": "cp ./serverless/serverless_queueHandler.yml ./serverless.yml && sls deploy",
     "deploy-scheduler": "cp ./serverless/serverless_scheduler.yml ./serverless.yml && sls deploy"
   },
   "author": "",

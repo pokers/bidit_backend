@@ -1,6 +1,6 @@
 import { log } from '../lib/logger'
 import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, BiddingAttributes, UserModel, SuccessfulBidAttributes } from './model'
-import { Op, WhereOptions } from 'sequelize'
+import { Op, WhereOptions, Sequelize } from 'sequelize'
 import { 
     Bidding,
     BiddingQueryInput,
@@ -77,6 +77,22 @@ class BiddingRepository extends RepositoryBase{
                 raw:true, nest: true
             });
             return result;
+        }catch(e){
+            log.error('exception > addBid : ', e);
+            throw e;
+        }
+    }
+
+    async getHighPriceBid(itemId:number, dueDate?:string|null, limit?:number,): Promise<Bidding[]>{
+        try{
+            const model = this.models.getModel(ModelName.bidding);
+            let where:WhereOptions = {itemId: itemId};
+            if(dueDate){
+                where = {...where, createdAt: {[Op.lte]: dueDate}}
+            }
+            const query = `SELECT * FROM bidding as t1, (SELECT max(price) as price FROM bidding WHERE itemId=${itemId} ${dueDate? 'AND createdAt <= "'+dueDate+'"':''} GROUP BY userId) as t2 WHERE itemId=${itemId} ${dueDate? 'AND createdAt <= "'+dueDate+'"':''} AND t1.price=t2.price ORDER BY t1.price DESC LIMIT ${limit||5}`;
+            const result = await this.models.query(query);
+            return result[0] || [];
         }catch(e){
             log.error('exception > addBid : ', e);
             throw e;

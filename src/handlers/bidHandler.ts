@@ -70,6 +70,12 @@ const bidHandler = async (event:SQSEvent)=>{
                 case MessageCommand.notifyHigherBidder:
                     await Container.get(PushService).notifyHighBidder(body);
                     break;
+                case MessageCommand.notifyEndingSoon:
+                    await Container.get(PushService).notifyEndingSoon(body);
+                    break;
+                case MessageCommand.notifySuccessfulBid:
+                    await Container.get(PushService).notifySuccessfulBid(body);
+                    break;
             }
             await delRecord(message);
         }

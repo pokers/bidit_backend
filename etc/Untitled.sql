@@ -9,6 +9,10 @@ update kakaoAccount set id=2233153001 where id=2233153000;
 
 select * from successfulBid;
 select * from bidding;
+select * from bidding where itemId=5 order by price DESC limit 5;
+
+select * from (select * from bidding where itemId=5 order by price) as t group by t.userId limit 5;
+
 select * from item;
 update item set status = 1, dueDate = "2022-07-26 23:58:00" where id=5;
 select * from itemDescription;

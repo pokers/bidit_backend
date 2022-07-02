@@ -32,8 +32,11 @@ const bidScheduleHandler = async (event:any)=>{
 
         await initialize();
         switch(event.command){
+            case 'retrieveSuccessfulBid':
+                const payload = await Container.get(SchedulerService).triggerSuccessfulBidItmes();
+                break;
             case 'retrieveEndingSoonItem':
-                const payload = await Container.get(SchedulerService).triggerEndingSoonItems();
+                await Container.get(SchedulerService).triggerEndingSoonItems(30);
                 break;
         }
 

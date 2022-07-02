@@ -209,10 +209,14 @@ class BiddingService extends ServiceBase{
             const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
 
             const foundItem:Item = await itemRepo.getItem(item.id);
-            const maxBid = await biddingRepo.getMaxPriceBid(item.id, item.dueDate);
+            // const maxBid = await biddingRepo.getMaxPriceBid(item.id, item.dueDate);
+            const highBids = await biddingRepo.getHighPriceBid(item.id, item.dueDate);
+            const maxBid = highBids[0];
+            
 
-            this.logInfo('addBid > maxBid : ', maxBid);
-            this.logInfo('addBid > item : ', foundItem);
+            this.logInfo('successfulBid > highBids : ', highBids);
+            this.logInfo('successfulBid > maxBid : ', maxBid);
+            this.logInfo('successfulBid > item : ', foundItem);
             this.checkSuccessfulBidItem(maxBid, foundItem);
 
             const bidInput:SuccessfulBidAttributes = {
@@ -226,6 +230,8 @@ class BiddingService extends ServiceBase{
             await this.commit(transaction);
             transaction = null;
             log.info('svc > successfulBid > Item result : ', updatedItem);
+            // TODO: consider code structuresend
+            await this.sendMessageToBidQueue(MessageCommand.notifySuccessfulBid, maxBid);
             
             return successfulBid;
         }catch(e){

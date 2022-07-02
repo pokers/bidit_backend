@@ -142,6 +142,15 @@ class Models {
             throw e;
         }
     }
+
+    async query(query:string):Promise<any>{
+        try{
+            return this.sequelize.getDBInstance().query(query, {raw:false});
+        }catch(e){
+            log.error('lib> Models > exception : ', e);
+            throw e;
+        }
+    }
 }
 
 

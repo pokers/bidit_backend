@@ -27,7 +27,11 @@ import { ServiceBase } from './serviceBase'
 
 @Service()
 class SchedulerService extends ServiceBase{
-    async triggerEndingSoonItems():Promise<Item[]>{
+    private isSellingItem(item:Item):boolean{
+        return (item.status === 0 || item.status === 1);
+    }
+
+    async triggerSuccessfulBidItmes():Promise<Item[]>{
         try{
             if(!this.repositories.getRepository().itemRepo){
                 throw ErrorModuleNotFound();
@@ -42,7 +46,7 @@ class SchedulerService extends ServiceBase{
                 status: 1   // 1=ongoing
             }
             const itemList:Item[] = await itemRepo.getItemsByDueDate(itemQuery, queryOptions);
-            log.info('svc > getEndingSoonItems > itemList : ', itemList);
+            log.info('svc > triggerSuccessfulBidItmes > itemList : ', itemList);
             if(itemList && itemList.length > 0){
                 await Promise.all(itemList.map(item=>{
                     if(item.dueDate){
@@ -58,7 +62,44 @@ class SchedulerService extends ServiceBase{
 
             return itemList;
         }catch(e){
-            log.error('exception > triggerEndingSoonItems : ', e);
+            log.error('exception > triggerSuccessfulBidItmes : ', e);
+            throw e;
+        }
+    }
+
+    async triggerEndingSoonItems(minutes:number):Promise<Item[]>{
+        try{
+            if(!this.repositories.getRepository().itemRepo){
+                throw ErrorModuleNotFound();
+            }
+            const start = (new Date(this.getTimeNow().getTime() + (30 * 60 * 1000)));
+            const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
+            const queryOptions:QueryOptions = {
+                start: start.toISOString(),
+                end : (new Date(start.getTime() + (10 * 60 * 1000))).toISOString(),
+                order: Order.ASC,
+                limit: 500
+            }
+            const itemQuery:ItemQueryInput={
+            }
+            const itemList:Item[] = await itemRepo.getItemsByDueDate(itemQuery, queryOptions);
+            log.info('svc > triggerEndingSoonItems > itemList : ', itemList);
+            if(itemList && itemList.length > 0){
+                await Promise.all(itemList.map(item=>{
+                    if(item.dueDate && this.isSellingItem(item)){
+                        const messageBody:MessageBody = {
+                            command: MessageCommand.notifyEndingSoon,
+                            item: item,
+                            delaySeconds: (new Date(item.dueDate).getTime() - start.getTime()) / 1000
+                        }
+                        return this.messageQueue.sendMessageToBidQueue(messageBody);
+                    }
+                }));
+            }
+
+            return itemList;
+        }catch(e){
+            log.error('svc> exception > triggerEndingSoonItems : ', e);
             throw e;
         }
     }

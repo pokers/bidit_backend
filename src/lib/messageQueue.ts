@@ -7,6 +7,8 @@ import { Service } from 'typedi'
 enum MessageCommand {
     successfulBid,
     notifyHigherBidder,
+    notifyEndingSoon,
+    notifySuccessfulBid,
 }
 type MessageBody = {
     command: MessageCommand,

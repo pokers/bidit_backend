@@ -1,0 +1,17 @@
+enum PenaltyType{
+    BIDDING,
+    SELLING,
+    KICKED
+}
+
+type Penalty {
+    id: Int!
+    status: Int!    # 0=VALID, 1=INVALID
+    userId: Int
+    type: PenaltyType
+    dueDate: String
+    description: String
+    createdAt: String!
+    updatedAt: String
+    deletedAt: String
+}

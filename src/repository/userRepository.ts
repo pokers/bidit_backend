@@ -10,12 +10,12 @@ import { Op } from 'sequelize'
 @sealed
 class UserRepository extends RepositoryBase{
 
-    async getUser(userId:number): Promise<User>{
+    async getUser(userId:number, include?:string[]): Promise<User>{
         try{
             const userModel = this.models.getModel(ModelName.user);
             const result:User = await userModel.findOne({
                 where: {id: userId},
-                include: ['kakaoAccount', 'pushToken'],
+                include: include || ['kakaoAccount', 'pushToken'],
                 raw:true,
                 nest: true
             });

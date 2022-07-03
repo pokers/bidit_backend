@@ -297,6 +297,25 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']>;
 };
 
+export type Penalty = {
+  __typename?: 'Penalty';
+  createdAt: Scalars['String'];
+  deletedAt?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  dueDate?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  status: Scalars['Int'];
+  type?: Maybe<PenaltyType>;
+  updatedAt?: Maybe<Scalars['String']>;
+  userId?: Maybe<Scalars['Int']>;
+};
+
+export enum PenaltyType {
+  Bidding = 'BIDDING',
+  Kicked = 'KICKED',
+  Selling = 'SELLING'
+}
+
 export type PushToken = {
   __typename?: 'PushToken';
   createdAt?: Maybe<Scalars['String']>;
@@ -399,6 +418,7 @@ export type User = {
   kakaoAccount?: Maybe<KakaoAccount>;
   nickname?: Maybe<Scalars['String']>;
   passwd?: Maybe<Scalars['String']>;
+  penalty?: Maybe<Penalty>;
   phone?: Maybe<Scalars['String']>;
   pushToken?: Maybe<PushToken>;
   status: Scalars['Int'];

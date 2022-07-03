@@ -3,6 +3,7 @@ import { log, ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound 
 import { Service } from 'typedi';
 import { ServiceBase } from './serviceBase'
 import { Transaction } from '../repository'
+import { PenaltyAttributes } from '../repository/model/penalty';
 
 @Service()
 class UserService extends ServiceBase {
@@ -13,8 +14,20 @@ class UserService extends ServiceBase {
             if(!this.repositories.getRepository().userRepo){
                 throw ErrorModuleNotFound();
             }
-            const queryResult = await this.repositories.getRepository().userRepo.getUser(id);
-            return queryResult
+            if(!this.repositories.getRepository().penaltyRepo){
+                throw ErrorModuleNotFound();
+            }
+            const user:User = await this.repositories.getRepository().userRepo.getUser(id);
+            const penaltyQuery:PenaltyAttributes = {
+                userId: id,
+                status: 0
+            }
+            const penalty = await this.repositories.getRepository().penaltyRepo.getUserPenalty(penaltyQuery);
+            if(penalty){
+                user.penalty = penalty;
+            }
+
+            return user
         }catch(e){
             log.error('exception > ', e);
             throw e;

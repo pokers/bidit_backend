@@ -14,6 +14,7 @@ import {
 import { UserModel } from './User';
 import { Service } from 'typedi';
 import { PushTokenModel } from './pushToken';
+import { PenaltyModel } from './penalty';
 
 
 enum ModelName {
@@ -25,7 +26,8 @@ enum ModelName {
     kakaoAccount = 'KakaoAccount',
     pushToken = 'pushToken',
     bidding = 'bidding',
-    successfulBid = 'successfulBid'
+    successfulBid = 'successfulBid',
+    penalty = 'penalty'
 }
 
 enum CursorName {
@@ -60,6 +62,7 @@ class Models {
                 PushTokenModel.initialize(this.sequelize.getDBInstance());
                 BiddingModel.initialize(this.sequelize.getDBInstance());
                 SuccessfulBidModel.initialize(this.sequelize.getDBInstance());
+                PenaltyModel.initialize(this.sequelize.getDBInstance());
             }
             return this;
         }catch(e){
@@ -104,6 +107,9 @@ class Models {
                 SuccessfulBidModel.belongsTo(UserModel, {foreignKey: 'userId', as: 'user', targetKey: 'id'});
                 SuccessfulBidModel.belongsTo(ItemModel, {foreignKey: 'itemId', as: 'item', targetKey: 'id'});
                 SuccessfulBidModel.belongsTo(BiddingModel, {foreignKey: 'biddingId', as: 'bidding', targetKey: 'id'});
+
+                UserModel.hasMany(PenaltyModel, {foreignKey: 'userId', as: 'penalty', sourceKey: 'id'});
+                PenaltyModel.belongsTo(UserModel, {foreignKey: 'userId', as: 'user', targetKey: 'id'});
             }
             return this;
         }catch(e){
@@ -135,6 +141,7 @@ class Models {
                 case ModelName.pushToken: return PushTokenModel;
                 case ModelName.bidding: return BiddingModel;
                 case ModelName.successfulBid: return SuccessfulBidModel;
+                case ModelName.penalty: return PenaltyModel;
             }
             return ItemModel;
         }catch(e){

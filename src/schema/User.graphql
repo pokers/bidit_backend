@@ -39,6 +39,7 @@ type User {
     items:ItemConnection
     kakaoAccount:KakaoAccount
     pushToken: PushToken
+    penalty: Penalty
 }
 
 type Query {

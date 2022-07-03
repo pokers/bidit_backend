@@ -30,12 +30,12 @@ class ItemRepository extends RepositoryBase{
     // Private Methods
 
     // Public Methods
-    async getItem(itemId:number): Promise<Item>{
+    async getItem(itemId:number, include?:string[]): Promise<Item>{
         try{
             const model = this.models.getModel(ModelName.item);
             const result:Item = await model.findOne({
                 where: {id: itemId},
-                include: ['description', 'image', 'category'],
+                include: include || ['description', 'image', 'category'],
                 raw:true, nest: true
             });
             return result;
@@ -44,6 +44,7 @@ class ItemRepository extends RepositoryBase{
             throw e;
         }
     }
+    
     async getItemDescription(itemId:number): Promise<ItemDescription>{
         try{
             const model = this.models.getModel(ModelName.itemDescription);

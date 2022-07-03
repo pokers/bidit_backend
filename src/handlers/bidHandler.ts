@@ -79,6 +79,12 @@ const bidHandler = async (event:SQSEvent)=>{
                 case MessageCommand.notifyFailedBid:
                     await Container.get(PushService).notifyFailedBid(body);
                     break;
+                case MessageCommand.failureItem:
+                    await Container.get(BiddingService).failureItem(body);
+                    break;
+                case MessageCommand.notifyFailureItem:
+                    await Container.get(PushService).notifyFailureItem(body);
+                    break;
             }
             await delRecord(message);
         }

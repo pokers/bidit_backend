@@ -84,6 +84,21 @@ class BiddingService extends ServiceBase{
         }
     }
 
+    private checkFailureItem(item:Item|null){
+        try{
+            if(!item){
+                throw ErrorItemNotFound();
+            }
+            if(item.status !== 0){
+                throw ErrorEndBidingItem();
+            }
+            return;
+        }catch(e){
+            log.error('exception > svc > checkSuccessfulBidItem : ', e);
+            throw e;
+        }
+    }
+
     private sendMessageToBidQueue(command:MessageCommand, body:any, delaySeconds?:number){
         try{
             const messageBody:MessageBody = {
@@ -208,7 +223,7 @@ class BiddingService extends ServiceBase{
             const biddingRepo:BiddingRepository = this.repositories.getRepository().biddingRepo;
             const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
 
-            const foundItem:Item = await itemRepo.getItem(item.id);
+            const foundItem:Item = await itemRepo.getItem(item.id, []);
             // const maxBid = await biddingRepo.getMaxPriceBid(item.id, item.dueDate);
             const highBids = await biddingRepo.getHighPriceBid(item.id, item.dueDate);
             const maxBid = highBids[0];
@@ -230,7 +245,7 @@ class BiddingService extends ServiceBase{
             await this.commit(transaction);
             transaction = null;
             log.info('svc > successfulBid > Item result : ', updatedItem);
-            
+
             // TODO: consider code structuresend
             const task = [];
             task.push(this.sendMessageToBidQueue(MessageCommand.notifySuccessfulBid, maxBid));
@@ -245,6 +260,46 @@ class BiddingService extends ServiceBase{
                 await this.rollback(transaction);
             }
             log.error('exception > svc > successfulBid : ', e);
+            throw e;
+        }
+    }
+
+    async failureItem(arg: any): Promise<Item>{
+        let transaction:Transaction|null = null;
+        try{
+            const { item } = arg;
+            if(!item){
+                throw ErrorInvalidBodyParameter();
+            }
+            if(!this.repositories.getRepository().biddingRepo || !this.repositories.getRepository().itemRepo){
+                throw ErrorModuleNotFound();
+            }
+
+            transaction = await this.startTransaction();
+
+            const biddingRepo:BiddingRepository = this.repositories.getRepository().biddingRepo;
+            const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
+
+            const foundItem:Item = await itemRepo.getItem(item.id, []);
+            
+            this.logInfo('failureItem > item : ', foundItem);
+            this.checkFailureItem(foundItem);
+
+            const updatedItem:Item = await itemRepo.updateItem(item.id, {status: 3/*END*/}, undefined, transaction);
+
+            await this.commit(transaction);
+            transaction = null;
+            log.info('svc > failureItem > Item result : ', updatedItem);
+            
+            // TODO: consider code structuresend
+            this.sendMessageToBidQueue(MessageCommand.notifyFailureItem, foundItem);
+            
+            return foundItem;
+        }catch(e){
+            if(transaction){
+                await this.rollback(transaction);
+            }
+            log.error('exception > svc > failureItem : ', e);
             throw e;
         }
     }

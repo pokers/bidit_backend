@@ -185,6 +185,39 @@ class PushService extends ServiceBase{
         }
     }
 
+    async notifyFailureItem(arg:any){
+        try{
+            if(!arg.item){
+                throw ErrorInvalidBodyParameter();
+            }
+            const item:Item = arg.item;
+            if(!this.repositories.getRepository().itemRepo){
+                throw ErrorModuleNotFound();
+            }
+            const userRepo:UserRepository = this.repositories.getRepository().userRepo;
+            const seller:User = await userRepo.getUser(item.userId);
+            log.info('notifyFailureItem> buyer : ', seller);
+            if(!seller){
+                throw ErrorUserNotFound();
+            }
+
+            if(!seller.pushToken){
+                throw ErrorInvalidPushToken();
+            }
+            const sellerMessage:FcmMessage = {
+                title: '경매 종료 알림',
+                body: `💔 UNLUCKY 아쉽게도 ${item.name}가 유찰되었습니다. 제품을 재등록해 보세요!`,
+                token: seller.pushToken.token!
+            }
+
+            // send push message
+            await this.sendPushMessage(sellerMessage);
+        }catch(e){
+            log.error('exception > svc > notifyFailureItem:  ', e);
+            throw e;
+        }
+    }
+
     async notifyFailedBid(arg:any){
         try{
             if(!arg.item){

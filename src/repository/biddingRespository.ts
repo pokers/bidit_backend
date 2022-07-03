@@ -85,12 +85,7 @@ class BiddingRepository extends RepositoryBase{
 
     async getHighPriceBid(itemId:number, dueDate?:string|null, limit?:number): Promise<Bidding[]>{
         try{
-            const model = this.models.getModel(ModelName.bidding);
-            let where:WhereOptions = {itemId: itemId};
-            if(dueDate){
-                where = {...where, createdAt: {[Op.lte]: dueDate}}
-            }
-            const query = `SELECT * FROM bidding as t1, (SELECT max(price) as price FROM bidding WHERE itemId=${itemId} ${dueDate? 'AND createdAt <= "'+dueDate+'"':''} GROUP BY userId) as t2 WHERE itemId=${itemId} ${dueDate? 'AND createdAt <= "'+dueDate+'"':''} AND t1.price=t2.price ORDER BY t1.price DESC LIMIT ${limit||5}`;
+            const query = `SELECT * FROM bidding as t1, (SELECT max(price) as price FROM bidding WHERE status=0 AND itemId=${itemId} ${dueDate? 'AND createdAt <= "'+dueDate+'"':''} GROUP BY userId) as t2 WHERE t1.status=0 AND t1.itemId=${itemId} ${dueDate? 'AND t1.createdAt <= "'+dueDate+'"':''} AND t1.price=t2.price ORDER BY t1.price DESC LIMIT ${limit||5}`;
             const result = await this.models.query(query);
             return result[0] || [];
         }catch(e){

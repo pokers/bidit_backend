@@ -38,6 +38,9 @@ const bidScheduleHandler = async (event:any)=>{
             case 'retrieveEndingSoonItem':
                 await Container.get(SchedulerService).triggerEndingSoonItems(30);
                 break;
+            case 'retrieveFailureItem':
+                await Container.get(SchedulerService).triggerFailureItem();
+                break;
         }
 
         await destroy();

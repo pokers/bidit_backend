@@ -180,8 +180,8 @@ export type ItemQueryInput = {
 };
 
 export enum ItemStatus {
+  End = 'END',
   Ongoing = 'ONGOING',
-  Pending = 'PENDING',
   Registed = 'REGISTED',
   Sold = 'SOLD'
 }

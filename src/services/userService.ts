@@ -1,9 +1,10 @@
-import { User, Maybe, AuthResult, UserInfoResult } from '../types';
+import { User, Maybe, AuthResult, UserInfoResult, UserAlarm } from '../types';
 import { log, ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound } from '../lib';
 import { Service } from 'typedi';
 import { ServiceBase } from './serviceBase'
 import { Transaction } from '../repository'
 import { PenaltyAttributes } from '../repository/model/penalty';
+import { UserAlarmAttributes } from '../repository/model';
 
 @Service()
 class UserService extends ServiceBase {
@@ -25,6 +26,14 @@ class UserService extends ServiceBase {
             const penalty = await this.repositories.getRepository().penaltyRepo.getUserPenalty(penaltyQuery);
             if(penalty){
                 user.penalty = penalty;
+            }
+            const userAlarmQuery:UserAlarmAttributes = {
+                userId: id,
+                status: 0
+            }
+            const userAlarm = await this.repositories.getRepository().alarmRepo.getUserAlarm(userAlarmQuery);
+            if(userAlarm){
+                user.userAlarm = userAlarm;
             }
 
             return user

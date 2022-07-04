@@ -53,6 +53,7 @@ custom:
       - src/schema/KakaoAccount.graphql
       - src/schema/Bidding.graphql
       - src/schema/Penalty.graphql
+      - src/schema/Alarm.graphql
     lambdaAuthorizerConfig:
       functionName: authResolver
     dataSources:

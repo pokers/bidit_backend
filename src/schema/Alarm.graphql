@@ -1,0 +1,30 @@
+enum AlarmType{
+    MASTER,
+    ENDINGSOON,
+    ENDTIME,
+    SUCCESSFULBID,
+    HIGHERBIDDER,
+    CHAT,
+    EVENT
+}
+
+type UserAlarm{
+    id: Int
+    status: Int
+    userId: Int
+    alarmId: Int
+    createdAt: String
+    updatedAt: String
+    deletedAt: String
+}
+
+type Alarm{
+    id: Int
+    status: Int
+    type: AlarmType
+    title: String
+    content: String
+    createdAt: String
+    updatedAt: String
+    deletedAt: String
+}

@@ -13,6 +13,28 @@ export type Scalars = {
   Long: any;
 };
 
+export type Alarm = {
+  __typename?: 'Alarm';
+  content?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['String']>;
+  deletedAt?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['Int']>;
+  title?: Maybe<Scalars['String']>;
+  type?: Maybe<AlarmType>;
+  updatedAt?: Maybe<Scalars['String']>;
+};
+
+export enum AlarmType {
+  Chat = 'CHAT',
+  Endingsoon = 'ENDINGSOON',
+  Endtime = 'ENDTIME',
+  Event = 'EVENT',
+  Higherbidder = 'HIGHERBIDDER',
+  Master = 'MASTER',
+  Successfulbid = 'SUCCESSFULBID'
+}
+
 export type BidInput = {
   itemId: Scalars['Int'];
   price: Scalars['Int'];
@@ -423,6 +445,18 @@ export type User = {
   pushToken?: Maybe<PushToken>;
   status: Scalars['Int'];
   updatedAt?: Maybe<Scalars['String']>;
+  userAlarm?: Maybe<UserAlarm>;
+};
+
+export type UserAlarm = {
+  __typename?: 'UserAlarm';
+  alarmId?: Maybe<Scalars['Int']>;
+  createdAt?: Maybe<Scalars['String']>;
+  deletedAt?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['Int']>;
+  updatedAt?: Maybe<Scalars['String']>;
+  userId?: Maybe<Scalars['Int']>;
 };
 
 export enum UserStatus {

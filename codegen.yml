@@ -6,6 +6,7 @@ schema:
   - src/schema/KakaoAccount.graphql
   - src/schema/Bidding.graphql
   - src/schema/Penalty.graphql
+  - src/schema/Alarm.graphql
 
 generates:
   ./src/types/schema/index.ts:

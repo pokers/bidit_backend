@@ -6,6 +6,7 @@ import { Models, Transaction } from './model';
 import { sealed } from '../lib/decorators';
 import { BiddingRepository } from './biddingRespository';
 import { PenaltyRepository } from './penaltyRepository';
+import { AlarmRepository } from './alarmRepository';
 
 @Service()
 @sealed
@@ -15,6 +16,7 @@ export class Repositories {
         private userRepository:UserRepository,
         private biddingRepository:BiddingRepository,
         private penaltyRepository:PenaltyRepository,
+        private alarmRepository:AlarmRepository,
         private models:Models
     ){
     }
@@ -35,7 +37,8 @@ export class Repositories {
                 itemRepo: this.itemRepository,
                 userRepo: this.userRepository,
                 biddingRepo: this.biddingRepository,
-                penaltyRepo: this.penaltyRepository
+                penaltyRepo: this.penaltyRepository,
+                alarmRepo: this.alarmRepository
             }
         }catch(e){
             log.error('exception > getRepository : ', e);

@@ -40,6 +40,7 @@ type User {
     kakaoAccount:KakaoAccount
     pushToken: PushToken
     penalty: Penalty
+    userAlarm: UserAlarm
 }
 
 type Query {

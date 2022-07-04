@@ -9,7 +9,9 @@ import {
     CategoryModel,
     KakaoAccountModel,
     BiddingModel,
-    SuccessfulBidModel
+    SuccessfulBidModel,
+    UserAlarmModel,
+    AlarmModel
 } from '.'
 import { UserModel } from './User';
 import { Service } from 'typedi';
@@ -27,7 +29,9 @@ enum ModelName {
     pushToken = 'pushToken',
     bidding = 'bidding',
     successfulBid = 'successfulBid',
-    penalty = 'penalty'
+    penalty = 'penalty',
+    alarm = 'alarm',
+    userAlarm = 'userAlarm'
 }
 
 enum CursorName {
@@ -63,6 +67,8 @@ class Models {
                 BiddingModel.initialize(this.sequelize.getDBInstance());
                 SuccessfulBidModel.initialize(this.sequelize.getDBInstance());
                 PenaltyModel.initialize(this.sequelize.getDBInstance());
+                UserAlarmModel.initialize(this.sequelize.getDBInstance());
+                AlarmModel.initialize(this.sequelize.getDBInstance());
             }
             return this;
         }catch(e){
@@ -110,6 +116,12 @@ class Models {
 
                 UserModel.hasMany(PenaltyModel, {foreignKey: 'userId', as: 'penalty', sourceKey: 'id'});
                 PenaltyModel.belongsTo(UserModel, {foreignKey: 'userId', as: 'user', targetKey: 'id'});
+
+                UserModel.hasMany(UserAlarmModel, {foreignKey: 'userId', as: 'userAlarm', sourceKey: 'id'});
+                UserAlarmModel.belongsTo(UserModel, {foreignKey: 'userId', as: 'user', targetKey: 'id'});
+
+                AlarmModel.hasMany(UserAlarmModel, {foreignKey: 'userId', as: 'userAlarm', sourceKey: 'id'});
+                UserAlarmModel.belongsTo(AlarmModel, {foreignKey: 'userId', as: 'alarm', targetKey: 'id'});
             }
             return this;
         }catch(e){
@@ -142,6 +154,8 @@ class Models {
                 case ModelName.bidding: return BiddingModel;
                 case ModelName.successfulBid: return SuccessfulBidModel;
                 case ModelName.penalty: return PenaltyModel;
+                case ModelName.alarm: return AlarmModel;
+                case ModelName.userAlarm: return UserAlarmModel;
             }
             return ItemModel;
         }catch(e){

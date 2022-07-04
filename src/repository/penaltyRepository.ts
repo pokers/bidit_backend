@@ -16,7 +16,7 @@ class PenaltyRepository extends RepositoryBase{
             const PenaltyModel = this.models.getModel(ModelName.penalty);
             const result:Penalty = await PenaltyModel.findOne({
                 where: {...penaltyQuery},
-                include: include || ['user'],
+                include: include,
                 raw:true,
                 nest: true
             });

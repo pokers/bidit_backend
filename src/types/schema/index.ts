@@ -269,6 +269,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addItem?: Maybe<Item>;
   addUser?: Maybe<User>;
+  addUserAlarm?: Maybe<Scalars['Boolean']>;
   bid?: Maybe<Bidding>;
   updateItem?: Maybe<Item>;
   updateItemImage?: Maybe<Item>;
@@ -281,6 +282,12 @@ export type MutationAddItemArgs = {
   description?: InputMaybe<Scalars['String']>;
   images?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   itemAdd?: InputMaybe<ItemAddInput>;
+};
+
+
+export type MutationAddUserAlarmArgs = {
+  status?: InputMaybe<Scalars['Int']>;
+  userId?: InputMaybe<Scalars['Int']>;
 };
 
 

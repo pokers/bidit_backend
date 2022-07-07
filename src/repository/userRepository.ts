@@ -151,7 +151,7 @@ class UserRepository extends RepositoryBase{
     async getPushTokens(userIds:number[]):Promise<PushToken[]>{
         try{
             const pushTokenModel = this.models.getModel(ModelName.pushToken);
-            const pushTokens = await pushTokenModel.findOne({
+            const pushTokens = await pushTokenModel.findall({
                 where: {userId: {[Op.or]: userIds}},
                 raw: true,
                 nest: true
@@ -160,6 +160,21 @@ class UserRepository extends RepositoryBase{
             return pushTokens;
         }catch(e){
             log.error('exception> getPushTokens : ', e);
+            throw e;
+        }
+    }
+    async getUsers(userIds:number[], include?:string[]): Promise<User[]>{
+        try{
+            const userModel = this.models.getModel(ModelName.user);
+            const result:User[] = await userModel.findall({
+                where: {id: {[Op.or]: userIds}},
+                include: include || ['kakaoAccount', 'pushToken'],
+                raw:true,
+                nest: true
+            });
+            return result;
+        }catch(e){
+            log.error('exception> UserRepository.getUser : ', e);
             throw e;
         }
     }

@@ -1,6 +1,6 @@
 import { log } from '../lib'
 import { Alarm, UserAlarm} from '../types'
-import { ModelName, AlarmAttributes } from './model'
+import { ModelName, AlarmAttributes, UserAlarmAttributes } from './model'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
 import { sealed } from '../lib/decorators'
@@ -20,6 +20,26 @@ class AlarmRepository extends RepositoryBase{
                 nest: true
             });
             return result;
+        }catch(e){
+            log.error('repo> getUserAlarm> exception : ', e);
+            throw e;
+        }
+    }
+
+    async addUserAlarm(userAlarmQuery:UserAlarmAttributes): Promise<UserAlarm>{
+        try{
+            const userAlarmModel = this.models.getModel(ModelName.userAlarm);
+            const userAlarm:UserAlarm = await userAlarmModel.findOne({
+                where: {userId: userAlarmQuery.userId},
+                raw:true,
+                nest: true
+            });
+            if(userAlarm){
+                log.info('addUserAlarm > update user alarm : ', userAlarm);
+                return await userAlarmModel.update(userAlarmQuery, {where : {userId: userAlarmQuery.userId}});
+            }
+            log.info('addUserAlarm > add new alarm');
+            return await userAlarmModel.create(userAlarmQuery);
         }catch(e){
             log.error('repo> getUserAlarm> exception : ', e);
             throw e;

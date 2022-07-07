@@ -10,7 +10,7 @@ enum AlarmType{
 
 type UserAlarm{
     id: Int
-    status: Int
+    status: Int     # 0=enable, 1=disable
     userId: Int
     alarmId: Int
     createdAt: String

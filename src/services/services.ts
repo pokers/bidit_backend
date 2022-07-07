@@ -6,6 +6,7 @@ import { ItemService } from './itemService';
 import { AuthService } from './authService';
 import { BiddingService } from './biddingService';
 import { SchedulerService } from './schedulerService';
+import { AlarmService } from './alarmService';
 
 @Service()
 export class Services {
@@ -14,7 +15,8 @@ export class Services {
         private itemService:ItemService,
         private authService:AuthService,
         private biddingService:BiddingService,
-        private schedulerService:SchedulerService
+        private schedulerService:SchedulerService,
+        private alarmService:AlarmService
     ){
     }
 
@@ -25,7 +27,8 @@ export class Services {
                 itemService: this.itemService,
                 authService: this.authService,
                 biddingService: this.biddingService,
-                schedulerService: this.schedulerService
+                schedulerService: this.schedulerService,
+                alarmService: this.alarmService
             }
         }catch(e){
             log.error('exception > getService : ', e);

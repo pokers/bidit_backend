@@ -193,10 +193,13 @@ class ItemRepository extends RepositoryBase{
                 }
                 where = { ...where, ...substr};
             }
-            if(queryOptions.start){
+            if(queryOptions.start && queryOptions.end){
+                where = { ...where, dueDate: {[Op.gte]: queryOptions.start, [Op.lte]: queryOptions.end}};
+            }
+            else if(queryOptions.start){
                 where = { ...where, dueDate: {[Op.gte]: queryOptions.start}};
             }
-            if(queryOptions.end){
+            else if(queryOptions.end){
                 where = { ...where, dueDate: {[Op.lte]: queryOptions.end}};
             }
 

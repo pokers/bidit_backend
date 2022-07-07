@@ -102,7 +102,7 @@ const authorizer = async (event:AppSyncAuthorizerEvent, context: Context)=>{
 
         if(result.isAuthorized && authResult.userId){
             // token is valid but there is no user info. check query if it's whether addUser or not.
-            if(event.requestContext.queryString?.indexOf('addUser') >= 0){
+            if(event.requestContext.queryString?.indexOf('addUser(') >= 0){
                 result.isAuthorized = false;
                 log.info('Add user : the user is already existed');
             }

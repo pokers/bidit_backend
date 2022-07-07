@@ -65,7 +65,7 @@ const bidHandler = async (event:SQSEvent)=>{
 
             switch(body.command){
                 case MessageCommand.successfulBid:
-                    const payload = await Container.get(BiddingService).successfulBid(body);
+                    await Container.get(BiddingService).successfulBid(body);
                     break;
                 case MessageCommand.notifyHigherBidder:
                     await Container.get(PushService).notifyHighBidder(body);

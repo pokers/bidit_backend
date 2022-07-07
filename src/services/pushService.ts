@@ -2,7 +2,8 @@ import {
     Item, 
     User,
     Bidding,
-    PushToken
+    PushToken,
+    UserAlarm
 } from '../types';
 import { ItemRepository, UserRepository } from '../repository';
 import { log } from '../lib/logger';
@@ -37,6 +38,27 @@ class PushService extends ServiceBase{
             throw e;
         }
     }
+    private isEnabledPushPermission(user:User){
+        try{
+            if(!user.pushToken){
+                return false;
+            }
+            if(!user.pushToken.token){
+                return false;
+            }
+            if(!user.userAlarm){
+                return false;
+            }
+            if(user.userAlarm.status !== 0){
+                return false;
+            }
+
+            return true;
+        }catch(e){
+            log.error('exception > svc > isPushPermission:  ', e);
+            throw e;
+        }
+    }
 
 
     // Public Methods
@@ -55,7 +77,7 @@ class PushService extends ServiceBase{
                 throw ErrorModuleNotFound();
             }
             const userRepo:UserRepository = this.repositories.getRepository().userRepo;
-            const user:User = await userRepo.getUser(bidding.userId);
+            const user:User = await userRepo.getUser(bidding.userId, ['pushToken', 'userAlarm']);
             log.info('notifyHighBidder> user : ', user);
             if(!user){
                 throw ErrorUserNotFound();
@@ -94,7 +116,7 @@ class PushService extends ServiceBase{
             const userRepo:UserRepository = this.repositories.getRepository().userRepo;
             const biddingRepo:BiddingRepository = this.repositories.getRepository().biddingRepo;
 
-            const seller:User = await userRepo.getUser(item.userId);
+            const seller:User = await userRepo.getUser(item.userId, ['pushToken', 'userAlarm']);
             log.info('notifyEndingSoon> seller : ', seller);
             if(!seller){
                 throw ErrorUserNotFound();
@@ -102,14 +124,9 @@ class PushService extends ServiceBase{
             if(!seller.pushToken){
                 throw ErrorInvalidPushToken();
             }
-
-            const buyers = await biddingRepo.getHighPriceBid(item.id, item.dueDate);
-            log.info('notifyEndingSoon > buyers : ', buyers);
-
-            const userIds = [...buyers.map(item=>item.userId)];
-            log.info('notifyEndingSoon > userIds : ', userIds);
-            const pushTokens:PushToken[] = await userRepo.getPushTokens(userIds);
-            log.info('notifyEndingSoon > tokens : ', pushTokens);
+            if(!this.isEnabledPushPermission(seller)){
+                log.info('notifyEndingSoon> is not enabled push : ', seller);
+            }
 
             const sellerMessage:FcmMessage = {
                 title: '경매 종료 알림!',
@@ -118,11 +135,29 @@ class PushService extends ServiceBase{
             }
             // send push message
             await this.sendPushMessage(sellerMessage);
-            await Promise.all(pushTokens.map(pushToken=>{
+
+            // For Buyer
+            const buyers = await biddingRepo.getHighPriceBid(item.id, item.dueDate);
+            if(buyers.length === 0){
+                log.info('There is no one');
+                return;
+            }
+            log.info('notifyEndingSoon > buyers : ', buyers);
+
+            const userIds = [...buyers.map(item=>item.userId)];
+            log.info('notifyEndingSoon > userIds : ', userIds);
+            const bidders:User[] = await userRepo.getUsers(userIds, ['pushToken', 'userAlarm']);
+            log.info('notifyEndingSoon > tokens : ', bidders);
+
+            await Promise.all(bidders.map(bidder=>{
+                if(!this.isEnabledPushPermission(bidder)){
+                    log.info('notifyEndingSoon> is not enabled push : ', bidder);
+                    return;
+                }
                 const buyerMessage:FcmMessage = {
                     title: '경매 종료 알림!',
                     body: `⏰ HURRY!! BID하신 ${item.name}의 판매가 30분 뒤 마감됩니다! BID 현황을 확인해 보세요!`,
-                    token: pushToken.token!
+                    token: bidder.pushToken!.token!
                 }
                 // send push message
                 return this.sendPushMessage(buyerMessage);
@@ -147,7 +182,7 @@ class PushService extends ServiceBase{
             const userRepo:UserRepository = this.repositories.getRepository().userRepo;
             const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
             
-            const buyer:User = await userRepo.getUser(bidding.userId);
+            const buyer:User = await userRepo.getUser(bidding.userId, ['pushToken', 'userAlarm']);
             log.info('notifySuccessfulBid> buyer : ', buyer);
             if(!buyer){
                 throw ErrorUserNotFound();
@@ -157,15 +192,15 @@ class PushService extends ServiceBase{
             }
 
             const item:Item = await itemRepo.getItem(bidding.itemId);
-            const seller:User = await userRepo.getUser(item.userId);
+            const seller:User = await userRepo.getUser(item.userId, ['pushToken', 'userAlarm']);
             log.info('notifySuccessfulBid> buyer : ', seller);
             if(!seller){
                 throw ErrorUserNotFound();
             }
-
             if(!seller.pushToken){
                 throw ErrorInvalidPushToken();
             }
+
             const buyerMessage:FcmMessage = {
                 title: '경매 종료 알림',
                 body: `🥳 HOORAY! ${item.name}를 ${bidding.price}원에 낙찰받았습니다! 채팅을 통해 구매를 완료해 주세요!`,
@@ -177,8 +212,16 @@ class PushService extends ServiceBase{
                 token: seller.pushToken.token!
             }
 
+            const tasks = [];
+            if(this.isEnabledPushPermission(buyer)){
+                tasks.push(this.sendPushMessage(buyerMessage));
+            }
+            if(this.isEnabledPushPermission(seller)){
+                tasks.push(this.sendPushMessage(sellerMessage));
+            }
+
             // send push message
-            await Promise.all([this.sendPushMessage(buyerMessage), this.sendPushMessage(sellerMessage)]);
+            await Promise.all(tasks);
         }catch(e){
             log.error('exception > svc > notifySuccessfulBid:  ', e);
             throw e;
@@ -195,14 +238,17 @@ class PushService extends ServiceBase{
                 throw ErrorModuleNotFound();
             }
             const userRepo:UserRepository = this.repositories.getRepository().userRepo;
-            const seller:User = await userRepo.getUser(item.userId);
-            log.info('notifyFailureItem> buyer : ', seller);
+            const seller:User = await userRepo.getUser(item.userId, ['pushToken', 'userAlarm']);
+            log.info('notifyFailureItem> seller : ', seller);
             if(!seller){
                 throw ErrorUserNotFound();
             }
-
             if(!seller.pushToken){
                 throw ErrorInvalidPushToken();
+            }
+            if(!this.isEnabledPushPermission(seller)){
+                log.info('notifyFailureItem> is not enabled push : ', seller);
+                return;
             }
             const sellerMessage:FcmMessage = {
                 title: '경매 종료 알림',
@@ -230,13 +276,17 @@ class PushService extends ServiceBase{
             const userRepo:UserRepository = this.repositories.getRepository().userRepo;
             const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
             
-            const buyer:User = await userRepo.getUser(bidding.userId);
+            const buyer:User = await userRepo.getUser(bidding.userId, ['pushToken', 'userAlarm']);
             log.info('notifyFailedBid> buyer : ', buyer);
             if(!buyer){
                 throw ErrorUserNotFound();
             }
             if(!buyer.pushToken){
                 throw ErrorInvalidPushToken();
+            }
+            if(!this.isEnabledPushPermission(buyer)){
+                log.info('notifyFailedBid> is not enabled push : ', buyer);
+                return;
             }
 
             const item:Item = await itemRepo.getItem(bidding.itemId);

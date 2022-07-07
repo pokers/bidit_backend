@@ -67,7 +67,7 @@ functions:
           rate: rate(3 minutes)
           enabled: true
           input:
-            command: "retrieveEndingSoonItem"
+            command: "retrieveSuccessfulBid"
       - schedule:
           name: retrieveFailureItem
           description: every 3minutes

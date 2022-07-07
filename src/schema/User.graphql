@@ -52,6 +52,7 @@ type Mutation {
     addUser:User
     updateUser(userUpdate:userUpdateInput):User
     updatePushToken(pushTokenUpdate:pushTokenUpdateInput):Boolean
+    addUserAlarm(userId:Int, status:Int):Boolean
 }
 input userUpdateInput{
     status: Int

@@ -41,6 +41,7 @@ class Fcm {
                     body: fcmMessage.body
                 }
             }
+            log.info('sendPush :', message);
             const result = await messaging().send(message);
         }catch(e){
             log.error('lib> Fcm> exception : ', e);

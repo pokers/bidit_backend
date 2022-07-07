@@ -69,6 +69,10 @@ custom:
         name: biddingResolverDataSource
         config:
           functionName: biddingResolver
+      - type: AWS_LAMBDA
+        name: alarmResolverDataSource
+        config:
+          functionName: alarmResolver
     mappingTemplates:
       # User Resolver
       - dataSource: userResolverDataSource
@@ -158,6 +162,12 @@ custom:
         field: bid
         request: false
         response: false
+      # alarm
+      - dataSource: alarmResolverDataSource
+        type: Mutation
+        field: addUserAlarm
+        request: false
+        response: false
 
 package:
   individually: true
@@ -240,6 +250,23 @@ functions:
     package:
       include:
         - ./bundle/biddingResolver.js
+    environment:
+      NODE_OPTIONS: ${self:custom.nodeOption}
+      BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
+      BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}
+      BIDIT_RDS_MAIN_PORT: ${env:BIDIT_RDS_MAIN_PORT}
+      BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
+      BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
+      BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+      BIDIT_SQS_BID_QUEUE: https://sqs.ap-northeast-2.amazonaws.com/164739657386/biditBidQueue
+
+  alarmResolver:
+    handler: bundle/alarmResolver.alarmResolver
+    name: bidit-alarmResolver
+    maximumRetryAttempts: 0
+    package:
+      include:
+        - ./bundle/alarmResolver.js
     environment:
       NODE_OPTIONS: ${self:custom.nodeOption}
       BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}

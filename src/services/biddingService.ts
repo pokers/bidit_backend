@@ -194,8 +194,13 @@ class BiddingService extends ServiceBase{
             transaction = null;
             log.info('svc > addBid > Item result : ', updatedItem);
             
-            // TODO: consider code structuresend
-            await this.sendMessageToBidQueue(MessageCommand.notifyHigherBidder, maxBid);
+            if(item.buyNow === bid.price){
+                // BuyNow
+                await this.successfulBid({item});
+            }else{
+                // TODO: consider code structuresend
+                await this.sendMessageToBidQueue(MessageCommand.notifyHigherBidder, maxBid);
+            }
 
             return newBidding;
         }catch(e){
@@ -225,7 +230,8 @@ class BiddingService extends ServiceBase{
 
             const foundItem:Item = await itemRepo.getItem(item.id, []);
             // const maxBid = await biddingRepo.getMaxPriceBid(item.id, item.dueDate);
-            const highBids = await biddingRepo.getHighPriceBid(item.id, item.dueDate);
+            const dueDate = (new Date(item.dueDate)).toISOString();
+            const highBids = await biddingRepo.getHighPriceBid(item.id, dueDate);
             const maxBid = highBids[0];
             
 

@@ -222,8 +222,8 @@ class ItemRepository extends RepositoryBase{
     
     async addItemImages(itemId:number, imageUrls: string[], transaction:Transaction): Promise<ItemImage[]>{
         try{
+            const itemImageModel = this.models.getModel(ModelName.itemImage);
             const itemImages = await Promise.all(imageUrls.map(async url=>{
-                const itemImageModel = this.models.getModel(ModelName.itemImage);
                 const result = await itemImageModel.create({
                     status: 0,
                     itemId: itemId,

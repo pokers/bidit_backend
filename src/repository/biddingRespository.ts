@@ -1,5 +1,5 @@
 import { log } from '../lib/logger'
-import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, BiddingAttributes, UserModel, SuccessfulBidAttributes } from './model'
+import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, BiddingAttributes, UserModel, SuccessfulBidAttributes, KakaoAccountModel } from './model'
 import { Op, WhereOptions, Sequelize } from 'sequelize'
 import { 
     Bidding,
@@ -50,12 +50,13 @@ class BiddingRepository extends RepositoryBase{
                 },{
                     model: UserModel,
                     as: 'user',
+                    include: [{model: KakaoAccountModel, as: 'kakaoAccount', raw:true, nest: true}],
                     required: true
                 }],
                 order: [['createdAt', 'DESC']],
                 raw:true, nest: true
             });
-            log.info('repo > getBidding > result : ', result);
+            log.info('repo > getBidding > result : ', JSON.stringify(result));
             return result;
         }catch(e){
             log.error('exception > getBidding : ', e);

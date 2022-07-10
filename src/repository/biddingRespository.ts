@@ -1,5 +1,5 @@
 import { log } from '../lib/logger'
-import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, BiddingAttributes, UserModel, SuccessfulBidAttributes, KakaoAccountModel } from './model'
+import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, BiddingAttributes, UserModel, SuccessfulBidAttributes, KakaoAccountModel, ItemDescriptionModel, ItemImageModel } from './model'
 import { Op, WhereOptions, Sequelize } from 'sequelize'
 import { 
     Bidding,
@@ -46,6 +46,15 @@ class BiddingRepository extends RepositoryBase{
                 include: [{
                     model: ItemModel,
                     as: 'item',
+                    include: [{
+                        model: ItemDescriptionModel, 
+                        as: 'description', 
+                        raw:true, nest: true
+                    },{
+                        model: ItemImageModel,
+                        as: 'image',
+                        raw:true, nest: true
+                    }],
                     required: true,
                 },{
                     model: UserModel,

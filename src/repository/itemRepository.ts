@@ -1,5 +1,5 @@
 import { log } from '../lib/logger'
-import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, Order } from './model'
+import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, Order, ItemDescriptionModel, ItemImageModel } from './model'
 import { Op, WhereOptions } from 'sequelize'
 import { Item, 
     ItemQueryInput, 
@@ -32,11 +32,21 @@ class ItemRepository extends RepositoryBase{
     // Public Methods
     async getItem(itemId:number, include?:string[]): Promise<Item>{
         try{
+            const defaultInclude = [{
+                model: ItemDescriptionModel,
+                as: 'description',
+            },{
+                model: ItemImageModel,
+                as: 'image',
+            },{
+                model: CategoryModel,
+                as: 'category',
+            }];
             const model = this.models.getModel(ModelName.item);
             const result:Item = await model.findOne({
                 where: {id: itemId},
-                include: include || ['description', 'image', 'category'],
-                raw:true, nest: true
+                include: include || defaultInclude,
+                nest: true
             });
             return result;
         }catch(e){
@@ -50,7 +60,7 @@ class ItemRepository extends RepositoryBase{
             const model = this.models.getModel(ModelName.itemDescription);
             const result:ItemDescription = await model.findOne({
                 where: {id: itemId},
-                raw:true, nest: true
+                nest: true
             });
             return result;
         }catch(e){
@@ -96,7 +106,7 @@ class ItemRepository extends RepositoryBase{
                 where,
                 limit: 1,
                 order: [[cursor, 'ASC']],
-                raw:true, nest: true
+                nest: true
             });
             log.info('First : ', first);
 
@@ -105,7 +115,7 @@ class ItemRepository extends RepositoryBase{
                 where,
                 limit: 1,
                 order: [[cursor, 'DESC']],
-                raw:true, nest: true
+                nest: true
             });
             log.info('last : ', last);
 
@@ -160,7 +170,7 @@ class ItemRepository extends RepositoryBase{
                 limit, 
                 order:[[cursor, order]], 
                 include: ['description', 'image', 'category'],
-                raw:true, nest: true
+                nest: true
             });
             if(last){
                 items.sort((a:Item,b:Item)=>{
@@ -209,7 +219,7 @@ class ItemRepository extends RepositoryBase{
                 limit, 
                 order: queryOptions.order? [['dueDate', queryOptions.order]]:null,
                 include: include,//['description', 'image', 'category'],
-                raw:true, nest: true
+                nest: true
             });
 
             log.info('repo> getItemsByDueDate > result : ', items);

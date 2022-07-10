@@ -81,7 +81,7 @@ class Models {
         try{
             if(!this.isAssociated){
                 this.isAssociated = true;
-                ItemModel.hasMany(ItemDescriptionModel, { foreignKey: 'itemId', as: 'description', sourceKey: 'id'});
+                ItemModel.hasOne(ItemDescriptionModel, { foreignKey: 'itemId', as: 'description', sourceKey: 'id'});
                 ItemDescriptionModel.belongsTo(ItemModel, { foreignKey: 'itemId', targetKey: 'id'});
                 
                 ItemModel.hasMany(ItemImageModel, { foreignKey: 'itemId', as: 'image', sourceKey: 'id'});

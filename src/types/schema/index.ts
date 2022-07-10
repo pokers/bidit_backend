@@ -35,6 +35,22 @@ export enum AlarmType {
   Successfulbid = 'SUCCESSFULBID'
 }
 
+export type AppleAccount = {
+  __typename?: 'AppleAccount';
+  createdAt?: Maybe<Scalars['String']>;
+  deletedAt?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  email_verified?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  is_private_email?: Maybe<Scalars['Boolean']>;
+  real_user_status?: Maybe<Scalars['Int']>;
+  status: Scalars['Int'];
+  sub?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['String']>;
+  userId: Scalars['Int'];
+};
+
 export type BidInput = {
   itemId: Scalars['Int'];
   price: Scalars['Int'];
@@ -435,6 +451,7 @@ export type SuccessfulBid = {
 
 export type User = {
   __typename?: 'User';
+  appleAccount?: Maybe<AppleAccount>;
   birth?: Maybe<Scalars['String']>;
   createdAt: Scalars['String'];
   deletedAt?: Maybe<Scalars['String']>;

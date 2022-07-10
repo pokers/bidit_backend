@@ -1,10 +1,10 @@
 import { User, Maybe, AuthResult, UserInfoResult, UserAlarm } from '../types';
-import { log, ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound } from '../lib';
+import { log, ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound, AppleIdTokenType } from '../lib';
 import { Service } from 'typedi';
 import { ServiceBase } from './serviceBase'
 import { Transaction } from '../repository'
 import { PenaltyAttributes } from '../repository/model/penalty';
-import { UserAlarmAttributes } from '../repository/model';
+import { KakaoUserInfo, UserAlarmAttributes } from '../repository/model';
 
 @Service()
 class UserService extends ServiceBase {
@@ -48,6 +48,9 @@ class UserService extends ServiceBase {
             if(authResult.authType === 'kakao' && authResult.kakaoAccountId){
                 return await this.repositories.getRepository().userRepo.getUserBySocialId(authResult.kakaoAccountId, authResult.authType);
             }
+            if(authResult.authType === 'apple' && authResult.appleAccountSub){
+                return await this.repositories.getRepository().userRepo.getUserByAppleSub(authResult.appleAccountSub, authResult.authType);
+            }
             return null;
         }catch(e){
             log.error('exception > ', e);
@@ -59,7 +62,10 @@ class UserService extends ServiceBase {
         try{
             const { result, data, vendor } = userinfo;
             if(vendor === 'kakao'){
-                return await this.repositories.getRepository().userRepo.addUserBySocialAccount(vendor, data!, transaction);
+                return await this.repositories.getRepository().userRepo.addUserBySocialAccount(vendor, data! as KakaoUserInfo, transaction);
+            }
+            if(vendor === 'apple'){
+                return await this.repositories.getRepository().userRepo.addUserByAppleAccount(vendor, data! as AppleIdTokenType, transaction);
             }
             return null;
         }catch(e){

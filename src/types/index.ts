@@ -7,21 +7,21 @@ export * from './schema'
 
 
 import {Maybe, User} from './schema/index'
-import { KakaoUserInfo } from '../lib'
+import { KakaoUserInfo, AppleIdTokenType } from '../lib'
 
 export type AuthResult = {
     result: boolean;
     userId?: Maybe<number>;
     authType: string;
     kakaoAccountId?: Maybe<number>;
-    appleAccountId?: Maybe<number>;
+    appleAccountSub?: Maybe<string>;
     user?: Maybe<User>;
 }
 
 export type UserInfoResult = {
     result: boolean;
     vendor: string;
-    data?: Maybe<KakaoUserInfo>;
+    data?: Maybe<KakaoUserInfo|AppleIdTokenType>;
 }
 
 import { ItemRepository, UserRepository } from "../repository";

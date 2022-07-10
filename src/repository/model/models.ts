@@ -17,6 +17,7 @@ import { UserModel } from './User';
 import { Service } from 'typedi';
 import { PushTokenModel } from './pushToken';
 import { PenaltyModel } from './penalty';
+import { AppleAccountModel } from './appleAccount';
 
 
 enum ModelName {
@@ -31,7 +32,8 @@ enum ModelName {
     successfulBid = 'successfulBid',
     penalty = 'penalty',
     alarm = 'alarm',
-    userAlarm = 'userAlarm'
+    userAlarm = 'userAlarm',
+    appleAccount = 'appleAccount'
 }
 
 enum CursorName {
@@ -69,6 +71,7 @@ class Models {
                 PenaltyModel.initialize(this.sequelize.getDBInstance());
                 UserAlarmModel.initialize(this.sequelize.getDBInstance());
                 AlarmModel.initialize(this.sequelize.getDBInstance());
+                AppleAccountModel.initialize(this.sequelize.getDBInstance());
             }
             return this;
         }catch(e){
@@ -98,6 +101,9 @@ class Models {
 
                 UserModel.hasOne(KakaoAccountModel, {foreignKey: 'userId', as:'kakaoAccount', sourceKey: 'id'});
                 KakaoAccountModel.belongsTo(UserModel, {foreignKey: 'userId' ,targetKey: 'id'});
+
+                UserModel.hasOne(AppleAccountModel, {foreignKey: 'userId', as:'appleAccount', sourceKey: 'id'});
+                AppleAccountModel.belongsTo(UserModel, {foreignKey: 'userId' ,targetKey: 'id'});
 
                 UserModel.hasOne(PushTokenModel, {foreignKey: 'userId', as:'pushToken', sourceKey: 'id'});
                 PushTokenModel.belongsTo(UserModel, {foreignKey: 'userId' ,targetKey: 'id'});
@@ -156,6 +162,7 @@ class Models {
                 case ModelName.penalty: return PenaltyModel;
                 case ModelName.alarm: return AlarmModel;
                 case ModelName.userAlarm: return UserAlarmModel;
+                case ModelName.appleAccount: return AppleAccountModel;
             }
             return ItemModel;
         }catch(e){

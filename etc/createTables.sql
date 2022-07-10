@@ -65,6 +65,26 @@ CREATE TABLE IF NOT EXISTS kakaoAccount(
     INDEX createdAt(createdAt)
 );
 
+CREATE TABLE IF NOT EXISTS appleAccount(
+    id                              INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    status                          INT UNSIGNED NOT NULL,
+    userId                          INT UNSIGNED NOT NULL,
+    sub                             VARCHAR(2048) CHARACTER SET UTF8MB4 NULL,
+    email                           VARCHAR(255) CHARACTER SET UTF8MB4 NULL,
+    email_verified                  BOOLEAN NULL,
+    is_private_email                BOOLEAN NULL,
+    real_user_status                INT NULL,
+    createdAt                       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedAt                       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deletedAt                       DATETIME NULL,
+    description                     VARCHAR(255) CHARACTER SET UTF8MB4 NULL,
+    PRIMARY KEY(id),
+    CONSTRAINT fk_user_appleAccount FOREIGN KEY(userId) REFERENCES user(id),
+    INDEX status(status),
+    INDEX sub(sub),
+    INDEX createdAt(createdAt)
+);
+
 CREATE TABLE IF NOT EXISTS pushToken(
     id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
     status      INT UNSIGNED NOT NULL,

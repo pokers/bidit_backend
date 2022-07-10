@@ -89,7 +89,7 @@ const authorizer = async (event:AppSyncAuthorizerEvent, context: Context)=>{
             result.resolverContext = {
                 authType: authResult.authType,
                 kakaoAccountId: authResult.kakaoAccountId,
-                appleAccountId: authResult.appleAccountId,
+                appleAccountSub: authResult.appleAccountSub,
             }
         }
 

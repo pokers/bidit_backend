@@ -1,6 +1,6 @@
-import { Service } from "typedi";
-import { log, cError, ErrorInvalidToken } from '../lib'
-import { KakaoResult, KakaoTokenInfo, KakaoUserInfo } from "../lib/kakaoAPI";
+import Container, { Service } from "typedi";
+import { log, cError, ErrorInvalidToken, AppleAuth } from '../lib'
+import { KakaoResult, KakaoTokenInfo, KakaoUserInfo, AppleIdTokenType } from "../lib";
 import { AuthResult, UserInfoResult } from '../types'
 import { ServiceBase } from './serviceBase'
 
@@ -32,6 +32,24 @@ class AuthService extends ServiceBase {
         }
     }
 
+    async appleAuthenticate(token:string):Promise<AuthResult>{
+        try{
+            const appleTokenType:AppleIdTokenType = await Container.get(AppleAuth).verifyIdToken(token);
+            if(!appleTokenType){
+                throw ErrorInvalidToken();
+            }
+            const result:AuthResult = {
+                result: true,
+                appleAccountSub: appleTokenType.sub,
+                authType: 'apple'
+            }
+            return result;
+        }catch(e){
+            log.error('exception> appleAuthenticate : ', e);
+            throw ErrorInvalidToken();
+        }
+    }
+
     async kakaoUserInfo(token:string):Promise<KakaoResult<KakaoUserInfo>>{
         try{
             const result:KakaoResult<KakaoUserInfo> = await this.kakaoAPI.getUserInfo(token);
@@ -59,6 +77,9 @@ class AuthService extends ServiceBase {
             if(vendor === 'kakao' || !vendor){
                 return await this.kakaoAuthenticate(token);
             }
+            if(vendor === 'apple'){
+                return await this.appleAuthenticate(token);
+            }
 
             return result;
         }catch(e){
@@ -82,6 +103,13 @@ class AuthService extends ServiceBase {
                 const kakaoResult:KakaoResult<KakaoUserInfo> = await this.kakaoUserInfo(token);
                 result.result = true;
                 result.data = kakaoResult.data;
+                result.vendor = vendor;
+                return result;
+            }
+            if(vendor === 'apple'){
+                const appleTokenType:AppleIdTokenType = await Container.get(AppleAuth).verifyIdToken(token);
+                result.result = true;
+                result.data = appleTokenType;
                 result.vendor = vendor;
                 return result;
             }

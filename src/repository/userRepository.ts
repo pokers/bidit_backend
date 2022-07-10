@@ -1,10 +1,11 @@
-import { log, ErrorInvalidToken } from '../lib'
+import { log, ErrorInvalidToken, AppleIdTokenType } from '../lib'
 import { User, Maybe,  Gender, JoinPath, PushToken } from '../types'
 import { ModelName, KakaoAccountModel, KakaoUserInfo, KakaoAccount, UserModel, ItemModel, Transaction, UserAttributes, PushTokenAttributes } from './model'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
 import { sealed } from '../lib/decorators'
 import { Op } from 'sequelize'
+import { AppleAccountAttributes, AppleAccountModel } from './model/appleAccount'
 
 @Service()
 @sealed
@@ -15,8 +16,7 @@ class UserRepository extends RepositoryBase{
             const userModel = this.models.getModel(ModelName.user);
             const result:User = await userModel.findOne({
                 where: {id: userId},
-                include: include || ['kakaoAccount', 'pushToken'],
-                raw:true,
+                include: include || ['kakaoAccount', 'pushToken', 'appleAccount'],
                 nest: true
             });
             return result;
@@ -39,13 +39,35 @@ class UserRepository extends RepositoryBase{
                             id: id
                         }
                     }],
-                    raw: true,
                     nest: true
                 });
             }
             return user;
         }catch(e){
             log.error('exception> getUserBySocialId : ', e);
+            throw e;
+        }
+    }
+
+    async getUserByAppleSub(sub:string, type: string):Promise<Maybe<User>>{
+        try{
+            const user:User|null = null;
+            if(type === 'string'){
+                return await this.models.getModel(ModelName.user).findOne({
+                    include:[{
+                        model:AppleAccountModel,
+                        as: 'appleAccount',
+                        required: true,
+                        where: {
+                            sub: sub
+                        }
+                    }],
+                    nest: true
+                });
+            }
+            return user;
+        }catch(e){
+            log.error('exception> getUserByAppleSub : ', e);
             throw e;
         }
     }
@@ -99,10 +121,64 @@ class UserRepository extends RepositoryBase{
         }
     }
 
+    async addAppleUserAccount(vendor:JoinPath, userInfo:AppleIdTokenType, transaction?:Transaction):Promise<Maybe<User>>{
+        try{
+            const defaultUserInfo:UserAttributes = {
+                status: 0,
+                joinPath: vendor
+            }
+            if(!userInfo || !userInfo.sub){
+                throw ErrorInvalidToken();
+            }
+
+            if(userInfo.email){
+                defaultUserInfo.email = userInfo.email;
+            }
+            const userModel:UserModel = await this.models.getModel(ModelName.user).create(defaultUserInfo,{transaction: transaction});
+            let user:User = userModel.get({plain: true});
+            log.info('User : ', user);
+
+            const getBoolean = ()=>{
+
+            }
+            const appleAccountAttributes:AppleAccountAttributes = {
+                userId: user.id,
+                status: 0,
+                sub: userInfo.sub,
+                email: userInfo.email,
+                email_verified: (typeof userInfo.email_verified === 'string')? (userInfo.email_verified === 'true'):userInfo.email_verified,
+                is_private_email: (typeof userInfo.is_private_email === 'string')? (userInfo.is_private_email === 'true'):userInfo.is_private_email,
+            }
+            const appleAccountModel:AppleAccountModel = await this.models.getModel(ModelName.appleAccount).create(appleAccountAttributes, {transaction: transaction});
+            user.appleAccount = appleAccountModel.get({plain: true});
+
+            log.info('appleAccount : ', user.appleAccount);
+
+            return user;
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception> addAppleUserAccount : ', e);
+            throw e;
+        }
+    }
+
     async addUserBySocialAccount(vendor: string, userInfo:Maybe<KakaoUserInfo>, transaction?: Transaction):Promise<Maybe<User>>{
         try{
             if(vendor === 'kakao'){
                 return await this.addKakaoUserAccount(JoinPath.Kakao, userInfo, transaction);
+            }
+            return null;
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception> addUserBySocialAccount : ', e);
+            throw e;
+        }
+    }
+
+    async addUserByAppleAccount(vendor: string, userInfo:AppleIdTokenType, transaction?: Transaction):Promise<Maybe<User>>{
+        try{
+            if(vendor === 'apple'){
+                return await this.addAppleUserAccount(JoinPath.Kakao, userInfo, transaction);
             }
             return null;
         }catch(e){
@@ -128,7 +204,6 @@ class UserRepository extends RepositoryBase{
             const pushTokenModel = this.models.getModel(ModelName.pushToken);
             const pushToken = await pushTokenModel.findOne({
                 where: {userId: userId},
-                raw: true,
                 nest: true
             });
             if(pushToken){
@@ -153,7 +228,6 @@ class UserRepository extends RepositoryBase{
             const pushTokenModel = this.models.getModel(ModelName.pushToken);
             const pushTokens = await pushTokenModel.findall({
                 where: {userId: {[Op.or]: userIds}},
-                raw: true,
                 nest: true
             });
 
@@ -169,7 +243,6 @@ class UserRepository extends RepositoryBase{
             const result:User[] = await userModel.findall({
                 where: {id: {[Op.or]: userIds}},
                 include: include || ['kakaoAccount', 'pushToken'],
-                raw:true,
                 nest: true
             });
             return result;

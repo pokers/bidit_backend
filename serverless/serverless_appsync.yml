@@ -54,6 +54,7 @@ custom:
       - src/schema/Bidding.graphql
       - src/schema/Penalty.graphql
       - src/schema/Alarm.graphql
+      - src/schema/AppleAccount.graphql
     lambdaAuthorizerConfig:
       functionName: authResolver
     dataSources:

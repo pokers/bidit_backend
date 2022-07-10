@@ -1,0 +1,15 @@
+
+type AppleAccount{
+    id: Int!
+    status: Int!        # 0=VALID, 1=INVALID
+    userId: Int!
+    sub: String
+    email: String
+    email_verified: String
+    is_private_email: Boolean
+    real_user_status: Int
+    createdAt: String
+    updatedAt: String
+    deletedAt: String
+    description: String
+}

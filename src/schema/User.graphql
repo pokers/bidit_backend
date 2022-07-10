@@ -38,6 +38,7 @@ type User {
     description: String
     items:ItemConnection
     kakaoAccount:KakaoAccount
+    appleAccount:AppleAccount
     pushToken: PushToken
     penalty: Penalty
     userAlarm: UserAlarm

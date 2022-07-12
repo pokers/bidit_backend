@@ -1,5 +1,5 @@
 import { log } from '../lib/logger'
-import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, Order, ItemDescriptionModel, ItemImageModel } from './model'
+import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, Order, ItemDescriptionModel, ItemImageModel, ItemDetailModel, ItemDetailAttributes } from './model'
 import { Op, WhereOptions } from 'sequelize'
 import { Item, 
     ItemQueryInput, 
@@ -11,6 +11,7 @@ import { Item,
     ItemImageUpdateInput,
     ItemAddInput,
     User,
+    ItemDetail,
 } from '../types'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
@@ -41,6 +42,9 @@ class ItemRepository extends RepositoryBase{
             },{
                 model: CategoryModel,
                 as: 'category',
+            },{
+                model: ItemDetailModel,
+                as: 'detail',
             }];
             const model = this.models.getModel(ModelName.item);
             const result:Item = await model.findOne({
@@ -169,7 +173,7 @@ class ItemRepository extends RepositoryBase{
                 where, 
                 limit, 
                 order:[[cursor, order]], 
-                include: ['description', 'image', 'category'],
+                include: ['description', 'image', 'category', 'detail'],
                 nest: true
             });
             if(last){
@@ -314,7 +318,39 @@ class ItemRepository extends RepositoryBase{
         }
     }
 
-    async addItem(userId:number, itemAdd: ItemAttributes, transaction:Transaction, description: string,  images?:string[]): Promise<Item>{
+    async addItemDetail(itemId:number, itemDetail: ItemDetailAttributes, transaction:Transaction): Promise<ItemDetail>{
+        try{
+            itemDetail.itemId = itemId;
+            const itemDetailModel = this.models.getModel(ModelName.itemDetail);
+            const result = await itemDetailModel.create(
+                itemDetail,
+                {transaction: transaction}
+            );
+
+            return result.get({plain: true});
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > addItemDetail : ', e);
+            throw e;
+        }
+    }
+
+    async updateItemDetail(itemId:number, detail: ItemDetailAttributes): Promise<ItemDetail>{
+        try{
+            const itemDetailModel = this.models.getModel(ModelName.itemDetail);
+            const itemDetail = await itemDetailModel.update(
+                detail, {where: {itemId:itemId}}
+            )
+            log.info('updateItemDetail : ', itemDetail);
+            return itemDetail;
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > updateItemDescription : ', e);
+            throw e;
+        }
+    }
+
+    async addItem(userId:number, itemAdd: ItemAttributes, transaction:Transaction, description: string,  images?:string[], detail?:ItemDetailAttributes): Promise<Item>{
         try{
             const newItem:ItemAttributes = {
                 status: 0, // 0=registered
@@ -346,6 +382,9 @@ class ItemRepository extends RepositoryBase{
             if(images){
                 tasks.push(this.addItemImages(item.id, images, transaction));
             }
+            if(detail){
+                tasks.push(this.addItemDetail(item.id, detail, transaction));
+            }
             const [itemDescription, itemCategory, itemImages] = await Promise.all(tasks);
 
             log.info('addItem item : ', item);
@@ -364,7 +403,7 @@ class ItemRepository extends RepositoryBase{
 
 
 
-    async updateItem(itemId:number, itemUpdate: ItemAttributes, description?: string, transaction?:Transaction): Promise<Item>{
+    async updateItem(itemId:number, itemUpdate: ItemAttributes, description?: string, detail?:ItemDetailAttributes, transaction?:Transaction): Promise<Item>{
         try{
             const itemModel = this.models.getModel(ModelName.item);
             const tasks = [];
@@ -372,6 +411,9 @@ class ItemRepository extends RepositoryBase{
             tasks.push(itemModel.update(itemUpdate, {where: {id:itemId}, transaction: transaction}));
             if(description){
                 tasks.push(this.updateItemDescription(itemId, description));
+            }
+            if(detail){
+                tasks.push(this.updateItemDetail(itemId, detail));
             }
             const [itemResult, itemDescriptionResult] = await Promise.all(tasks);
             if(itemDescriptionResult){
@@ -416,7 +458,7 @@ class ItemRepository extends RepositoryBase{
                 limit, 
                 order:[[cursor, order]], 
                 include: ['parent'],
-                raw:true, nest: true
+                nest: true
             });
             if(last){
                 items.sort((a:Item,b:Item)=>{
@@ -438,7 +480,7 @@ class ItemRepository extends RepositoryBase{
             const result:Category = await categoryModel.findOne({
                 where: {id: id},
                 include: ['parent'],
-                raw:true, nest: true
+                nest: true
             });
             return result;
         }catch(e){
@@ -455,7 +497,7 @@ class ItemRepository extends RepositoryBase{
             const categoryList:Category[] = await categoryModel.findAll({
                 order:[[cursor, order]], 
                 include: ['parent'],
-                raw:true, nest: true
+                nest: true
             });
             return categoryList;
         }catch(e){

@@ -144,7 +144,8 @@ class ItemService extends ServiceBase{
             }
             const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
             transaction = await this.startTransaction();
-            const newItem:Item = await itemRepo.addItem(authInfo.userId, itemAdd, transaction, description, images);
+            const newItem:Item = await itemRepo.addItem(authInfo.userId, itemAdd, transaction, description, images, itemAdd.detail);
+
             await this.commit(transaction);
             transaction = null;
 
@@ -175,7 +176,7 @@ class ItemService extends ServiceBase{
                 throw ErrorModuleNotFound();
             }
             const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
-            const newItem:Item = await itemRepo.updateItem(itemId, itemUpdate, description);
+            const newItem:Item = await itemRepo.updateItem(itemId, itemUpdate, description, itemUpdate.detail);
 
             const result:Item = await this.getItem({id:itemId}, selectionSetList);
             log.info('updateItem result : ', result);

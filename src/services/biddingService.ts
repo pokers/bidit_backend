@@ -188,8 +188,8 @@ class BiddingService extends ServiceBase{
             const newBidding:Bidding = await biddingRepo.addBid(userId, bid, transaction);
             this.logInfo('addBid > newBidding : ', newBidding)
 
-            const updatedItem:Item = await itemRepo.updateItem(bid.itemId, {status: 1, cPrice: bid.price}, undefined, transaction);
-            
+            const updatedItem:Item = await itemRepo.updateItem(bid.itemId, {status: 1, cPrice: bid.price}, undefined, undefined, transaction);
+             
             await this.commit(transaction);
             transaction = null;
             log.info('svc > addBid > Item result : ', updatedItem);
@@ -246,7 +246,7 @@ class BiddingService extends ServiceBase{
                 biddingId: maxBid.id
             };
             const successfulBid:SuccessfulBid = await biddingRepo.addSuccessfulBid(bidInput, transaction);
-            const updatedItem:Item = await itemRepo.updateItem(item.id, {status: 2}, undefined, transaction);
+            const updatedItem:Item = await itemRepo.updateItem(item.id, {status: 2}, undefined, undefined, transaction);
 
             await this.commit(transaction);
             transaction = null;
@@ -291,7 +291,7 @@ class BiddingService extends ServiceBase{
             this.logInfo('failureItem > item : ', foundItem);
             this.checkFailureItem(foundItem);
 
-            const updatedItem:Item = await itemRepo.updateItem(item.id, {status: 3/*END*/}, undefined, transaction);
+            const updatedItem:Item = await itemRepo.updateItem(item.id, {status: 3/*END*/}, undefined, undefined, transaction);
 
             await this.commit(transaction);
             transaction = null;

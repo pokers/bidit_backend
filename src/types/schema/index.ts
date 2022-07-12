@@ -136,6 +136,7 @@ export type Item = {
   deletedAt?: Maybe<Scalars['String']>;
   deliveryType?: Maybe<Scalars['Int']>;
   description?: Maybe<ItemDescription>;
+  detail?: Maybe<ItemDetail>;
   dueDate?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   image?: Maybe<Array<Maybe<ItemImage>>>;
@@ -154,6 +155,7 @@ export type ItemAddInput = {
   buyNow?: InputMaybe<Scalars['Int']>;
   categoryId: Scalars['Int'];
   deliveryType: Scalars['Int'];
+  detail?: InputMaybe<ItemDetailInput>;
   dueDate: Scalars['String'];
   name: Scalars['String'];
   sCondition: Scalars['Int'];
@@ -179,6 +181,53 @@ export type ItemDescription = {
   status: Scalars['Int'];
   type?: Maybe<Scalars['Int']>;
   updatedAt?: Maybe<Scalars['String']>;
+};
+
+export type ItemDetail = {
+  __typename?: 'ItemDetail';
+  battery?: Maybe<Scalars['String']>;
+  cam?: Maybe<Scalars['String']>;
+  categoryId?: Maybe<Scalars['Int']>;
+  cpu?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['String']>;
+  deletedAt?: Maybe<Scalars['String']>;
+  flash?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Int']>;
+  itemId?: Maybe<Scalars['Int']>;
+  lens?: Maybe<Scalars['String']>;
+  networkType?: Maybe<Scalars['String']>;
+  period?: Maybe<Scalars['Int']>;
+  ram?: Maybe<Scalars['String']>;
+  resolution?: Maybe<Scalars['String']>;
+  size?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['Int']>;
+  type?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['String']>;
+  vendor?: Maybe<Scalars['String']>;
+  warranty?: Maybe<Scalars['String']>;
+  weight?: Maybe<Scalars['String']>;
+  wire?: Maybe<Scalars['String']>;
+};
+
+export type ItemDetailInput = {
+  battery?: InputMaybe<Scalars['String']>;
+  cam?: InputMaybe<Scalars['String']>;
+  categoryId?: InputMaybe<Scalars['Int']>;
+  cpu?: InputMaybe<Scalars['String']>;
+  flash?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Int']>;
+  lens?: InputMaybe<Scalars['String']>;
+  networkType?: InputMaybe<Scalars['String']>;
+  period?: InputMaybe<Scalars['Int']>;
+  ram?: InputMaybe<Scalars['String']>;
+  resolution?: InputMaybe<Scalars['String']>;
+  size?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<Scalars['Int']>;
+  type?: InputMaybe<Scalars['String']>;
+  vendor?: InputMaybe<Scalars['String']>;
+  warranty?: InputMaybe<Scalars['String']>;
+  weight?: InputMaybe<Scalars['String']>;
+  wire?: InputMaybe<Scalars['String']>;
 };
 
 export type ItemEdge = {
@@ -229,6 +278,7 @@ export type ItemUpdateInput = {
   buyNow?: InputMaybe<Scalars['Int']>;
   categoryId?: InputMaybe<Scalars['Int']>;
   deliveryType?: InputMaybe<Scalars['Int']>;
+  detail?: InputMaybe<ItemDetailInput>;
   dueDate?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
   sCondition?: InputMaybe<Scalars['Int']>;

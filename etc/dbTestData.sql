@@ -1,16 +1,17 @@
 INSERT INTO category VALUES (NULL, 0, NULL, '디지털', 0, '2022-06-05 12:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, 'iPhone', 1, '2022-06-05 15:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, 'GALAY폰', 1, '2022-06-05 18:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, '기타 모바일', 1, '2022-06-05 21:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, '스마트워치', 1, '2022-06-06 02:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, '노트북', 1, '2022-06-06 06:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, '테블릿', 1, '2022-06-06 11:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, 'TV/모니터', 1, '2022-06-07 07:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, '게임', 1, '2022-06-07 18:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, '음향기기', 1, '2022-06-08 11:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, '카메라', 1, '2022-06-08 21:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, '드론', 1, '2022-06-09 22:00:00', now(), NULL);
-INSERT INTO category VALUES (NULL, 0, 3, '기타', 1, '2022-06-10 19:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, 'iPhone', 1, '2022-06-05 15:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, 'GALAY폰', 1, '2022-06-05 18:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, 'Android폰', 1, '2022-06-05 21:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, '스마트워치', 1, '2022-06-06 02:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, '노트북', 1, '2022-06-06 06:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, '테블릿', 1, '2022-06-06 11:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, 'TV/모니터', 1, '2022-06-07 07:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, '게임', 1, '2022-06-07 18:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, '음향기기', 1, '2022-06-08 11:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, '카메라', 1, '2022-06-08 21:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, '드론', 1, '2022-06-09 22:00:00', now(), NULL);
+INSERT INTO category VALUES (NULL, 0, 1, '기타', 1, '2022-06-10 19:00:00', now(), NULL);
+
 
 
 INSERT INTO user VALUES(NULL, 0, "test1", "testpassword", 0, 0, "2022-05-26", "test1@email.com", "01012345678", '2022-06-05 12:00:00', now(),null, "testAccount");

@@ -39,8 +39,8 @@ class SequelizeORM {
         try{
             if(this._isConnected){
                 this._isConnected = false;
-                // this.dbInst.close();
-                this.dbInst.connectionManager.close();  // For using the Lambda
+                await this.dbInst.connectionManager.close();  // For using the Lambda
+                await this.dbInst.close();
                 log.info('SequelizeORM : close ');
             }
         }catch(e){
@@ -81,10 +81,10 @@ class SequelizeORM {
                         // timezone: "+09:00",
                         logging: false,
                         pool:{
-                            max: 2,
+                            max: 4,
                             min: 0,
                             idle:0,
-                            acquire: 30000,
+                            acquire: 3000,
                             evict: 75
                         }
                     })

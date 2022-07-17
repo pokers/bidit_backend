@@ -10,7 +10,7 @@ class AppleAuth {
     async verifyIdToken(token:string){
         try{
             const userInfo:AppleIdTokenType = await verifyIdToken(token,{
-                nonce: 'NONCE',
+                // nonce: 'NONCE',
                 ignorExpiration: false
             });
             return userInfo;

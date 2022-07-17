@@ -36,7 +36,7 @@ class Fcm {
             }
             const message = {
                 token: fcmMessage.token,
-                data:{
+                notification:{
                     title: fcmMessage.title,
                     body: fcmMessage.body
                 }

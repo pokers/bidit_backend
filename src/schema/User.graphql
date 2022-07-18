@@ -12,6 +12,10 @@ enum gender{
     MALE,
     FEMALE
 }
+enum MembershipStatus{
+    VALID,
+    INVALID
+}
 
 type PushToken {
     id: Int
@@ -52,6 +56,7 @@ type Query {
 type Mutation {
     addUser:User
     updateUser(userUpdate:userUpdateInput):User
+    updateMembership(status:MembershipStatus):User
     updatePushToken(pushTokenUpdate:pushTokenUpdateInput):Boolean
     addUserAlarm(userId:Int, status:Int):Boolean
 }

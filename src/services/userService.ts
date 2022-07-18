@@ -96,6 +96,29 @@ class UserService extends ServiceBase {
         }
     }
 
+    async updateMembership(authInfo:AuthResult, arg: any, selectionSetList:string[]):Promise<Maybe<User>>{
+        try{
+            const { status } = arg;
+
+            if(!authInfo.userId){
+                throw ErrorUserNotFound();
+            }
+            if(!status){
+                throw ErrorInvalidBodyParameter();
+            }
+            if(!this.repositories.getRepository().userRepo){
+                throw ErrorModuleNotFound();
+            }
+            const userStatus = status === 'VALID'? 0:1;
+            const updatedUser = await this.repositories.getRepository().userRepo.updateMembership(authInfo.userId, userStatus);
+
+            return await this.getUser({id:authInfo.userId});
+        }catch(e){
+            log.error('exception > ', e);
+            throw e;
+        }
+    }
+
     async updatePushToken(authInfo:AuthResult, arg: any, selectionSetList:string[]):Promise<boolean>{
         try{
             const { pushTokenUpdate } = arg;

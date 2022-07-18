@@ -30,7 +30,8 @@ export enum ErrMessage {
     ErrorOwnItemBidding = 'Not allowed to bid your item.',
     ErrorEndBidingItem = 'Not allowed to bid finished item',
     ErrorInvalidPushToken = 'Cannot found push token.',
-    ErrorIsNotInitialized = 'Is not Initialized'
+    ErrorIsNotInitialized = 'Is not Initialized',
+    ErrorInvalidMemoryship = 'Is not invalid membership'
 }
 
 export const ErrorNotSupportedParameters = ()=>{
@@ -115,4 +116,8 @@ export const ErrorInvalidPushToken = ()=>{
 
 export const ErrorIsNotInitialized = ()=>{
     return new cError(400, ErrMessage.ErrorIsNotInitialized);
+}
+
+export const ErrorInvalidMemoryship = ()=>{
+    return new cError(400, ErrMessage.ErrorInvalidMemoryship);
 }

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { log, cError, ErrorRequireAddUser } from '../lib'
+import { log, cError, ErrorRequireAddUser, ErrorAxiosException, ErrorInvalidMemoryship } from '../lib'
 import { Context, AppSyncAuthorizerEvent } from 'aws-lambda'
 import { Provider } from './provider'
 import { AuthService, UserService } from '../services'
@@ -36,6 +36,10 @@ const processAuthentication = async (authorizationToken:string):Promise<AuthResu
         // log.info('user : ', user);
         if(user){
             authResult.userId = user.id;
+        }
+
+        if(user && user.status === 1/** 0=VALID, 1=INVALID */){
+            throw ErrorInvalidMemoryship();
         }
         return authResult;
     }catch(e){

@@ -188,6 +188,18 @@ class ItemService extends ServiceBase{
         }
     }
 
+    async setInvalidItemsByUserId(userId:number){
+        try{
+            if(!userId){
+                throw ErrorUserNotFound();
+            }
+            const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
+            await itemRepo.setInvalidItemsByUserId(userId);
+        }catch(e){
+            log.error('exception > setInvalidItemsByUserId : ', e);
+            throw e;
+        }
+    }
     
 
     async updateItemImage(authInfo:AuthResult, arg: any, selectionSetList:string[]): Promise<ItemImage>{

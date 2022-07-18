@@ -98,6 +98,11 @@ custom:
         response: false
       - dataSource: userResolverDataSource
         type: Mutation
+        field: updateMembership
+        request: false
+        response: false
+      - dataSource: userResolverDataSource
+        type: Mutation
         field: updatePushToken
         request: false
         response: false

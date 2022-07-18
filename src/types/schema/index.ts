@@ -332,6 +332,11 @@ export type KakaoAccount = {
   userId: Scalars['Int'];
 };
 
+export enum MembershipStatus {
+  Invalid = 'INVALID',
+  Valid = 'VALID'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   addItem?: Maybe<Item>;
@@ -340,6 +345,7 @@ export type Mutation = {
   bid?: Maybe<Bidding>;
   updateItem?: Maybe<Item>;
   updateItemImage?: Maybe<Item>;
+  updateMembership?: Maybe<User>;
   updatePushToken?: Maybe<Scalars['Boolean']>;
   updateUser?: Maybe<User>;
 };
@@ -373,6 +379,11 @@ export type MutationUpdateItemArgs = {
 export type MutationUpdateItemImageArgs = {
   itemId?: InputMaybe<Scalars['Int']>;
   itemImageUpdate?: InputMaybe<ItemImageUpdateInput>;
+};
+
+
+export type MutationUpdateMembershipArgs = {
+  status?: InputMaybe<MembershipStatus>;
 };
 
 

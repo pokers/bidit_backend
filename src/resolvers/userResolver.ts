@@ -230,6 +230,13 @@ const userResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
             case 'me':
                 payload = await me(event);
                 break;
+            case 'updateMembership':
+                if(!identity || !identity.resolverContext){
+                    throw ErrorNotFoundSocialUserInfo();
+                }
+                payload = await Container.get(UserService).updateMembership(identity.resolverContext, event.arguments, event.info.selectionSetList);
+                await Container.get(ItemService).setInvalidItemsByUserId(payload?.id);
+                break;
             default:
                 break;
         }

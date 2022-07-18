@@ -432,6 +432,18 @@ class ItemRepository extends RepositoryBase{
         }
     }
 
+    async setInvalidItemsByUserId(userId:number){
+        try{
+            const itemModel = this.models.getModel(ModelName.item);
+            await itemModel.update({status:1}, {where: {userId:userId, status: {[Op.ne]: 3}}});
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > setInvalidItemsByUserId : ', e);
+            throw e;
+        }
+    }
+
+
     async getCategoryList(categoryQuery: CategoryQueryInput, first?:number, last?:number, after?:string, before?:string): Promise<Category[]>{
         try{
             const cursor: CategoryModel[CursorName.createdAt] = CursorName.createdAt;

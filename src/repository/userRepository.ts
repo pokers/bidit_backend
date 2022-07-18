@@ -4,7 +4,7 @@ import { ModelName, KakaoAccountModel, KakaoUserInfo, KakaoAccount, UserModel, I
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
 import { sealed } from '../lib/decorators'
-import { Op } from 'sequelize'
+import { Model, Op } from 'sequelize'
 import { AppleAccountAttributes, AppleAccountModel } from './model/appleAccount'
 
 @Service()
@@ -195,6 +195,20 @@ class UserRepository extends RepositoryBase{
             return user;
         }catch(e){
             log.error('exception> updateUser : ', e);
+            throw e;
+        }
+    }
+
+    async updateMembership(userId:number, userStatus:number):Promise<Maybe<User>>{
+        try{
+            const user = await this.models.getModel(ModelName.user).update({status: userStatus}, {where: {id: userId}});
+            await this.models.getModel(ModelName.kakaoAccount).update({status: userStatus}, {where: {id: userId}});
+            await this.models.getModel(ModelName.appleAccount).update({status: userStatus}, {where: {id: userId}});
+            
+            log.info('updateMembership : ', user);
+            return user;
+        }catch(e){
+            log.error('exception> updateMembership : ', e);
             throw e;
         }
     }

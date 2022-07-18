@@ -1,5 +1,5 @@
 import { log } from '../lib/logger'
-import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, Order, ItemDescriptionModel, ItemImageModel, ItemDetailModel, ItemDetailAttributes } from './model'
+import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, Order, ItemDescriptionModel, ItemImageModel, ItemDetailModel, ItemDetailAttributes, UserAlarmModel, UserModel } from './model'
 import { Op, WhereOptions } from 'sequelize'
 import { Item, 
     ItemQueryInput, 
@@ -45,6 +45,10 @@ class ItemRepository extends RepositoryBase{
             },{
                 model: ItemDetailModel,
                 as: 'detail',
+            },{
+                model: UserModel,
+                as: 'user',
+                include: ['kakaoAccount', 'pushToken', 'appleAccount'],
             }];
             const model = this.models.getModel(ModelName.item);
             const result:Item = await model.findOne({
@@ -173,7 +177,7 @@ class ItemRepository extends RepositoryBase{
                 where, 
                 limit, 
                 order:[[cursor, order]], 
-                include: ['description', 'image', 'category', 'detail'],
+                include: ['description', 'image', 'category', 'detail', 'user'],
                 nest: true
             });
             if(last){

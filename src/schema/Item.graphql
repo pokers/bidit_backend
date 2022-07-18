@@ -37,6 +37,7 @@ type Item {
     image:[ItemImage]
     category: Category
     detail: ItemDetail
+    user:User
 }
 
 type ItemDescription{

@@ -146,6 +146,7 @@ export type Item = {
   status: Scalars['Int'];
   title?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['String']>;
+  user?: Maybe<User>;
   userId: Scalars['Int'];
   viewCount?: Maybe<Scalars['Int']>;
 };

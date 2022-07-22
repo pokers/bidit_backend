@@ -114,6 +114,12 @@ export enum CategoryStatus {
   Valid = 'VALID'
 }
 
+export type Counting = {
+  __typename?: 'Counting';
+  buy?: Maybe<Scalars['Int']>;
+  sell?: Maybe<Scalars['Int']>;
+};
+
 export enum CursorType {
   CreatedAt = 'createdAt',
   DueDate = 'dueDate'
@@ -515,6 +521,7 @@ export type User = {
   __typename?: 'User';
   appleAccount?: Maybe<AppleAccount>;
   birth?: Maybe<Scalars['String']>;
+  counting?: Maybe<Counting>;
   createdAt: Scalars['String'];
   deletedAt?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;

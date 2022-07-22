@@ -91,7 +91,7 @@ class Models {
                 ItemDescriptionModel.belongsTo(ItemModel, { foreignKey: 'itemId', targetKey: 'id'});
                 
                 ItemModel.hasMany(ItemImageModel, { foreignKey: 'itemId', as: 'image', sourceKey: 'id'});
-                ItemImageModel.belongsTo(ItemModel, { foreignKey: 'itemId', targetKey: 'id'});
+                ItemImageModel.belongsTo(ItemModel, { foreignKey: 'itemId', as: 'item', targetKey: 'id'});
 
                 ItemModel.hasOne(CategoryModel, {foreignKey: 'id', sourceKey: 'categoryId', as: 'category'});
                 // CategoryModel.hasOne(ItemModel, {foreignKey: 'categoryId', as: 'item', sourceKey: 'id'});

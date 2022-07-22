@@ -17,7 +17,7 @@ enum CursorType{
 
 type Item {
     id: Int!
-    status: Int! # 0=REGISTED, 1=ONGOING, 2=SOLD, 3=END
+    status: Int! # 0=REGISTED, 1=ONGOING, 2=SOLD, 3=END, 4=CANCEL
     userId: Int!
     categoryId: Int
     sPrice: Int

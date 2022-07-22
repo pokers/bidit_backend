@@ -435,7 +435,7 @@ class ItemRepository extends RepositoryBase{
     async setInvalidItemsByUserId(userId:number){
         try{
             const itemModel = this.models.getModel(ModelName.item);
-            await itemModel.update({status:1}, {where: {userId:userId, status: {[Op.ne]: 3}}});
+            await itemModel.update({status:4}, {where: {userId:userId, status: {[Op.ne]: 3}}});
         }catch(e){
             this.isUniqueConstraintError(e);
             log.error('exception > setInvalidItemsByUserId : ', e);
@@ -443,7 +443,21 @@ class ItemRepository extends RepositoryBase{
         }
     }
 
+    async getMyItemCount(userId:number):Promise<number>{
+        try{
+            const itemModel = this.models.getModel(ModelName.item);
+            return await itemModel.count({where: {userId:userId, status: {[Op.ne]: 4}}});
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > getMyItemCount : ', e);
+            throw e;
+        }
+    }
 
+
+    /*********************************************************************************
+     * Category
+     *********************************************************************************/
     async getCategoryList(categoryQuery: CategoryQueryInput, first?:number, last?:number, after?:string, before?:string): Promise<Category[]>{
         try{
             const cursor: CategoryModel[CursorName.createdAt] = CursorName.createdAt;
@@ -496,7 +510,8 @@ class ItemRepository extends RepositoryBase{
             const result:Category = await categoryModel.findOne({
                 where: {id: id},
                 include: ['parent'],
-                nest: true
+                nest: true,
+                raw: true
             });
             return result;
         }catch(e){

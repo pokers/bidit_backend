@@ -167,7 +167,8 @@ const me = async(event:AppSyncResolverEvent<any, any>):Promise<User>=>{
         }
 
         const [user, items]= await Promise.all([me(userId), getItem(userId)]);
-        log.info('me result : ', user);        
+        log.info('user result : ', user);
+        log.info('items result : ', items);
         if(!user){
             throw ErrorUserNotFound();
         }

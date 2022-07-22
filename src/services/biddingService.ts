@@ -127,10 +127,10 @@ class BiddingService extends ServiceBase{
             }
             const biddingRepo:BiddingRepository = this.repositories.getRepository().biddingRepo;
             const result:Bidding[] = await biddingRepo.getMyBidding(authInfo.userId, biddingQuery);
-            log.info('repo > getMyBidding > result : ', result);
+            log.info('service > getMyBidding > result : ', result);
             return result;
         }catch(e){
-            log.error('exception > repo > getMyBidding:  ', e);
+            log.error('exception > service > getMyBidding:  ', e);
             throw e;
         }
     }

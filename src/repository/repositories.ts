@@ -8,6 +8,14 @@ import { BiddingRepository } from './biddingRespository';
 import { PenaltyRepository } from './penaltyRepository';
 import { AlarmRepository } from './alarmRepository';
 
+type RepoObjects = {
+    [key: string]: any;
+    itemRepo: ItemRepository
+    userRepo: UserRepository
+    biddingRepo: BiddingRepository
+    penaltyRepo: PenaltyRepository
+    alarmRepo: AlarmRepository
+}
 @Service()
 @sealed
 export class Repositories {
@@ -31,7 +39,7 @@ export class Repositories {
         await this.models.rollback(transaction);
     }
 
-    getRepository(){
+    getRepository():RepoObjects{
         try{
             return {
                 itemRepo: this.itemRepository,
@@ -47,4 +55,4 @@ export class Repositories {
     }
 }
 
-export { Models, Transaction }
+export { Models, Transaction, RepoObjects }

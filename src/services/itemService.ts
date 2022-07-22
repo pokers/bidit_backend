@@ -81,7 +81,7 @@ class ItemService extends ServiceBase{
             }
             const itemRepo:ItemRepository = this.repositories.getRepository().itemRepo;
             result = await itemRepo.getItem(id);
-            log.info('Item : ', JSON.stringify(result));
+            log.info('Item : ', result);
             return result;
         }catch(e){
             log.error('exception > getItem:  ', e);

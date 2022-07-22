@@ -50,6 +50,7 @@ const biddingResolver = async (event:AppSyncResolverEvent<any, any>, context: Co
                 break;
         }
 
+        log.info('try to destroy sequelize');
         await destroy();
         return payload;
     }catch(e){

@@ -130,6 +130,17 @@ class BiddingRepository extends RepositoryBase{
             throw e;
         }
     }
+
+    async getMySuccessBidCount(userId:number): Promise<number>{
+        try{
+            const model = this.models.getModel(ModelName.successfulBid);
+            return await model.count({where:{userId:userId}});
+        }catch(e){
+            this.isUniqueConstraintError(e);
+            log.error('exception > getMySuccessBidCount : ', e);
+            throw e;
+        }
+    }
 }
 
 export { BiddingRepository }

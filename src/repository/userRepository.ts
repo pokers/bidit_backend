@@ -17,7 +17,7 @@ class UserRepository extends RepositoryBase{
             const result:User = await userModel.findOne({
                 where: {id: userId},
                 include: include || ['kakaoAccount', 'pushToken', 'appleAccount'],
-                nest: true
+                nest: true, raw: true
             });
             return result;
         }catch(e){
@@ -204,7 +204,7 @@ class UserRepository extends RepositoryBase{
             const user = await this.models.getModel(ModelName.user).update({status: userStatus}, {where: {id: userId}});
             await this.models.getModel(ModelName.kakaoAccount).update({status: userStatus}, {where: {id: userId}});
             await this.models.getModel(ModelName.appleAccount).update({status: userStatus}, {where: {id: userId}});
-            
+
             log.info('updateMembership : ', user);
             return user;
         }catch(e){

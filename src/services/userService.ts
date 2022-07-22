@@ -1,42 +1,71 @@
-import { User, Maybe, AuthResult, UserInfoResult, UserAlarm } from '../types';
+import { User, Maybe, AuthResult, UserInfoResult, UserAlarm, Penalty } from '../types';
 import { log, ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound, AppleIdTokenType } from '../lib';
 import { Service } from 'typedi';
 import { ServiceBase } from './serviceBase'
-import { Transaction } from '../repository'
+import { Transaction, RepoObjects } from '../repository'
 import { PenaltyAttributes } from '../repository/model/penalty';
 import { KakaoUserInfo, UserAlarmAttributes } from '../repository/model';
+
+class UserAdapter {
+    static buildUser(user:User){
+        return (penalty:Penalty)=>{
+            user.penalty = penalty;
+            return (userAlarm:UserAlarm)=>{
+                user.userAlarm = userAlarm;
+                return (sellCount:number)=>{
+                    user.counting = {
+                        buy:0,
+                        sell: sellCount
+                    }
+                    return (buyCount:number)=>{
+                        user.counting!.buy = buyCount;
+                        return user;
+                    }
+                };
+            }
+        }
+    }
+}
 
 @Service()
 class UserService extends ServiceBase {
 
+    private isValidRepositories(names:string[]){
+        names.map(name=>{
+            if(!this.repositories.getRepository()[name]){
+                throw ErrorModuleNotFound();
+            }
+        })
+    }
     async getUser(arg: any, selectionSetList?:string[]): Promise<User>{
         try{
             const { id } = arg;
-            if(!this.repositories.getRepository().userRepo){
-                throw ErrorModuleNotFound();
-            }
-            if(!this.repositories.getRepository().penaltyRepo){
-                throw ErrorModuleNotFound();
-            }
-            const user:User = await this.repositories.getRepository().userRepo.getUser(id);
-            const penaltyQuery:PenaltyAttributes = {
+            this.isValidRepositories(['userRepo', 'penaltyRepo', 'alarmRepo', 'itemRepo', 'biddingRepo']);
+
+            const queryAttributes:PenaltyAttributes = {
                 userId: id,
                 status: 0
-            }
-            const penalty = await this.repositories.getRepository().penaltyRepo.getUserPenalty(penaltyQuery);
-            if(penalty){
-                user.penalty = penalty;
-            }
-            const userAlarmQuery:UserAlarmAttributes = {
-                userId: id,
-                status: 0
-            }
-            const userAlarm = await this.repositories.getRepository().alarmRepo.getUserAlarm(userAlarmQuery);
-            if(userAlarm){
-                user.userAlarm = userAlarm;
             }
 
-            return user
+            const tasks = [];
+            tasks.push(this.repositories.getRepository().userRepo.getUser(id));
+            tasks.push(this.repositories.getRepository().penaltyRepo.getUserPenalty(queryAttributes as PenaltyAttributes));
+            tasks.push(this.repositories.getRepository().alarmRepo.getUserAlarm(queryAttributes as UserAlarmAttributes));
+            tasks.push(this.repositories.getRepository().itemRepo.getMyItemCount(id));
+            tasks.push(this.repositories.getRepository().biddingRepo.getMySuccessBidCount(id));
+            const [user, penalty, userAlarm, sell, buy] = await Promise.all(tasks);
+
+            log.info('user : ', user);
+            log.info('penalty : ', penalty);
+            log.info('userAlarm : ', userAlarm);
+            log.info('sell : ', sell);
+            log.info('buy : ', buy);
+
+            return UserAdapter.buildUser(user as User)
+            (penalty as Penalty)
+            (userAlarm as UserAlarm)
+            (sell as number)
+            (buy as number);
         }catch(e){
             log.error('exception > ', e);
             throw e;
@@ -84,9 +113,8 @@ class UserService extends ServiceBase {
             if(!userUpdate){
                 throw ErrorInvalidBodyParameter();
             }
-            if(!this.repositories.getRepository().userRepo){
-                throw ErrorModuleNotFound();
-            }
+            this.isValidRepositories(['userRepo']);
+
             const updatedUser = await this.repositories.getRepository().userRepo.updateUser(authInfo.userId, userUpdate);
 
             return await this.getUser({id:authInfo.userId});
@@ -106,9 +134,8 @@ class UserService extends ServiceBase {
             if(!status){
                 throw ErrorInvalidBodyParameter();
             }
-            if(!this.repositories.getRepository().userRepo){
-                throw ErrorModuleNotFound();
-            }
+            this.isValidRepositories(['userRepo']);
+
             const userStatus = status === 'VALID'? 0:1;
             const updatedUser = await this.repositories.getRepository().userRepo.updateMembership(authInfo.userId, userStatus);
 
@@ -129,9 +156,8 @@ class UserService extends ServiceBase {
             if(!pushTokenUpdate){
                 throw ErrorInvalidBodyParameter();
             }
-            if(!this.repositories.getRepository().userRepo){
-                throw ErrorModuleNotFound();
-            }
+            this.isValidRepositories(['userRepo']);
+
             log.info('pushTokenUpdate : ', pushTokenUpdate);
             const pushToken = await this.repositories.getRepository().userRepo.updatePushToken(authInfo.userId, pushTokenUpdate);
 

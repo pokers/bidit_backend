@@ -26,6 +26,10 @@ type PushToken {
     updatedAt: String
 }
 
+type Counting{
+    buy:Int
+    sell:Int
+}
 type User {
     id: Int!
     status: Int!    # 0=VALID, 1=INVALID
@@ -46,6 +50,7 @@ type User {
     pushToken: PushToken
     penalty: Penalty
     userAlarm: UserAlarm
+    counting:Counting
 }
 
 type Query {

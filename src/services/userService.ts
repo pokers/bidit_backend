@@ -56,11 +56,11 @@ class UserService extends ServiceBase {
 
             const adapter = this.userAdapter;
             return adapter.initBuilder()
-            .addBuilder({excutor: adapter.initUserObject, value: user})
-            .addBuilder({excutor: adapter.setPenalty, value: penalty})
-            .addBuilder({excutor: adapter.setUserAlarm, value: userAlarm})
-            .addBuilder({excutor: adapter.setUserSellCount, value: sell})
-            .addBuilder({excutor: adapter.setUserBuyCount, value: buy})
+            .addBuilder({excutor: adapter.initUserObject, args: [user]})
+            .addBuilder({excutor: adapter.setPenalty, args: [penalty]})
+            .addBuilder({excutor: adapter.setUserAlarm, args: [userAlarm]})
+            .addBuilder({excutor: adapter.setUserSellCount, args: [sell]})
+            .addBuilder({excutor: adapter.setUserBuyCount, args: [buy]})
             .runBuilderChain();
         }catch(e){
             log.error('exception > ', e);

@@ -1,9 +1,9 @@
 import { Service } from 'typedi';
 import { log } from '../lib';
 
-type Task<T> = {
-    excutor(org:T, value:any):T;
-    value:any;
+interface Task<T>{
+    excutor(acc:T, ...args:any[]):T;
+    args:any[];
 }
 
 interface iTaskChain<T> {
@@ -38,7 +38,7 @@ class TaskChain<T> implements iTaskChain<T>{
     public run():T{
         try{
             return this.taskChain.reduce((acc:T, task:Task<T>)=>{
-                return task.excutor(acc, task.value);
+                return task.excutor(acc, ...task.args);
             }, {} as T);
         }catch(e){
             log.error('exception> svc> runTask>', e);

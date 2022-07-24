@@ -274,6 +274,7 @@ export type ItemQueryInput = {
 };
 
 export enum ItemStatus {
+  Cancel = 'CANCEL',
   End = 'END',
   Ongoing = 'ONGOING',
   Registed = 'REGISTED',

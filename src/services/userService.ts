@@ -1,38 +1,31 @@
 import { User, Maybe, AuthResult, UserInfoResult, UserAlarm, Penalty } from '../types';
-import { log, ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound, AppleIdTokenType } from '../lib';
+import { log, 
+    ErrorModuleNotFound, 
+    ErrorInvalidBodyParameter, 
+    ErrorUserNotFound, 
+    AppleIdTokenType, 
+    KakaoAPI,
+    MessageQueue } from '../lib';
 import { Service } from 'typedi';
 import { ServiceBase } from './serviceBase'
-import { Transaction, RepoObjects } from '../repository'
+import { Transaction, Repositories } from '../repository'
 import { PenaltyAttributes } from '../repository/model/penalty';
 import { KakaoUserInfo, UserAlarmAttributes } from '../repository/model';
-
-class UserAdapter {
-    static buildUser(user:User){
-        return (penalty:Penalty)=>{
-            user.penalty = penalty;
-            return (userAlarm:UserAlarm)=>{
-                user.userAlarm = userAlarm;
-                return (sellCount:number)=>{
-                    user.counting = {
-                        buy:0,
-                        sell: sellCount
-                    }
-                    return (buyCount:number)=>{
-                        user.counting!.buy = buyCount;
-                        return user;
-                    }
-                };
-            }
-        }
-    }
-}
+import { UserAdapter } from './adapters'
 
 @Service()
 class UserService extends ServiceBase {
+    constructor(protected repositories:Repositories, 
+        protected kakaoAPI:KakaoAPI,
+        protected messageQueue:MessageQueue,
+        protected userAdapter:UserAdapter){
+            super(repositories, kakaoAPI, messageQueue);
+    }
 
     private isValidRepositories(names:string[]){
         names.map(name=>{
             if(!this.repositories.getRepository()[name]){
+                log.info('repository name : ', name);
                 throw ErrorModuleNotFound();
             }
         })
@@ -61,11 +54,14 @@ class UserService extends ServiceBase {
             log.info('sell : ', sell);
             log.info('buy : ', buy);
 
-            return UserAdapter.buildUser(user as User)
-            (penalty as Penalty)
-            (userAlarm as UserAlarm)
-            (sell as number)
-            (buy as number);
+            const adapter = this.userAdapter;
+            return adapter.initBuilder()
+            .addBuilder({excutor: adapter.initUserObject, value: user})
+            .addBuilder({excutor: adapter.setPenalty, value: penalty})
+            .addBuilder({excutor: adapter.setUserAlarm, value: userAlarm})
+            .addBuilder({excutor: adapter.setUserSellCount, value: sell})
+            .addBuilder({excutor: adapter.setUserBuyCount, value: buy})
+            .runBuilderChain();
         }catch(e){
             log.error('exception > ', e);
             throw e;

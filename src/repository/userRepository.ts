@@ -14,12 +14,13 @@ class UserRepository extends RepositoryBase{
     async getUser(userId:number, include?:string[]): Promise<User>{
         try{
             const userModel = this.models.getModel(ModelName.user);
-            const result:User = await userModel.findOne({
+            const user:UserModel = await userModel.findOne({
                 where: {id: userId},
                 include: include || ['kakaoAccount', 'pushToken', 'appleAccount'],
-                nest: true, raw: true
+                nest: true
             });
-            return result;
+
+            return user.get({plain: true});
         }catch(e){
             log.error('exception> UserRepository.getUser : ', e);
             throw e;

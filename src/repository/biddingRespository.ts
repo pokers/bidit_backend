@@ -1,5 +1,5 @@
 import { log } from '../lib/logger'
-import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, BiddingAttributes, UserModel, SuccessfulBidAttributes, KakaoAccountModel, ItemDescriptionModel, ItemImageModel } from './model'
+import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, BiddingAttributes, UserModel, SuccessfulBidAttributes, KakaoAccountModel, ItemDescriptionModel, ItemImageModel, BiddingModel } from './model'
 import { Op, WhereOptions, Sequelize } from 'sequelize'
 import { 
     Bidding,
@@ -41,7 +41,7 @@ class BiddingRepository extends RepositoryBase{
     async getBidding(biddingQuery:BiddingQueryInput): Promise<Bidding[]>{
         try{
             const model = this.models.getModel(ModelName.bidding);
-            const result:Bidding[] = await model.findAll({
+            const result:BiddingModel[] = await model.findAll({
                 where: {...biddingQuery},
                 include: [{
                     model: ItemModel,
@@ -49,21 +49,21 @@ class BiddingRepository extends RepositoryBase{
                     include: [{
                         model: ItemDescriptionModel, 
                         as: 'description', 
-                        raw:true, nest: true
                     },{
                         model: ItemImageModel,
                         as: 'image',
-                        raw:true, nest: true
                     }],
-                    required: true,
+                    // required: true,
                 },{
                     model: UserModel,
                     as: 'user',
-                    include: [{model: KakaoAccountModel, as: 'kakaoAccount', raw:true, nest: true}],
-                    required: true
+                    include: [{
+                        model: KakaoAccountModel, as: 'kakaoAccount', 
+                    }],
+                    // required: true
                 }],
                 order: [['createdAt', 'DESC']],
-                raw:true, nest: true
+                nest: true
             });
             log.info('repo > getBidding > result : ', JSON.stringify(result));
             return result;

@@ -20,7 +20,7 @@ class BiddingRepository extends RepositoryBase{
     async getMyBidding(userId:number, biddingQuery:BiddingQueryInput): Promise<Bidding[]>{
         try{
             const model = this.models.getModel(ModelName.bidding);
-            const result:Bidding[] = await model.findAll({
+            const bidding:BiddingModel[] = await model.findAll({
                 where: {userId: userId, ...biddingQuery},
                 include: [{
                     model: ItemModel,
@@ -28,8 +28,10 @@ class BiddingRepository extends RepositoryBase{
                     order: [['createdAt', 'DESC']],
                     required: true,
                 }],
-                raw:true, nest: true
+                nest: true
             });
+
+            const result = bidding.map((item:BiddingModel)=>item.get({plain: true}));
             log.info('repo > getMyBidding > result : ', result);
             return result;
         }catch(e){
@@ -41,7 +43,7 @@ class BiddingRepository extends RepositoryBase{
     async getBidding(biddingQuery:BiddingQueryInput): Promise<Bidding[]>{
         try{
             const model = this.models.getModel(ModelName.bidding);
-            const result:BiddingModel[] = await model.findAll({
+            const bidding:BiddingModel[] = await model.findAll({
                 where: {...biddingQuery},
                 include: [{
                     model: ItemModel,
@@ -65,6 +67,7 @@ class BiddingRepository extends RepositoryBase{
                 order: [['createdAt', 'DESC']],
                 nest: true
             });
+            const result = bidding.map((item:BiddingModel)=>item.get({plain: true}));
             log.info('repo > getBidding > result : ', JSON.stringify(result));
             return result;
         }catch(e){

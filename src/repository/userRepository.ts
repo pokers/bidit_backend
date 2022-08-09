@@ -53,7 +53,7 @@ class UserRepository extends RepositoryBase{
     async getUserByAppleSub(sub:string, type: string):Promise<Maybe<User>>{
         try{
             const user:User|null = null;
-            if(type === 'string'){
+            if(type === 'apple'){
                 return await this.models.getModel(ModelName.user).findOne({
                     include:[{
                         model:AppleAccountModel,
@@ -139,9 +139,6 @@ class UserRepository extends RepositoryBase{
             let user:User = userModel.get({plain: true});
             log.info('User : ', user);
 
-            const getBoolean = ()=>{
-
-            }
             const appleAccountAttributes:AppleAccountAttributes = {
                 userId: user.id,
                 status: 0,
@@ -179,7 +176,7 @@ class UserRepository extends RepositoryBase{
     async addUserByAppleAccount(vendor: string, userInfo:AppleIdTokenType, transaction?: Transaction):Promise<Maybe<User>>{
         try{
             if(vendor === 'apple'){
-                return await this.addAppleUserAccount(JoinPath.Kakao, userInfo, transaction);
+                return await this.addAppleUserAccount(JoinPath.Apple, userInfo, transaction);
             }
             return null;
         }catch(e){

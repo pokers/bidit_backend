@@ -55,7 +55,7 @@ class BiddingService extends ServiceBase{
                 if(item.userId === userId){
                     throw ErrorOwnItemBidding();
                 }
-                if(item.status === 2){
+                if(item.status !== 0 && item.status !== 1){
                     throw ErrorEndBidingItem();
                 }
             }

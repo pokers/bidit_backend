@@ -85,7 +85,7 @@ class UserService extends ServiceBase {
 
     async addUser(userinfo:UserInfoResult, transaction?: Transaction):Promise<Maybe<User>>{
         try{
-            const { result, data, vendor } = userinfo;
+            const { result, vendor, data } = userinfo;
             if(vendor === 'kakao'){
                 return await this.repositories.getRepository().userRepo.addUserBySocialAccount(vendor, data! as KakaoUserInfo, transaction);
             }

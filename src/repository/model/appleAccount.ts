@@ -41,6 +41,7 @@ class AppleAccountModel extends Model implements AppleAccountAttributes{
         this.init({
             id: {
                 type: BIGINT,
+                autoIncrement: true,
                 allowNull: false,
                 primaryKey: true,
             },

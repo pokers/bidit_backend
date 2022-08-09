@@ -35,6 +35,7 @@ class AuthService extends ServiceBase {
     async appleAuthenticate(token:string):Promise<AuthResult>{
         try{
             const appleTokenType:AppleIdTokenType = await Container.get(AppleAuth).verifyIdToken(token);
+            log.info('appleAuthenticate : ', appleTokenType);
             if(!appleTokenType){
                 throw ErrorInvalidToken();
             }
@@ -72,6 +73,7 @@ class AuthService extends ServiceBase {
             }
             log.info(`tokenType : ${tokenType} ${token} ${vendor}`);
             if(tokenType === undefined || token === undefined){
+                log.error(`tokenType : ${tokenType} ${token} ${vendor}`);
                 return result;
             }
             if(vendor === 'kakao' || !vendor){

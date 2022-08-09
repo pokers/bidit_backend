@@ -1,19 +1,25 @@
 SHOW STATUS LIKE 'Threads_connected';
 show tables;
 select * from user;
+select * from pushToken;
 select * from alarm;
 select * from userAlarm;
 select * from kakaoAccount;
+select * from appleAccount;
+
 delete from user where id=9;
 delete from kakaoAccount where id=2233153000;
 update kakaoAccount set id=2233153001 where id=2233153000;
+
+update user set status=0 where id=34;
+update kakaoAccount set status=0 where id=2233153001;
 
 insert into penalty values(null, 0, 30, 'BIDDING', '2022-07-31 00:00:00', 'test test', now(), now(), null);
 select * from successfulBid;
 select * from bidding;
 delete from bidding where id=25;
 select * from bidding where itemId=5 order by price DESC limit 5;
-
+update pushToken set token="" where id=6;
 
 insert into alarm values(NULL, 0, "MASTER", NULL, NULL, now(), now(), NULL);
 insert into userAlarm values(null, 0, 1,1, now(), now(), null);
@@ -28,18 +34,19 @@ desc appleAccount;
 select * from item;
 select * from itemImage;
 select * from itemDescription;
+select * from itemDetail;
 
 delete from itemDescription where id=29;
 delete from item where id=42;
 
-
+update item set status=0 where id=4;
 update item set buyNow = 300000, cPrice=210000 where id=5;
 update item set status = 1, dueDate = "2022-07-26 23:58:00" where id=5;
 select * from itemDescription;
 select * from category;
 delete from category where id=3;
 select * from pushToken;
-update pushToken set token="dsj2fOOJS7KeRYBMxEjHtL:APA91bF-ZK_bjl1gEpoVaILBgxNzLKIegHiWvUf8qGR2qeez_80fAyIL_cMEh2QxDbyb2cdNxMooFLR6w7KMT_zkFNcz8FSkiqhnnAlvbQgTAQjUdaqCCEmpxLdJ2Ri-R3vUh_iS0sJ2" where id=4;
+update pushToken set token="etuz3hLGHEtyh2QR5Q9NAi:APA91bGH3sS6pVi0-H5LHY6YqR_4T3gn1xz7Z_pcFh7oCwnFlZhnOAyEGvoXXxN4wrRFN_WIl9c5P3iYQH3tmuphhm5FiTG2v95E3WwTHaRVcLhq-_VRaDZOfeUg9kCVf00VhtQrNRJV" where id=3;
 insert into pushToken values(null, 0, 33, "dsj2fOOJS7KeRYBMxEjHtL:APA91bF-ZK_bjl1gEpoVaILBgxNzLKIegHiWvUf8qGR2qeez_80fAyIL_cMEh2QxDbyb2cdNxMooFLR6w7KMT_zkFNcz8FSkiqhnnAlvbQgTAQjUdaqCCEmpxLdJ2Ri-R3vUh_iS0sJ2", now(), now(), null);
 select * from penalty;
 

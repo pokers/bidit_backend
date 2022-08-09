@@ -32,8 +32,8 @@ const processAuthentication = async (authorizationToken:string):Promise<AuthResu
         
         const authResult:AuthResult = await Container.get(AuthService).authenticateUser(authorizationToken);
         const user:Maybe<User> = await Container.get(UserService).getUserBySocialId(authResult);
-        // log.info('authResult : ', authResult);
-        // log.info('user : ', user);
+        log.info('authResult : ', authResult);
+        log.info('user : ', user);
         if(user){
             authResult.userId = user.id;
         }

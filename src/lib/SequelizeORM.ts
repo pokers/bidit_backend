@@ -81,7 +81,7 @@ class SequelizeORM {
                         // timezone: "+09:00",
                         logging: false,
                         pool:{
-                            max: 4,
+                            max: 1,
                             min: 0,
                             idle:0,
                             acquire: 3000,

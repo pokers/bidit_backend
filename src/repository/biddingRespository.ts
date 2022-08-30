@@ -1,5 +1,21 @@
 import { log } from '../lib/logger'
-import { ItemModel, CategoryModel, ModelName, CursorName, Transaction, ItemAttributes, ItemDescriptionAttributes, ItemImageAttributes, BiddingAttributes, UserModel, SuccessfulBidAttributes, KakaoAccountModel, ItemDescriptionModel, ItemImageModel, BiddingModel } from './model'
+import { ItemModel, 
+    CategoryModel, 
+    ModelName, 
+    CursorName, 
+    Transaction, 
+    ItemAttributes, 
+    ItemDescriptionAttributes, 
+    ItemImageAttributes, 
+    BiddingAttributes, 
+    UserModel, 
+    SuccessfulBidAttributes, 
+    KakaoAccountModel, 
+    ItemDescriptionModel, 
+    ItemImageModel, 
+    BiddingModel,
+    ItemDetailModel 
+} from './model'
 import { Op, WhereOptions, Sequelize } from 'sequelize'
 import { 
     Bidding,
@@ -20,19 +36,44 @@ class BiddingRepository extends RepositoryBase{
     async getMyBidding(userId:number, biddingQuery:BiddingQueryInput): Promise<Bidding[]>{
         try{
             const model = this.models.getModel(ModelName.bidding);
+            const itemInclude = [{
+                model: ItemDescriptionModel,
+                as: 'description',
+            },{
+                model: ItemImageModel,
+                as: 'image',
+            },{
+                model: CategoryModel,
+                as: 'category',
+            },{
+                model: ItemDetailModel,
+                as: 'detail',
+            },{
+                model: UserModel,
+                as: 'user'
+            }];
+            const biddingInclude = [{
+                model: ItemModel,
+                as: 'item',
+                order: [['createdAt', 'DESC']],
+                required: true,
+                include: itemInclude
+            },
+            {
+                model: UserModel,
+                as: 'user',
+                required: true,
+            }]
+
             const bidding:BiddingModel[] = await model.findAll({
                 where: {userId: userId, ...biddingQuery},
-                include: [{
-                    model: ItemModel,
-                    as: 'item',
-                    order: [['createdAt', 'DESC']],
-                    required: true,
-                }],
+                include: biddingInclude,
                 nest: true
             });
 
             const result = bidding.map((item:BiddingModel)=>item.get({plain: true}));
             log.info('repo > getMyBidding > result : ', result);
+            log.info('repo > getMyBidding > result : ', JSON.stringify(result));
             return result;
         }catch(e){
             log.error('exception > getMyBidding : ', e);

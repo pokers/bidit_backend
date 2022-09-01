@@ -1,0 +1,23 @@
+
+type Dibs {
+    id: Int!
+    status: Int! # 0=valid, 1=invalid
+    userId: Int!
+    itemId: Int!
+    createdAt: String!
+    updatedAt: String
+    deletedAt: String
+    user: User
+    item: Item
+}
+
+type Query{
+    getMyDibs():[Dibs]
+    getDibsCount(itemId: Int):Int
+}
+
+type mutation{
+    addDibs(itemId: Int):Dibs
+    updateDibs(itemId: Int, status: Int):Dibs
+}
+

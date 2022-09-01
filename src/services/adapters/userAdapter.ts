@@ -1,17 +1,17 @@
 import { User, UserAlarm, Penalty } from '../../types';
 import { log } from '../../lib';
 import { Service } from 'typedi';
-import { TaskChain, Task } from '../../utils'
+import { FunctorList, Task } from '../../utils'
 
 @Service()
 class UserAdapter {
-    constructor(protected taskChain:TaskChain<User>){
+    constructor(protected functorList:FunctorList<User>){
         
     }
 
     public initBuilder():UserAdapter{
         try{
-            this.taskChain.init();
+            this.functorList.init();
             return this;
         }catch(e){
             log.error('exception> svc> initBuilder>', e);
@@ -21,7 +21,7 @@ class UserAdapter {
 
     public addBuilder(task:Task<User>):UserAdapter{
         try{
-            this.taskChain.add(task);
+            this.functorList.add(task);
             return this;
         }catch(e){
             log.error('exception> svc> addBuilder>', e);
@@ -30,7 +30,7 @@ class UserAdapter {
     }
     public runBuilderChain():User{
         try{
-            return this.taskChain.run();
+            return this.functorList.run();
         }catch(e){
             log.error('exception> svc> runBuilderChain>', e);
             throw e;

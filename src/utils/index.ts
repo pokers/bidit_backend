@@ -1,1 +1,1 @@
-export * from './taskChain'
+export * from './functorList'

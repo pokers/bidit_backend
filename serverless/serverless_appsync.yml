@@ -55,6 +55,7 @@ custom:
       - src/schema/Penalty.graphql
       - src/schema/Alarm.graphql
       - src/schema/AppleAccount.graphql
+      - src/schema/Dibs.graphql
     lambdaAuthorizerConfig:
       functionName: authResolver
     dataSources:
@@ -74,6 +75,10 @@ custom:
         name: alarmResolverDataSource
         config:
           functionName: alarmResolver
+      - type: AWS_LAMBDA
+        name: dibsResolverDataSource
+        config:
+          functionName: dibsResolver
     mappingTemplates:
       # User Resolver
       - dataSource: userResolverDataSource
@@ -172,6 +177,12 @@ custom:
       - dataSource: alarmResolverDataSource
         type: Mutation
         field: addUserAlarm
+        request: false
+        response: false
+      # dibs
+      - dataSource: dibsResolverDataSource
+        type: Query
+        field: getMyDibs
         request: false
         response: false
 
@@ -273,6 +284,23 @@ functions:
     package:
       include:
         - ./bundle/alarmResolver.js
+    environment:
+      NODE_OPTIONS: ${self:custom.nodeOption}
+      BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}
+      BIDIT_RDS_MAIN_HOST: ${env:BIDIT_RDS_MAIN_HOST}
+      BIDIT_RDS_MAIN_PORT: ${env:BIDIT_RDS_MAIN_PORT}
+      BIDIT_RDS_MAIN_USER: ${env:BIDIT_RDS_MAIN_USER}
+      BIDIT_RDS_MAIN_PASS: ${env:BIDIT_RDS_MAIN_PASS}
+      BIDIT_RDS_MAIN_DATABASE: ${env:BIDIT_RDS_MAIN_DATABASE}
+      BIDIT_SQS_BID_QUEUE: https://sqs.ap-northeast-2.amazonaws.com/164739657386/biditBidQueue
+
+  dibsResolver:
+    handler: bundle/dibsResolver.dibsResolver
+    name: bidit-dibsResolver
+    maximumRetryAttempts: 0
+    package:
+      include:
+        - ./bundle/dibsResolver.js
     environment:
       NODE_OPTIONS: ${self:custom.nodeOption}
       BIDIT_SECRET_MANAGER_RDS: ${env:BIDIT_SECRET_MANAGER_RDS}

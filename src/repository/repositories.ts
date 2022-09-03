@@ -7,6 +7,7 @@ import { sealed } from '../lib/decorators';
 import { BiddingRepository } from './biddingRespository';
 import { PenaltyRepository } from './penaltyRepository';
 import { AlarmRepository } from './alarmRepository';
+import { DibsRepository } from './dibsRepository';
 
 type RepoObjects = {
     [key: string]: any;
@@ -20,12 +21,13 @@ type RepoObjects = {
 @sealed
 export class Repositories {
     constructor(
-        private itemRepository:ItemRepository,
-        private userRepository:UserRepository,
-        private biddingRepository:BiddingRepository,
-        private penaltyRepository:PenaltyRepository,
-        private alarmRepository:AlarmRepository,
-        private models:Models
+        protected itemRepository:ItemRepository,
+        protected userRepository:UserRepository,
+        protected biddingRepository:BiddingRepository,
+        protected penaltyRepository:PenaltyRepository,
+        protected alarmRepository:AlarmRepository,
+        protected dibsRepository:DibsRepository,
+        protected models:Models
     ){
     }
 
@@ -46,7 +48,8 @@ export class Repositories {
                 userRepo: this.userRepository,
                 biddingRepo: this.biddingRepository,
                 penaltyRepo: this.penaltyRepository,
-                alarmRepo: this.alarmRepository
+                alarmRepo: this.alarmRepository,
+                dibsRepo: this.dibsRepository
             }
         }catch(e){
             log.error('exception > getRepository : ', e);

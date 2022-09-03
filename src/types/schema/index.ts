@@ -131,6 +131,19 @@ export enum DeliveryType {
   Parcel = 'PARCEL'
 }
 
+export type Dibs = {
+  __typename?: 'Dibs';
+  createdAt: Scalars['String'];
+  deletedAt?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  item?: Maybe<Item>;
+  itemId: Scalars['Int'];
+  status: Scalars['Int'];
+  updatedAt?: Maybe<Scalars['String']>;
+  user?: Maybe<User>;
+  userId: Scalars['Int'];
+};
+
 export type Item = {
   __typename?: 'Item';
   aCondition?: Maybe<Scalars['Int']>;
@@ -449,6 +462,7 @@ export type Query = {
   getItem?: Maybe<Item>;
   getItemList?: Maybe<ItemConnection>;
   getMyBidding?: Maybe<Array<Maybe<Bidding>>>;
+  getMyDibs?: Maybe<Array<Maybe<Dibs>>>;
   getUser?: Maybe<User>;
   me?: Maybe<User>;
   scanCategory?: Maybe<Array<Maybe<Category>>>;

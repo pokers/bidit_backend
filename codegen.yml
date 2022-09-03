@@ -8,6 +8,7 @@ schema:
   - src/schema/Penalty.graphql
   - src/schema/Alarm.graphql
   - src/schema/AppleAccount.graphql
+  - src/schema/Dibs.graphql
 
 generates:
   ./src/types/schema/index.ts:

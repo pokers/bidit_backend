@@ -11,7 +11,8 @@ import {
     BiddingModel,
     SuccessfulBidModel,
     UserAlarmModel,
-    AlarmModel
+    AlarmModel,
+    DibsModel
 } from '.'
 import { UserModel } from './User';
 import { Service } from 'typedi';
@@ -35,7 +36,8 @@ enum ModelName {
     alarm = 'alarm',
     userAlarm = 'userAlarm',
     appleAccount = 'appleAccount',
-    itemDetail = 'itemDetail'
+    itemDetail = 'itemDetail',
+    dibs = 'dibs'
 }
 
 enum CursorName {
@@ -51,9 +53,9 @@ enum Order {
 @Service()
 class Models {
     // private sequelize:SequelizeORM;
-    private isInitialized:Boolean = false;
-    private isAssociated:Boolean = false;
-    constructor(private sequelize:SequelizeORM){
+    protected isInitialized:Boolean = false;
+    protected isAssociated:Boolean = false;
+    constructor(protected sequelize:SequelizeORM){
     }
 
     // initialize(sequelize:SequelizeORM):Models{
@@ -75,6 +77,7 @@ class Models {
                 AlarmModel.initialize(this.sequelize.getDBInstance());
                 AppleAccountModel.initialize(this.sequelize.getDBInstance());
                 ItemDetailModel.initialize(this.sequelize.getDBInstance());
+                DibsModel.initialize(this.sequelize.getDBInstance());
             }
             return this;
         }catch(e){
@@ -137,7 +140,13 @@ class Models {
 
                 CategoryModel.hasOne(ItemDetailModel, {foreignKey: 'categoryId', as: 'detail', sourceKey: 'id'});
                 ItemDetailModel.belongsTo(ItemModel, { foreignKey: 'categoryId', targetKey: 'id'});
+
+                UserModel.hasMany(DibsModel, {foreignKey: 'userId', sourceKey: 'id'});
+                ItemModel.hasMany(DibsModel, { foreignKey: 'itemId', sourceKey: 'id'});
+                DibsModel.belongsTo(UserModel, {foreignKey: 'userId', as: 'user', targetKey: 'id'});
+                DibsModel.belongsTo(ItemModel, {foreignKey: 'itemId', as: 'item', targetKey: 'id'});
             }
+
             return this;
         }catch(e){
             log.error('exception : ', e);
@@ -173,6 +182,7 @@ class Models {
                 case ModelName.userAlarm: return UserAlarmModel;
                 case ModelName.appleAccount: return AppleAccountModel;
                 case ModelName.itemDetail: return ItemDetailModel;
+                case ModelName.dibs: return DibsModel;
             }
             return ItemModel;
         }catch(e){

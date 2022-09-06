@@ -6,7 +6,7 @@ import { Provider } from './provider'
 import { Container } from 'typedi'
 import { BiddingService } from '../services/biddingService';
 
-const initialize = async()=>{
+export const initialize = async()=>{
     try{
         const provider:Provider = Container.get(Provider);
         await provider.initialize();
@@ -16,7 +16,7 @@ const initialize = async()=>{
     }
 }
 
-const destroy = async ()=>{
+export const destroy = async ()=>{
     try{
         const provider:Provider = Container.get(Provider);
         await provider.destroy();
@@ -26,7 +26,7 @@ const destroy = async ()=>{
     }
 }
 
-const extractIdentity = (event:AppSyncResolverEvent<any, any>):AppSyncIdentityLambda=>{
+export const extractIdentity = (event:AppSyncResolverEvent<any, any>):AppSyncIdentityLambda=>{
     const identity = event.identity as AppSyncIdentityLambda
     if(!identity || !identity.resolverContext){
         throw ErrorNotFoundSocialUserInfo();
@@ -45,12 +45,17 @@ const dibsResolver = async (event:AppSyncResolverEvent<any, any>, context: Conte
             case 'getMyDibs':
                 payload = await Container.get(DibsService).getMyDibs(identity.resolverContext, event.arguments, event.info.selectionSetList);
                 break;
+            case 'getDibsCount':
+                payload = await Container.get(DibsService).getDibsCount(identity.resolverContext, event.arguments, event.info.selectionSetList);
+                break;
+            case 'addDibs':
+                payload = await Container.get(DibsService).addDibs(identity.resolverContext, event.arguments, event.info.selectionSetList);
+                break;
             default:
                 break;
         }
 
         log.info('try to destroy sequelize');
-
         await destroy();
         return payload;
     }catch(e){

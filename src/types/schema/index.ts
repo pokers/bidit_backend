@@ -359,6 +359,7 @@ export enum MembershipStatus {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addDibs?: Maybe<Dibs>;
   addItem?: Maybe<Item>;
   addUser?: Maybe<User>;
   addUserAlarm?: Maybe<Scalars['Boolean']>;
@@ -368,6 +369,11 @@ export type Mutation = {
   updateMembership?: Maybe<User>;
   updatePushToken?: Maybe<Scalars['Boolean']>;
   updateUser?: Maybe<User>;
+};
+
+
+export type MutationAddDibsArgs = {
+  itemId?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -458,6 +464,7 @@ export type Query = {
   getBidding?: Maybe<Array<Maybe<Bidding>>>;
   getCategory?: Maybe<Category>;
   getCategoryList?: Maybe<CategoryConnection>;
+  getDibsCount?: Maybe<Scalars['Int']>;
   getEndingSoonItems?: Maybe<Array<Maybe<Item>>>;
   getItem?: Maybe<Item>;
   getItemList?: Maybe<ItemConnection>;
@@ -485,6 +492,11 @@ export type QueryGetCategoryListArgs = {
   categoryQuery?: InputMaybe<CategoryQueryInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryGetDibsCountArgs = {
+  itemId?: InputMaybe<Scalars['Int']>;
 };
 
 

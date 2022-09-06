@@ -30,4 +30,7 @@ export class ServiceBase {
         now.setTime(now.getTime() + (9*60*60*1000));
         return now;
     }
+    getRepositories():Repositories{
+        return this.repositories;
+    }
 }

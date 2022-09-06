@@ -16,7 +16,8 @@ import { ItemModel,
     BiddingModel,
     ItemDetailModel,
     DibsModel,
-    Models
+    Models,
+    DibsAttributes
 } from './model'
 import { Op, WhereOptions, Sequelize } from 'sequelize'
 import { 
@@ -24,11 +25,13 @@ import {
     BiddingQueryInput,
     BidInput,
     SuccessfulBid,
-    Dibs
+    Dibs,
+    Maybe
 } from '../types'
 import { RepositoryBase } from './repositoryBase'
 import { Service } from 'typedi'
 import { sealed } from '../lib/decorators'
+import { ErrorCouldNotAdd } from '../lib'
 
 interface includeModel<T> {
     model: T,
@@ -69,9 +72,10 @@ class DibsRepository extends RepositoryBase{
 
             const model = this.models.getModel(ModelName.dibs);
             const dibs:DibsModel[] = await model.findAll({
-                where: {userId: userId},
+                where: {userId: userId, status: 0}, // status 0=valid, 1=invalid
                 include: includes
             })
+            log.info('dibs : ', dibs);
 
             const result = dibs.map((item:DibsModel)=>item.get({plain: true}));
             log.info('repo > getDibsByUserId > result : ', result);
@@ -79,6 +83,46 @@ class DibsRepository extends RepositoryBase{
             return result;
         }catch(e){
             log.error('exception > getDibsByUserId : ', e);
+            throw e;
+        }
+    }
+
+    async getDibsCountByItemId(itemId:number): Promise<number>{
+        try{
+            const model = this.models.getModel(ModelName.dibs);
+            const dibsCount:number = await model.count({
+                where: {itemId: itemId, status: 0}, // status 0=valid, 1=invalid
+            })
+            log.info('dibsCount : ', dibsCount);
+            return dibsCount;
+        }catch(e){
+            log.error('exception > getDibsCountByItemId : ', e);
+            throw e;
+        }
+    }
+
+    async addDibs(userId:number, itemId:number, transaction:Transaction): Promise<Maybe<Dibs>>{
+        try{
+            const dibsAttributes:DibsAttributes = {
+                status: 0,
+                userId: userId,
+                itemId: itemId,
+            }
+
+            const model = this.models.getModel(ModelName.dibs);
+            const dibs:DibsModel = await model.create({
+                ...dibsAttributes,
+            }, {Transaction: transaction});
+            // log.info('dibs : ', dibs);
+            if(dibs === null){
+                throw ErrorCouldNotAdd();
+            }
+            
+            const result = dibs.get({plain: true});
+            log.info('repo > addDibs > result : ', JSON.stringify(result));
+            return result;
+        }catch(e){
+            log.error('exception > repo > addDibs : ', e);
             throw e;
         }
     }

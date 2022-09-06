@@ -185,6 +185,16 @@ custom:
         field: getMyDibs
         request: false
         response: false
+      - dataSource: dibsResolverDataSource
+        type: Query
+        field: getDibsCount
+        request: false
+        response: false
+      - dataSource: dibsResolverDataSource
+        type: Mutation
+        field: addDibs
+        request: false
+        response: false
 
 package:
   individually: true

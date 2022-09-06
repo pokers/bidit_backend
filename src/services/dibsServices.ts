@@ -19,11 +19,12 @@ import {
     SuccessfulBid,
     
     // Dibs
-    Dibs
+    Dibs,
+    Maybe
 } from '../types';
 import { ItemRepository } from '../repository';
 import { log } from '../lib/logger';
-import { ErrorModuleNotFound, ErrorInvalidBodyParameter, ErrorUserNotFound, ErrorLowPriceBidding, ErrorSameUserBidding, ErrorOwnItemBidding, ErrorEndBidingItem,ErrorItemNotFound, MessageCommand } from '../lib';
+import { ErrorModuleNotFound, ErrorCouldNotAdd, ErrorUserNotFound, ErrorLowPriceBidding, ErrorSameUserBidding, ErrorOwnItemBidding, ErrorEndBidingItem,ErrorItemNotFound, MessageCommand } from '../lib';
 import { ModelName, CursorName, Order, Transaction, ItemAttributes, SuccessfulBidModel, SuccessfulBidAttributes } from '../repository/model';
 import { Service } from 'typedi'
 import { ServiceBase } from './serviceBase'
@@ -41,20 +42,38 @@ enum DefaultDate {
 class DibsService extends ServiceBase{
     
     // Private Methods
-    private logInfo(...arg:any){
+    protected logInfo(...arg:any){
         log.info('DibsService > ', ...arg);
     }
-    private extractUserId(authInfo:AuthResult):number{
+    protected extractUserId(authInfo:AuthResult):number{
         if(!authInfo.userId){
             throw ErrorUserNotFound();
         }
         return authInfo.userId;
     }
-    private getDibsRepository():DibsRepository{
-        if(!this.repositories.getRepository().dibsRepo){
+    protected extractItemId(arg:any):number{
+        if(!arg.itemId){
+            throw ErrorItemNotFound();
+        }
+        return arg.itemId;
+    }
+    protected getDibsRepository():DibsRepository{
+        if(!this.getRepositories().getRepository().dibsRepo){
             throw ErrorModuleNotFound();
         }
-        return this.repositories.getRepository().dibsRepo
+        return this.getRepositories().getRepository().dibsRepo
+    }
+    protected getItemRepository():ItemRepository{
+        if(!this.getRepositories().getRepository().itemRepo){
+            throw ErrorModuleNotFound();
+        }
+        return this.getRepositories().getRepository().itemRepo
+    }
+    protected isValidItem(item:Maybe<Item>):Boolean {
+        if(!(!!item)){
+            throw ErrorItemNotFound();
+        }
+        return true;
     }
 
     // Public Methods
@@ -68,6 +87,52 @@ class DibsService extends ServiceBase{
             return dibs;
         }catch(e){
             log.error('exception > service > getMyDibs:  ', e);
+            throw e;
+        }
+    }
+
+    async getDibsCount(authInfo:AuthResult, arg: any, selectionSetList:string[]): Promise<number>{
+        try{
+            const itemId:number = this.extractItemId(arg);
+            const dibsRepository:DibsRepository = this.getDibsRepository();
+            const dibsCount:number = await dibsRepository.getDibsCountByItemId(itemId);
+
+            log.info('service > getDibsCount > result : ', dibsCount);
+            return dibsCount;
+        }catch(e){
+            log.error('exception > service > getDibsCount:  ', e);
+            throw e;
+        }
+    }
+
+    async addDibs(authInfo:AuthResult, arg: any, selectionSetList:string[]): Promise<Dibs>{
+        let transaction:Transaction|null = null;
+        try{
+            const userId:number = this.extractUserId(authInfo);
+            const itemId:number = this.extractItemId(arg);
+            
+            const dibsRepository:DibsRepository = this.getDibsRepository();
+            const itemRepository:ItemRepository = this.getItemRepository();
+            
+            const item:Item = await itemRepository.getItem(itemId);
+            this.isValidItem(item);
+
+            transaction = await this.startTransaction();
+            const dibs:Maybe<Dibs> = await dibsRepository.addDibs(userId, itemId, transaction);
+            if(dibs === null){
+                throw ErrorCouldNotAdd();
+            }
+
+            await this.commit(transaction);
+            transaction = null;
+
+            log.info('service > addDibs > result : ', dibs);
+            return dibs;
+        }catch(e){
+            if(transaction){
+                await this.rollback(transaction);
+            }
+            log.error('exception > service > addDibs:  ', e);
             throw e;
         }
     }

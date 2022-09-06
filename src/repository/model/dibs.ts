@@ -12,6 +12,7 @@ const {
 } = DataTypes;
 
 interface DibsAttributes {
+    status?:number,
     userId:number,
     itemId:number,
 }

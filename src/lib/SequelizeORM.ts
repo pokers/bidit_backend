@@ -81,11 +81,11 @@ class SequelizeORM {
                         // timezone: "+09:00",
                         logging: false,
                         pool:{
-                            max: 1,
+                            max: 2,
                             min: 0,
-                            idle:0,
-                            acquire: 3000,
-                            evict: 75
+                            idle:5000,
+                            acquire: 10000,
+                            evict: 10000
                         }
                     })
                     await this.dbInst.authenticate();

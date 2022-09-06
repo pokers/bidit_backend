@@ -13,15 +13,15 @@ type Dibs {
 
 type Query {
     getMyDibs:[Dibs]
-    # getDibsCount(itemId: Int):Int
+    getDibsCount(itemId: Int):Int
 }
 
-# type Mutation {
-#     addDibs(itemId: Int):Dibs
-#     updateDibs(itemId: Int, status: Int):Dibs
-# }
+type Mutation {
+    addDibs(itemId: Int):Dibs
+    # updateDibs(itemId: Int, status: Int):Dibs
+}
 
 schema {
     query: Query
-    # mutation: Mutation
+    mutation: Mutation
 }

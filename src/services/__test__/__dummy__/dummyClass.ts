@@ -1,7 +1,7 @@
-import { SequelizeORM, Transaction, UniqueConstraintError } from '../../lib/SequelizeORM';
-import { ItemRepository, RepoObjects } from '../../repository';
-import { Repositories, UserRepository, BiddingRepository, PenaltyRepository, AlarmRepository, DibsRepository, Models } from '../../repository'
-import { KakaoAPI, MessageQueue } from '../../lib'
+import { SequelizeORM, Transaction, UniqueConstraintError } from '../../../lib/SequelizeORM';
+import { ItemRepository, RepoObjects } from '../../../repository';
+import { Repositories, UserRepository, BiddingRepository, PenaltyRepository, AlarmRepository, DibsRepository, Models } from '../../../repository'
+import { KakaoAPI, MessageQueue } from '../../../lib'
 
 export class DummyItemRepository extends ItemRepository {}
 export class DummyUserRepository extends UserRepository {}
@@ -14,14 +14,11 @@ export class DummyModels extends Models {}
 export class DummyRepositories extends Repositories {
 
     async startTransaction():Promise<Transaction>{
-        return {} as Transaction;
+        return {} as Transaction;``
     }
     async commit(transaction:Transaction){
     }
     async rollback(transaction:Transaction){
-    }
-    getRepository():RepoObjects{
-        return {} as RepoObjects;
     }
 }
 
